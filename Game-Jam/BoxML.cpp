@@ -28,11 +28,11 @@ void BoxML::CreateWorld(void)
 	if (_player)
 		RemoveObject(_player);
 
-	player->Body()->ApplyForceToCenter({ 5, 2 }, true);
-	player->Body()->ApplyForceToCenter({ 5, 4 }, true);
-	player->Body()->ApplyForceToCenter({ 5, 4 }, true);
+	_player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f, 2, 1);
 
-	
+	_player->Body()->ApplyForceToCenter({ 5, 2 }, true);
+	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);
+	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);
 }
 
 void BoxML::LoadPositions(void)
