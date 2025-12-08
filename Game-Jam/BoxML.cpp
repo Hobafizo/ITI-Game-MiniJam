@@ -28,11 +28,13 @@ void BoxML::CreateWorld(void)
 	if (_player)
 		RemoveObject(_player);
 
-	_player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f, 2, 1);
+	_player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f);
 
 	_player->Body()->ApplyForceToCenter({ 5, 2 }, true);
 	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);
 	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);
+
+	bfWall* wall
 }
 
 void BoxML::LoadPositions(void)
@@ -157,8 +159,10 @@ bfRectangle* BoxML::CreateRectangle(const b2BodyType bodyType, const b2Vec2 posi
 	return bfObj;
 }
 
-bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, float radius, float density, float friction, uint16 categoryBits, uint16 maskBits)
+bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, float radius, float density, float friction)
 {
+	const uint16 categoryBits = (uint16)ObjectCategory::Player, maskBits = 0;
+
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
 	bodyDef.position = position;
