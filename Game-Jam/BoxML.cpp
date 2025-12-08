@@ -1,6 +1,7 @@
 #include "BoxML.h"
 #include "bfCircle.h"
 #include "bfRectangle.h"
+#include "bfPlayer.h"
 #include <random>
 
 #define G_CONST               20.0f
@@ -31,11 +32,11 @@ BoxML::~BoxML(void)
 
 void BoxML::CreateWorld(void)
 {
-	bfCircle* circle = CreateCircle(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f, 2, 1);
+	bfPlayer* player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f, 2, 1);
 
-	circle->Body()->ApplyForceToCenter({ 5, 2 }, true);
-	circle->Body()->ApplyForceToCenter({ 5, 4 }, true);
-	circle->Body()->ApplyForceToCenter({ 5, 4 }, true);
+	player->Body()->ApplyForceToCenter({ 5, 2 }, true);
+	player->Body()->ApplyForceToCenter({ 5, 4 }, true);
+	player->Body()->ApplyForceToCenter({ 5, 4 }, true);
 
 	
 }
@@ -157,6 +158,35 @@ bfRectangle* BoxML::CreateRectangle(const b2BodyType bodyType, const b2Vec2 posi
 	body->CreateFixture(&fixtureDef);
 
 	bfRectangle* bfObj = new bfRectangle(body, size);
+
+	AddObject(bfObj);
+	return bfObj;
+}
+
+bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, float radius, float density, float friction, uint16 categoryBits, uint16 maskBits)
+{
+	b2BodyDef bodyDef;
+	bodyDef.type = bodyType;
+	bodyDef.position = position;
+
+	b2Body* body = _world.CreateBody(&bodyDef);
+
+	b2CircleShape circleShape;
+	circleShape.m_radius = radius / _screenPixelPerUnit;
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &circleShape;
+	fixtureDef.density = density;
+	fixtureDef.friction = friction;
+
+	if (categoryBits)
+		fixtureDef.filter.categoryBits = categoryBits;
+	if (maskBits)
+		fixtureDef.filter.maskBits = maskBits;
+
+	body->CreateFixture(&fixtureDef);
+
+	bfPlayer* bfObj = new bfPlayer(body, radius);
 
 	AddObject(bfObj);
 	return bfObj;
