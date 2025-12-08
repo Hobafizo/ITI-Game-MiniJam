@@ -24,4 +24,8 @@ public:
 	sf::Drawable* Drawable() const override;
 	b2Vec2 getB2Position() const override;
 	sf::Vector2f getSfPosition() const override;
+
+	// bfWall.h / cpp
+	ObjectCategory Category() const override { return ObjectCategory::Wall; }
+
 };

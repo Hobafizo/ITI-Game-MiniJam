@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <box2d/box2d.h>
-
+#include "ObjectCategory.h"
 class bfObject
 {
 protected:
@@ -24,4 +24,6 @@ public:
 	virtual sf::Drawable* Drawable() const = 0;
 	virtual b2Vec2 getB2Position() const = 0;
 	virtual sf::Vector2f getSfPosition() const = 0;
+	virtual ObjectCategory Category() const { return ObjectCategory::Wall; } // default, override in subclasses
+
 };

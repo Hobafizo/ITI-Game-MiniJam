@@ -14,7 +14,7 @@ public:
 	void SetRedirectDirection(const b2Vec2& dir) { _redirectDirection = dir; }
 	b2Vec2 RedirectDirection() const { return _redirectDirection; }
 
-	void SetTransparent(bool val) { _isTransparent = val; }
+	void SetTransparent(bool transparent);
 	bool IsTransparent() const { return _isTransparent; }
 
 

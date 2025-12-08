@@ -65,3 +65,12 @@ sf::Vector2f bfRectangle::getSfPosition(void) const
 {
 	return _shape.getPosition();
 }
+void bfRectangle::SetTransparent(bool transparent)
+{
+	_isTransparent = transparent;
+	sf::Color color = _shape.getFillColor();
+	color.a = transparent ? 100 : 255; // semi-transparent or opaque
+	_shape.setFillColor(color);
+}
+
+

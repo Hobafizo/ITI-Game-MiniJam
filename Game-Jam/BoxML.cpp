@@ -129,7 +129,7 @@ bfCircle* BoxML::CreateCircle(const b2BodyType bodyType, const b2Vec2 position, 
 	return bfObj;
 }
 
-bfRectangle* BoxML::CreateRectangle(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits)
+bfRectangle* BoxML::CreateRectangle(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits, bool addToWorld)
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
@@ -154,8 +154,7 @@ bfRectangle* BoxML::CreateRectangle(const b2BodyType bodyType, const b2Vec2 posi
 	body->CreateFixture(&fixtureDef);
 
 	bfRectangle* bfObj = new bfRectangle(body, size);
-
-	AddObject(bfObj);
+	if (addToWorld) AddObject(bfObj);
 	return bfObj;
 }
 
@@ -222,10 +221,11 @@ bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, cons
 	bfWall* bfObj = new bfWall(body, size);
 
 	AddObject(bfObj);
+
 	return bfObj;
 }
 
-bfSpeedWall* BoxML::CreateSpeedWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction)
+bfSpeedWall* BoxML::CreateSpeedWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, bool addToWorld)
 {
 	const uint16 categoryBits = (uint16)ObjectCategory::SpeedWall, maskBits = 0;
 
@@ -263,6 +263,20 @@ void BoxML::Step(void)
 		return;
 
 	_world.Step(_timeStep, _velocityIterations, _positionIterations);
+	float targetSpeed = 10.0f;
+	for (auto obj : _objs)
+	{
+		bfPlayer* playerObj = dynamic_cast<bfPlayer*>(obj);
+		if (!playerObj) continue;
+
+		b2Vec2 v = playerObj->Body()->GetLinearVelocity();
+		float currentSpeed = v.Length();
+		if (currentSpeed > 0.01f) {
+			v = b2Vec2(v.x / currentSpeed * targetSpeed, v.y / currentSpeed * targetSpeed);
+			playerObj->Body()->SetLinearVelocity(v);
+		}
+	}
+
 	_timer.restart();
 }
 
@@ -272,6 +286,7 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 
 	mainWnd.clear();
 
+	// Draw all normal objects
 	for (auto it = _objs.begin(); it != _objs.end(); ++it)
 	{
 		obj = *it;
@@ -282,15 +297,66 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 		mainWnd.draw(*obj->Drawable());
 	}
 
+	if (_previewObject)
+	{
+		if (_previewObject->Body())
+			_world.DestroyBody(_previewObject->Body());
+		delete _previewObject;
+		_previewObject = nullptr;
+	}
+
+
 	mainWnd.display();
 }
+
 
 void BoxML::OnBeginContact(b2Contact* contact)
 {
 	// Identify objects via user data
 	std::cout << "Collision began!\n";
+	void* bodyUserDataA = (void*)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
+	void* bodyUserDataB = (void*)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
 
-	if (contact->GetFixtureA()->GetBody() == _player->Body());
+	if (!bodyUserDataA || !bodyUserDataB) return;
+
+	bfPlayer* player = nullptr;
+	bfObject* wall = nullptr;
+
+	bfObject* objA = reinterpret_cast<bfObject*>(bodyUserDataA);
+	bfObject* objB = reinterpret_cast<bfObject*>(bodyUserDataB);
+
+	// Identify player
+	if (objA->Category() == ObjectCategory::Player) player = dynamic_cast<bfPlayer*>(objA);
+	if (objB->Category() == ObjectCategory::Player) player = dynamic_cast<bfPlayer*>(objB);
+
+	// Identify wall
+	if (objA->Category() == ObjectCategory::Wall || objA->Category() == ObjectCategory::PlayerWallRedirect)
+		wall = objA;
+	if (objB->Category() == ObjectCategory::Wall || objB->Category() == ObjectCategory::PlayerWallRedirect)
+		wall = objB;
+
+	if (!player || !wall) return;
+
+	b2Vec2 vel = player->Body()->GetLinearVelocity();
+
+	if (wall->Category() == ObjectCategory::Wall)
+	{
+		vel = b2Vec2(-vel.x, -vel.y); // simple opposite
+	}
+	else if (wall->Category() == ObjectCategory::PlayerWallRedirect)
+	{
+		b2Vec2 dir = wall->RedirectDirection();
+		float speed = vel.Length();
+		if (dir.LengthSquared() > 0.01f)
+		{
+			dir.Normalize();  // now dir.x, dir.y is unit vector
+			vel = b2Vec2(dir.x * speed, dir.y * speed); // scaled
+		}
+	}
+
+	player->Body()->SetLinearVelocity(vel);
+
+	//if (contact->GetFixtureA()->GetBody() == _player->Body());
 }
 
 void BoxML::OnEndContact(b2Contact* contact)
@@ -324,3 +390,55 @@ b2Vec2 BoxML::centerAround(const b2Vec2 size, const sf::Vector2f targetPosition,
 
 	return tPos;
 }
+void BoxML::UpdatePreviewObject(const b2Vec2& mousePos)
+{
+	// 1. Manually clean up the previous preview
+	if (_previewObject)
+	{
+		// We cannot use RemoveObject() because the preview isn't in the _objs list yet.
+		if (_previewObject->Body())
+			_world.DestroyBody(_previewObject->Body());
+
+		delete _previewObject;
+		_previewObject = nullptr;
+	}
+
+	// 2. Create new preview object based on selected type
+	// (This part of your code was fine)
+	switch (_currentPreviewType)
+	{
+	case ObjectCategory::Wall:
+		// addToWorld is false, so we handle the pointer manually above
+		_previewObject = CreateRectangle(b2_staticBody, mousePos, sf::Vector2f(60, 80), 1.0f, 0.3f, 0, 0, false);
+		break;
+	case ObjectCategory::PlayerWallRedirect:
+		_previewObject = CreateRectangle(b2_staticBody, mousePos, sf::Vector2f(60, 80), 1.0f, 0.3f, 0, 0, false);
+		// Ensure bfRectangle actually has this method defined!
+		// _previewObject->SetRedirectDirection(b2Vec2(0, 1)); 
+		break;
+	case ObjectCategory::SpeedWall:
+		_previewObject = CreateSpeedWall(b2_staticBody, mousePos, sf::Vector2f(60, 80), 1.0f, 0.3f,false);
+		// Note: You didn't implement 'addToWorld' logic in CreateSpeedWall, 
+		// so this might auto-add to the list and cause a double-delete crash later. 
+		// You should add the 'addToWorld' bool to CreateSpeedWall too.
+		break;
+	}
+
+	if (_previewObject)
+		_previewObject->SetTransparent(true);
+}
+void BoxML::PlacePreviewObject()
+{
+	if (!_previewObject) return;
+	_previewObject->SetTransparent(false);
+	AddObject(_previewObject);
+	_previewObject = nullptr;
+}
+
+void BoxML::HandleKeyPress(sf::Keyboard::Key key)
+{
+	if (key == sf::Keyboard::Num1) _currentPreviewType = ObjectCategory::Wall;
+	if (key == sf::Keyboard::Num2) _currentPreviewType = ObjectCategory::PlayerWallRedirect;
+	if (key == sf::Keyboard::Num3) _currentPreviewType = ObjectCategory::SpeedWall;
+}
+
