@@ -147,6 +147,7 @@
     <ClCompile Include="BoxML.cpp" />
     <ClCompile Include="InputHandler.hpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="WorldContactListener.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +158,9 @@
     <ClInclude Include="bfSpeedWall.h" />
     <ClInclude Include="bfWall.h" />
     <ClInclude Include="BoxML.h" />
+    <ClInclude Include="GameManager.hpp" />
+    <ClInclude Include="Level1.hpp" />
+    <ClInclude Include="LevelManager.hpp" />
     <ClInclude Include="ObjectCategory.h" />
     <ClInclude Include="WorldContactListener.h" />
   </ItemGroup>

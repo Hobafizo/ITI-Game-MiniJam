@@ -7,12 +7,13 @@ class InputHandler {
 	private:
 		
 		
-		void isKeyPressed(sf::Keyboard::Key key) {
+		void KeyPressed(sf::Keyboard::Key key) {
 			cout<< sf::Keyboard::isKeyPressed(key);
 		}
 
-		void isMouseButtonPressed(sf::Mouse::Button button) {
-			cout << "right";
+		void MouseButtonPressed(sf::Mouse::Button button) {
+			getMousePosition();
+			
 		}
 
 		void getMousePosition() {
@@ -25,9 +26,9 @@ class InputHandler {
 		
 
 		void handleInput() {
-			isKeyPressed(sf::Keyboard::A); // Example key
-			isMouseButtonPressed(sf::Mouse::Left); // Example button
-			getMousePosition();
+			KeyPressed(sf::Keyboard::Num1); // Example key
+			MouseButtonPressed(sf::Mouse::Left); // Example button
+			
 		}
 		
 };
