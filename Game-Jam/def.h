@@ -1,0 +1,5 @@
+#pragma once
+
+#define PLAYER_SPEED_X 10.0f
+#define PLAYER_SPEED_Y 5.0f
+#define PLAYER_SPEED   sqrt(PLAYER_SPEED_X * PLAYER_SPEED_X + PLAYER_SPEED_Y * PLAYER_SPEED_Y)

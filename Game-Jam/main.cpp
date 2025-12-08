@@ -35,7 +35,7 @@ int main()
 
         boxWorld.Step();
         boxWorld.Render(window);
-        inputHandler->handleInput();
+        //inputHandler->handleInput();
     }
 
     return 0;

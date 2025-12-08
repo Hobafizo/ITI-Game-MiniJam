@@ -1,6 +1,7 @@
 #include "bfPlayer.h"
+#include "def.h"
 
-bfPlayer::bfPlayer(b2Body* body, float radius, unsigned int color) : _body(body)
+bfPlayer::bfPlayer(b2Body* body, float radius, unsigned int color) : _body(body), _boostMultiplier(1), _speedBoostTimer(0)
 {
 	setRadius(radius);
 	setOrigin({ radius, radius });
@@ -46,6 +47,26 @@ void bfPlayer::setOutlineColor(const sf::Color color)
 	_shape.setOutlineColor(color);
 }
 
+void bfPlayer::setSpeedBoostTimer(float timer)
+{
+	_speedBoostTimer = timer;
+}
+
+void bfPlayer::setBoostMultiplier(float multiplier)
+{
+	_boostMultiplier = multiplier;
+}
+
+void bfPlayer::updateVelocity(float curTime)
+{
+	float multiplier = curTime > _speedBoostTimer ? 1 : _boostMultiplier;
+
+	b2Vec2 vel = _body->GetLinearVelocity();
+	vel.Normalize();
+
+	_body->SetLinearVelocity(PLAYER_SPEED * multiplier * vel);
+}
+
 b2Body* bfPlayer::Body(void) const
 {
 	return _body;
@@ -64,4 +85,14 @@ b2Vec2 bfPlayer::getB2Position(void) const
 sf::Vector2f bfPlayer::getSfPosition(void) const
 {
 	return _shape.getPosition();
+}
+
+float bfPlayer::getSpeedBoostTimer(void) const
+{
+	return _speedBoostTimer;
+}
+
+float bfPlayer::getBoostMultiplier(void) const
+{
+	return _boostMultiplier;
 }
