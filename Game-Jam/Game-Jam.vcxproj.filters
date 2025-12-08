@@ -72,7 +72,7 @@
     <ClCompile Include="InputHandler.hpp">
       <Filter>Scripts\InputHandler</Filter>
     </ClCompile>
-    <ClCompile Include="UIHandler.cpp">
+    <ClCompile Include="VisualHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MenuLoader.cpp">
@@ -113,10 +113,7 @@
     <ClInclude Include="GameManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Level1.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelManager.hpp">
+    <ClInclude Include="LevelData.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ObjectCategory.h">
@@ -124,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="def.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelManager.cpp">
+      <Filter>Scripts\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
