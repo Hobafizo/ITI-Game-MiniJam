@@ -34,7 +34,7 @@ void BoxML::CreateWorld(void)
 	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);
 	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);
 
-	bfWall* wall
+	bfWall* wall = CreateWall(b2_staticBody, pixelToMeter({ 500, 384 }), { 30, 368 });
 }
 
 void BoxML::LoadPositions(void)
