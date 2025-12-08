@@ -28,6 +28,12 @@
     <Filter Include="Scripts\InputHandler">
       <UniqueIdentifier>{ad085834-a3bf-4f32-847a-c9b27f7cbd59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripts\MenuLoader">
+      <UniqueIdentifier>{cff2409d-8955-4579-bcaf-5e7baeaffa04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts\Managers">
+      <UniqueIdentifier>{b1672de3-4c2e-4217-9b12-a146990c12ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -66,6 +72,18 @@
     <ClCompile Include="InputHandler.hpp">
       <Filter>Scripts\InputHandler</Filter>
     </ClCompile>
+    <ClCompile Include="UIHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuLoader.cpp">
+      <Filter>Scripts\MenuLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseMenu.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuManager.cpp">
+      <Filter>Scripts\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxML.h">
@@ -102,6 +120,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ObjectCategory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="def.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

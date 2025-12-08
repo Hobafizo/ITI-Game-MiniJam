@@ -138,6 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BaseMenu.cpp" />
     <ClCompile Include="bfCircle.cpp" />
     <ClCompile Include="bfObject.cpp" />
     <ClCompile Include="bfPlayer.cpp" />
@@ -149,6 +150,9 @@
     <ClCompile Include="LevelMenu.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="MenuLoader.cpp" />
+    <ClCompile Include="MenuManager.cpp" />
+    <ClCompile Include="UIHandler.cpp" />
     <ClCompile Include="WorldContactListener.cpp" />
   </ItemGroup>
   <ItemGroup>
