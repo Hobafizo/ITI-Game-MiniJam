@@ -9,6 +9,7 @@
 
 #define PIXELS_PER_UNIT   10
 
+int active_menu= 0; // 0 - main menu, 1 - level menu 3-pause menu 4-game over menu 5-win menu 6-none
 int main()
 {
     const float timeStep = 1.0f / 60.0f; // 1/60 (frames/sec)
@@ -33,13 +34,18 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             //inputHandler->handleInput();
+            if (active_menu == 0) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    mainMenu.checkClick();
+                }
+            }
+
         }
 
         boxWorld.Step();
         boxWorld.Render(window);
         //inputHandler->handleInput();
         window.clear();
-        mainMenu.draw(window);
     }
 
     return 0;

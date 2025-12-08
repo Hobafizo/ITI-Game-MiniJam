@@ -25,6 +25,9 @@
     <Filter Include="Scripts">
       <UniqueIdentifier>{5edad5c4-24e6-44c3-976c-aabaf08f0df1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripts\InputHandler">
+      <UniqueIdentifier>{ad085834-a3bf-4f32-847a-c9b27f7cbd59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -54,14 +57,14 @@
     <ClCompile Include="bfWall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InputHandler.hpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="MainMenu.cpp">
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="LevelMenu.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="InputHandler.hpp">
+      <Filter>Scripts\InputHandler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
