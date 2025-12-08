@@ -3,6 +3,7 @@
 #include "bfRectangle.h"
 #include "InputHandler.hpp"
 #include "MainMenu.cpp"
+#include "LevelMenu.cpp"
 #define WINDOW_WIDTH      1024
 #define WINDOW_HEIGHT     768
 #define WINDOW_FRAME_RATE 60
@@ -26,6 +27,7 @@ int main()
     window.setFramerateLimit(WINDOW_FRAME_RATE);
     InputHandler *inputHandler = new InputHandler(window);
     Menu mainMenu;
+    LevelMenu levelMenu;
     while (window.isOpen())
     {
         sf::Event event;
@@ -42,10 +44,12 @@ int main()
 
         }
 
-        boxWorld.Step();
-        boxWorld.Render(window);
+       /* boxWorld.Step();
+        boxWorld.Render(window);*/
         //inputHandler->handleInput
         window.clear();
+        levelMenu.draw(window);
+        window.display();
     }
 
     return 0;
