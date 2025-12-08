@@ -44,7 +44,7 @@ int main()
 
         boxWorld.Step();
         boxWorld.Render(window);
-        //inputHandler->handleInput();
+        //inputHandler->handleInput
         window.clear();
     }
 

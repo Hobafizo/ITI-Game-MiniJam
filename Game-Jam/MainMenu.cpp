@@ -12,13 +12,17 @@ class Menu {
     
     sf::Texture exitTexture;
     sf::Sprite exitSprite;
+    sf::Vector2u windowSize = sf::Vector2u(1024, 768);
 public:
 	
 	Menu() {
 		if (!loadAssets()) {
 			// Handle error, e.g., throw an exception or log a message
 			std::cerr << "ERROR: Failed to load menu assets." << std::endl;
-		}
+        }
+        else {
+            setupSprites();
+        }
 	}
     bool loadAssets() {
         // Load the background image from the assets folder
@@ -50,14 +54,35 @@ public:
         startSprite.setTexture(startTexture);
         exitSprite.setTexture(exitTexture);
 
-        startSprite.setPosition(350.0f, 200.0f);
-        exitSprite.setPosition(350.0f, 300.0f);
+        // --- 1. Fix Background Scaling ---
+        // Calculate scale factors to fill the 1024x768 window
+        float scaleX = (float)windowSize.x / backgroundTexture.getSize().x;
+        float scaleY = (float)windowSize.y / backgroundTexture.getSize().y;
+        backgroundSprite.setScale(scaleX, scaleY);
+        backgroundSprite.setPosition(0.0f, 0.0f); // Place at top-left
 
-        // Example: Scale the background if needed
-        // backgroundSprite.setScale(0.5f, 0.5f);
+        // --- 2. Fix Button Centering and Scaling ---
+        // Define a standard width for buttons (e.g., 300 pixels)
+        float desiredButtonWidth = 300.0f;
 
-        // Example: Position the sprite
-        // backgroundSprite.setPosition(0.0f, 0.0f);
+        // Calculate the horizontal center position
+        float centerX = (windowSize.x - desiredButtonWidth) / 2.0f;
+
+        // Calculate the scale factor for the Start button
+        float startScale = desiredButtonWidth / startTexture.getSize().x;
+        startSprite.setScale(startScale, startScale);
+
+        // Position Start Button (Centered horizontally)
+        // Vertical position remains 200.0f for now
+        startSprite.setPosition(centerX, 200.0f);
+
+        // Calculate the scale factor for the Exit button
+        float exitScale = desiredButtonWidth / exitTexture.getSize().x;
+        exitSprite.setScale(exitScale, exitScale);
+
+        // Position Exit Button (Centered horizontally)
+        // Vertical position remains 300.0f for now
+        exitSprite.setPosition(centerX, 400.0f);
     }
 
     // A function to draw the menu to the window
