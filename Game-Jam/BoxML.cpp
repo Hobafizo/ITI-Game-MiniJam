@@ -2,25 +2,18 @@
 #include "bfCircle.h"
 #include "bfRectangle.h"
 #include "bfPlayer.h"
-#include <random>
-
-#define G_CONST               20.0f
-#define SUN_SIZE              100.0f
-#define SUN_MASS              500.0f
-
-#define PLANET_SIZE_MIN       10.0f
-#define PLANET_SIZE_MAX       25.0f
-#define TRAIL_SIZE_MAX        2000
-
-#define SUN_PLANET_RADIUS_MIN 15.0f
-#define SUN_PLANET_RADIUS_MAX 60.0f
+#include "bfWall.h"
+#include "bfSpeedWall.h"
+#include "ObjectCategory.h"
+#include <iostream>
 
 BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned short screenPixelPerUnit,
 	float timeStep, int32 velocityIterations, int32 positionIterations)
 	: _gravity(0.0f, 0.0f), _world(_gravity),
 	_screenWidth(screenWidth), _screenHeight(screenHeight), _screenPixelPerUnit(screenPixelPerUnit),
 	_timeStep(timeStep), _frameRefreshRate((int)_timeStep * 1000),
-	_velocityIterations(velocityIterations), _positionIterations(positionIterations)
+	_velocityIterations(velocityIterations), _positionIterations(positionIterations),
+	_contactListener(this), _player(nullptr)
 {
 	_world.SetContactListener(&_contactListener);
 }
@@ -32,13 +25,13 @@ BoxML::~BoxML(void)
 
 void BoxML::CreateWorld(void)
 {
-	bfPlayer* player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f, 2, 1);
-	bfRectangle* wall = CreateRectangle(b2_staticBody, b2Vec2{ 20,15 },sf::Vector2f(60,80));
+	if (_player)
+		RemoveObject(_player);
 
-	/*player->Body()->ApplyForceToCenter({ 5, 2 }, true);
+	player->Body()->ApplyForceToCenter({ 5, 2 }, true);
 	player->Body()->ApplyForceToCenter({ 5, 4 }, true);
-	player->Body()->ApplyForceToCenter({ 5, 4 }, true);*/
-	
+	player->Body()->ApplyForceToCenter({ 5, 4 }, true);
+
 	
 }
 
@@ -193,6 +186,70 @@ bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, 
 	return bfObj;
 }
 
+bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction)
+{
+	const uint16 categoryBits = (uint16)ObjectCategory::Wall, maskBits = 0;
+
+	b2BodyDef bodyDef;
+	bodyDef.type = bodyType;
+	bodyDef.position = position;
+
+	b2Body* body = _world.CreateBody(&bodyDef);
+
+	b2PolygonShape boxShape;
+	b2Vec2 bSize = pixelToMeter(size);
+	boxShape.SetAsBox(bSize.x / 2, bSize.y / 2);
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &boxShape;
+	fixtureDef.density = density;
+	fixtureDef.friction = friction;
+
+	if (categoryBits)
+		fixtureDef.filter.categoryBits = categoryBits;
+	if (maskBits)
+		fixtureDef.filter.maskBits = maskBits;
+
+	body->CreateFixture(&fixtureDef);
+
+	bfWall* bfObj = new bfWall(body, size);
+
+	AddObject(bfObj);
+	return bfObj;
+}
+
+bfSpeedWall* BoxML::CreateSpeedWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction)
+{
+	const uint16 categoryBits = (uint16)ObjectCategory::SpeedWall, maskBits = 0;
+
+	b2BodyDef bodyDef;
+	bodyDef.type = bodyType;
+	bodyDef.position = position;
+
+	b2Body* body = _world.CreateBody(&bodyDef);
+
+	b2PolygonShape boxShape;
+	b2Vec2 bSize = pixelToMeter(size);
+	boxShape.SetAsBox(bSize.x / 2, bSize.y / 2);
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &boxShape;
+	fixtureDef.density = density;
+	fixtureDef.friction = friction;
+
+	if (categoryBits)
+		fixtureDef.filter.categoryBits = categoryBits;
+	if (maskBits)
+		fixtureDef.filter.maskBits = maskBits;
+
+	body->CreateFixture(&fixtureDef);
+
+	bfSpeedWall* bfObj = new bfSpeedWall(body, size);
+
+	AddObject(bfObj);
+	return bfObj;
+}
+
 void BoxML::Step(void)
 {
 	if (_timer.getElapsedTime().asMilliseconds() < _frameRefreshRate)
@@ -219,6 +276,23 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 	}
 
 	mainWnd.display();
+}
+
+void BoxML::OnBeginContact(b2Contact* contact)
+{
+	// Identify objects via user data
+	std::cout << "Collision began!\n";
+}
+
+void BoxML::OnEndContact(b2Contact* contact)
+{
+	std::cout << "Collision ended!\n";
+}
+
+void BoxML::OnPostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
+{
+	float force = impulse->normalImpulses[0];
+	std::cout << "Collision force: " << force << "\n";
 }
 
 b2Vec2 BoxML::pixelToMeter(const sf::Vector2f pixel) const
