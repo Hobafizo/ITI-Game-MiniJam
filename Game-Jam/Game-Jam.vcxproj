@@ -145,6 +145,7 @@
     <ClCompile Include="bfSpeedWall.cpp" />
     <ClCompile Include="bfWall.cpp" />
     <ClCompile Include="BoxML.cpp" />
+    <ClCompile Include="InputHandler.hpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="WorldContactListener.cpp" />
   </ItemGroup>
