@@ -42,6 +42,8 @@ void BoxML::CreateWorld(void)
 	circle->Body()->ApplyForceToCenter({ 5, 2 }, true);
 	circle->Body()->ApplyForceToCenter({ 5, 4 }, true);
 	circle->Body()->ApplyForceToCenter({ 5, 4 }, true);
+
+	
 }
 
 void BoxML::LoadPositions(void)

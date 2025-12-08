@@ -22,6 +22,9 @@
     <Filter Include="Objects">
       <UniqueIdentifier>{e74a14c2-997d-4919-88f4-286723f4e306}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripts">
+      <UniqueIdentifier>{5edad5c4-24e6-44c3-976c-aabaf08f0df1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -42,6 +45,9 @@
     <ClCompile Include="WorldContactListener.cpp">
       <Filter>Engines</Filter>
     </ClCompile>
+    <ClCompile Include="bfPlayer.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxML.h">
@@ -58,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="WorldContactListener.h">
       <Filter>Engines</Filter>
+    </ClInclude>
+    <ClInclude Include="bfPlayer.h">
+      <Filter>Objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
