@@ -44,12 +44,14 @@ int main()
 
         }
 
-       /* boxWorld.Step();
-        boxWorld.Render(window);*/
+        boxWorld.Step();
+        boxWorld.Render(window);
+
         //inputHandler->handleInput
-        window.clear();
+
+        /*window.clear();
         levelMenu.draw(window);
-        window.display();
+        window.display();*/
     }
 
     return 0;
