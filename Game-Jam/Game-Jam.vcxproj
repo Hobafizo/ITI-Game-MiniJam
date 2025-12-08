@@ -143,6 +143,7 @@
     <ClCompile Include="bfPlayer.cpp" />
     <ClCompile Include="bfRectangle.cpp" />
     <ClCompile Include="BoxML.cpp" />
+    <ClCompile Include="InputHandler.hpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="WorldContactListener.cpp" />
   </ItemGroup>
@@ -152,6 +153,7 @@
     <ClInclude Include="bfPlayer.h" />
     <ClInclude Include="bfRectangle.h" />
     <ClInclude Include="BoxML.h" />
+    <ClInclude Include="InputHandler.h" />
     <ClInclude Include="WorldContactListener.h" />
   </ItemGroup>
   <ItemGroup>
