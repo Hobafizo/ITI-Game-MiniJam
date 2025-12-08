@@ -6,9 +6,7 @@
 #define WINDOW_HEIGHT     768
 #define WINDOW_FRAME_RATE 60
 
-#define PIXELS_PER_UNIT 10
-
-#define SUN_COLOR 
+#define PIXELS_PER_UNIT   10
 
 int main()
 {
@@ -31,12 +29,6 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-
-			else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Button::Left)
-			{
-				sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-				boxWorld.SpawnPlanetAt((sf::Vector2f)mousePos);
-			}
         }
 
         boxWorld.Step();

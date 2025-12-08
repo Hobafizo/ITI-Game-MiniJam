@@ -1,5 +1,6 @@
 #pragma once
-#include "PlanetInfo.h"
+#include "bfObject.h"
+#include "WorldContactListener.h"
 #include <list>
 
 class BoxML
@@ -14,27 +15,17 @@ private:
 	sf::Clock _timer;
 	b2Vec2 _gravity;
 	b2World _world;
+	WorldContactListener _contactListener;
 
 	std::list<bfObject*> _objs;
-	class bfCircle* _sun;
-	std::list<PlanetInfo> _planets;
 
 public:
 	BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned short screenPixelPerUnit, float timeStep, int32 velocityIterations, int32 positionIterations);
 	~BoxML();
 
-	void LoadPositions();
-
 	void CreateWorld();
-	void SpawnPlanetAt(const sf::Vector2f position);
 
-	void CreatePlanet(const b2Vec2 position, float radius, const sf::Color color);
-	void RemovePlanet(b2Body* body);
-
-private:
-	void ApplyGravity();
-	bool ApplyGravity(bfObject* sun, PlanetInfo& planet);
-	void UpdatePlanetTrail(PlanetInfo& planet);
+	void LoadPositions();
 	
 private:
 	void AddObject(bfObject* obj);
@@ -42,8 +33,8 @@ private:
 	void ClearObjects();
 
 public:
-	class bfCircle* CreateCircle(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f);
-	class bfRectangle* CreateRectangle(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f);
+	class bfCircle* CreateCircle(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0);
+	class bfRectangle* CreateRectangle(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0);
 
 	void Step();
 	void Render(sf::RenderWindow& mainWnd);
