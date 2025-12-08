@@ -31,12 +31,6 @@ BoxML::~BoxML(void)
 
 void BoxML::CreateWorld(void)
 {
-	bfCircle* _sun = CreateCircle(b2_staticBody,
-		centerAround(pixelToMeter({ SUN_SIZE * 2, SUN_SIZE * 2 }), sf::Vector2f{ 0.0f, 0.0f }, sf::Vector2f{ (float)_screenWidth, (float)_screenHeight }),
-		SUN_SIZE, 0.01f, 0.3f, 1);
-
-	_sun->setFillColor(sf::Color(253, 184, 19));
-
 	bfCircle* circle = CreateCircle(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f, 2, 1);
 
 	circle->Body()->ApplyForceToCenter({ 5, 2 }, true);
