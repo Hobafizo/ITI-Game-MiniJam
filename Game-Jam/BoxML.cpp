@@ -30,9 +30,11 @@ void BoxML::CreateWorld(void)
 
 	_player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f, 2, 1);
 
-	_player->Body()->ApplyForceToCenter({ 5, 2 }, true);
-	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);
-	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);
+	//bfPlayer* player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f, 2, 1);
+	float speed = 10.0f;
+	bfRectangle* wall = CreateRectangle(b2_staticBody, b2Vec2{ 20,15 }, sf::Vector2f(60, 80));
+
+
 }
 
 void BoxML::LoadPositions(void)
@@ -172,6 +174,9 @@ bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, 
 	fixtureDef.shape = &circleShape;
 	fixtureDef.density = density;
 	fixtureDef.friction = friction;
+	fixtureDef.friction = 0.0f;
+	fixtureDef.restitution = 1.0f;
+
 
 	if (categoryBits)
 		fixtureDef.filter.categoryBits = categoryBits;
@@ -282,6 +287,8 @@ void BoxML::OnBeginContact(b2Contact* contact)
 {
 	// Identify objects via user data
 	std::cout << "Collision began!\n";
+
+	if (contact->GetFixtureA()->GetBody() == _player->Body());
 }
 
 void BoxML::OnEndContact(b2Contact* contact)

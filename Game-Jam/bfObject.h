@@ -6,7 +6,16 @@ class bfObject
 {
 protected:
 	bfObject();
+	b2Vec2 _redirectDirection{ 0,0 }; // default no redirect
+	bool _isTransparent = false;    // for preview
+
 public:
+	void SetRedirectDirection(const b2Vec2& dir) { _redirectDirection = dir; }
+	b2Vec2 RedirectDirection() const { return _redirectDirection; }
+
+	void SetTransparent(bool val) { _isTransparent = val; }
+	bool IsTransparent() const { return _isTransparent; }
+
 	virtual ~bfObject();
 
 	virtual void setSfPosition(const sf::Vector2f pos) = 0;
