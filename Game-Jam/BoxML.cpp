@@ -42,13 +42,18 @@ void BoxML::LoadPositions(void)
 	}
 }
 
-void BoxML::CreateSolarSystem(void)
+void BoxML::CreateWorld(void)
 {
 	_sun = CreateCircle(b2_staticBody,
 		centerAround(pixelToMeter({ SUN_SIZE * 2, SUN_SIZE * 2 }), sf::Vector2f{ 0.0f, 0.0f }, sf::Vector2f{ (float)_screenWidth, (float)_screenHeight }),
 		SUN_SIZE);
 
 	_sun->setFillColor(sf::Color(253, 184, 19));
+
+	bfCircle* circle = CreateCircle(b2_dynamicBody, b2Vec2{ 10, 10 }, 10);
+	circle->Body()->ApplyForceToCenter({ 5, 2 }, true);
+	circle->Body()->ApplyForceToCenter({ 5, 2 }, true);
+	circle->Body()->ApplyForceToCenter({ 5, 2 }, true);
 }
 
 void BoxML::SpawnPlanetAt(const sf::Vector2f position)

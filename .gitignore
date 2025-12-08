@@ -429,3 +429,5 @@ FodyWeavers.xsd
 *.exe
 *.out
 *.app
+
+Game-Jam/Game-Jam.vcxproj

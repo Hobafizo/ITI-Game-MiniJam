@@ -18,7 +18,7 @@ int main()
 
     BoxML boxWorld(WINDOW_WIDTH, WINDOW_HEIGHT, PIXELS_PER_UNIT, timeStep, velocityIterations, positionIterations);
 
-	boxWorld.CreateSolarSystem();
+	boxWorld.CreateWorld();
 	boxWorld.LoadPositions();
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML works!");

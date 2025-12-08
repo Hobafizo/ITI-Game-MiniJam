@@ -25,7 +25,7 @@ public:
 
 	void LoadPositions();
 
-	void CreateSolarSystem();
+	void CreateWorld();
 	void SpawnPlanetAt(const sf::Vector2f position);
 
 	void CreatePlanet(const b2Vec2 position, float radius, const sf::Color color);
