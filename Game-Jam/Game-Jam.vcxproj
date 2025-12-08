@@ -146,6 +146,7 @@
     <ClCompile Include="bfWall.cpp" />
     <ClCompile Include="BoxML.cpp" />
     <ClCompile Include="InputHandler.hpp" />
+    <ClCompile Include="LevelMenu.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="WorldContactListener.cpp" />

@@ -2,6 +2,7 @@
 #include "bfCircle.h"
 #include "bfRectangle.h"
 #include "InputHandler.hpp"
+#include "MainMenu.cpp"
 #define WINDOW_WIDTH      1024
 #define WINDOW_HEIGHT     768
 #define WINDOW_FRAME_RATE 60
@@ -23,6 +24,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML works!");
     window.setFramerateLimit(WINDOW_FRAME_RATE);
     InputHandler *inputHandler = new InputHandler(window);
+    Menu mainMenu;
     while (window.isOpen())
     {
         sf::Event event;
@@ -35,7 +37,9 @@ int main()
 
         boxWorld.Step();
         boxWorld.Render(window);
-        inputHandler->handleInput();
+        //inputHandler->handleInput();
+        window.clear();
+        mainMenu.draw(window);
     }
 
     return 0;

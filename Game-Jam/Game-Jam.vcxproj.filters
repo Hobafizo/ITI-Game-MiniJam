@@ -60,6 +60,9 @@
     <ClCompile Include="MainMenu.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="LevelMenu.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxML.h">
