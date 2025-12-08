@@ -1,4 +1,3 @@
-#include <SFML/Graphics.hpp>
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -13,12 +12,13 @@ class InputHandler {
 		}
 
 		void isMouseButtonPressed(sf::Mouse::Button button) {
-			cout<<  sf::Mouse::isButtonPressed(button);
+			cout << "right";
 		}
 
 		void getMousePosition() {
 			  sf::Mouse::getPosition(window);
 			 cout<< sf::Mouse::getPosition(window).x<< sf::Mouse::getPosition(window).y;
+			 cout << "hello";
 		}
 	public:
 		InputHandler(sf::RenderWindow& win) : window(win) { }
