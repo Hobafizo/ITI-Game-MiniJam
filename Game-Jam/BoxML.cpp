@@ -33,11 +33,12 @@ BoxML::~BoxML(void)
 void BoxML::CreateWorld(void)
 {
 	bfPlayer* player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f, 2, 1);
+	bfRectangle* wall = CreateRectangle(b2_staticBody, b2Vec2{ 20,15 },sf::Vector2f(60,80));
 
-	player->Body()->ApplyForceToCenter({ 5, 2 }, true);
+	/*player->Body()->ApplyForceToCenter({ 5, 2 }, true);
 	player->Body()->ApplyForceToCenter({ 5, 4 }, true);
-	player->Body()->ApplyForceToCenter({ 5, 4 }, true);
-
+	player->Body()->ApplyForceToCenter({ 5, 4 }, true);*/
+	
 	
 }
 
