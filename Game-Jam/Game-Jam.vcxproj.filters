@@ -25,6 +25,9 @@
     <Filter Include="Scripts">
       <UniqueIdentifier>{5edad5c4-24e6-44c3-976c-aabaf08f0df1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripts\InputHandler">
+      <UniqueIdentifier>{ad085834-a3bf-4f32-847a-c9b27f7cbd59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -48,6 +51,21 @@
     <ClCompile Include="bfPlayer.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
+    <ClCompile Include="bfSpeedWall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bfWall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenu.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelMenu.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="InputHandler.hpp">
+      <Filter>Scripts\InputHandler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxML.h">
@@ -68,5 +86,27 @@
     <ClInclude Include="bfPlayer.h">
       <Filter>Objects</Filter>
     </ClInclude>
+    <ClInclude Include="bfSpeedWall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bfWall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Level1.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectCategory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Documentation.txt" />
+    <Text Include="INFO.txt" />
   </ItemGroup>
 </Project>
