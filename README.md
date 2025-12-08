@@ -1,1 +1,1 @@
-# ITI---Game-MiniJam
+# ITI - Game MiniJam
