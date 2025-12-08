@@ -142,6 +142,8 @@
     <ClCompile Include="bfObject.cpp" />
     <ClCompile Include="bfPlayer.cpp" />
     <ClCompile Include="bfRectangle.cpp" />
+    <ClCompile Include="bfSpeedWall.cpp" />
+    <ClCompile Include="bfWall.cpp" />
     <ClCompile Include="BoxML.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="WorldContactListener.cpp" />
@@ -151,7 +153,10 @@
     <ClInclude Include="bfObject.h" />
     <ClInclude Include="bfPlayer.h" />
     <ClInclude Include="bfRectangle.h" />
+    <ClInclude Include="bfSpeedWall.h" />
+    <ClInclude Include="bfWall.h" />
     <ClInclude Include="BoxML.h" />
+    <ClInclude Include="ObjectCategory.h" />
     <ClInclude Include="WorldContactListener.h" />
   </ItemGroup>
   <ItemGroup>
