@@ -6,6 +6,8 @@
 #include "bfMonster.h"
 #include "bfWall.h"
 #include "bfSpeedWall.h"
+#include "bfKey.h"
+#include "bfDoor.h"
 
 #include <iostream>
 #include <random>
@@ -59,6 +61,7 @@ BoxML::~BoxML(void)
 
 void BoxML::CreateWorld(void)
 {
+	LoadBackground2("Assets/Enviroment/Water_Filter.png", sf::Color(255, 255, 255, 150));
 	LoadBackground("Assets/background/sea.png");
 
 	if (_player)
@@ -370,17 +373,60 @@ bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, cons
 				break;
 			}
 		}
+
+		else if (isObject((ObjectCategory)categoryBits,
+			(ObjectCategory)((uint16)ObjectCategory::Wall_Horizontal | (uint16)ObjectCategory::SpeedWall_Horizontal)
+		))
+		{
+			std::uniform_int_distribution<int> typeNum(1, 3);
+
+			switch (typeNum(randGenerator))
+			{
+			case 1:
+				bfObj->loadSpriteSheet("Assets/walls/wall_h_1.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
+				break;
+
+			case 2:
+				bfObj->loadSpriteSheet("Assets/walls/wall_h_2.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
+				break;
+
+			case 3:
+				bfObj->loadSpriteSheet("Assets/walls/wall_h_3.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
+				break;
+			}
+		}
 	}
 
 	return bfObj;
 }
 
-bool BoxML::LoadBackground(const std::string& imagePath)
+bfKey* BoxML::CreateKey(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits, bool loadSprite)
+{
+	return nullptr;
+}
+
+bfDoor* BoxML::CreateDoor(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits, bool loadSprite)
+{
+	return nullptr;
+}
+
+bool BoxML::LoadBackground(const std::string& imagePath, sf::Color color)
 {
 	if (!_backgroundTexture.loadFromFile(imagePath, {}))
 		return false;
 
 	_background.setTexture(_backgroundTexture);
+	_background.setColor(color);
+	return true;
+}
+
+bool BoxML::LoadBackground2(const std::string& imagePath, sf::Color color)
+{
+	if (!_backgroundTexture2.loadFromFile(imagePath, {}))
+		return false;
+
+	_background2.setTexture(_backgroundTexture2);
+	_background2.setColor(color);
 	return true;
 }
 
@@ -403,6 +449,7 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 	mainWnd.clear();
 
 	mainWnd.draw(_background);
+	mainWnd.draw(_background2);
 
 	for (auto it = _objs.begin(); it != _objs.end(); ++it)
 	{

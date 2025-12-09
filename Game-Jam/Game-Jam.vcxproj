@@ -161,6 +161,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bfCircle.h" />
+    <ClInclude Include="bfDoor.h" />
+    <ClInclude Include="bfKey.h" />
     <ClInclude Include="bfMonster.h" />
     <ClInclude Include="bfObject.h" />
     <ClInclude Include="bfCharacter.h" />
