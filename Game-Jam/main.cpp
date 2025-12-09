@@ -61,6 +61,10 @@ int main()
                 // Handle pause menu clicks/input if a PauseMenu is displayed
             }
 
+            if (event.type == sf::Event::KeyPressed) {
+                boxWorld.HandleKeyPress(event.key.code);
+            }
+
             // 2. Pass Left Click to place the wall
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
@@ -77,6 +81,7 @@ int main()
 
         if (menuManager.currentState == ACTIVE_GAME)
         {
+            boxWorld.UpdatePreviewObject(worldPos);
             boxWorld.Step();
             boxWorld.Render(window);
         }

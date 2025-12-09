@@ -280,8 +280,8 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 		if (obj->Body()) ApplyRotation(obj, obj->Body()->GetAngle());
 		mainWnd.draw(*obj->Drawable());
 
-		float angle = obj->Body()->GetAngle() * 180.f / b2_pi;
-		obj->setRotation(angle);
+		/*float angle = obj->Body()->GetAngle() * 180.f / b2_pi;
+		obj->setRotation(angle);*/
 	}
 
 	if (_previewObject)
