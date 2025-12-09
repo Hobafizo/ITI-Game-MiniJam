@@ -1,3 +1,5 @@
+#include "def.h"
+#include "Hud.hpp"
 #include "BoxML.h"
 #include "bfCircle.h"
 #include "bfRectangle.h"
@@ -5,11 +7,6 @@
 #include "MenuManager.hpp"
 #include "LevelManager.hpp"
 #include "Level1.hpp"
-#define WINDOW_WIDTH      1024
-#define WINDOW_HEIGHT     768
-#define WINDOW_FRAME_RATE 60
-
-#define PIXELS_PER_UNIT   10
 
 int active_menu= 0; // 0 - main menu, 1 - level menu 3-pause menu 4-game over menu 5-win menu 6-none
 int main()
@@ -18,19 +15,24 @@ int main()
     const int32 velocityIterations = 6;
     const int32 positionIterations = 2;
 
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "My Game", sf::Style::Fullscreen);
+    window.setFramerateLimit(WINDOW_FRAME_RATE);
+
     BoxML boxWorld(WINDOW_WIDTH, WINDOW_HEIGHT, PIXELS_PER_UNIT, timeStep, velocityIterations, positionIterations);
+    BoxML::setInstance(&boxWorld);
 
 	boxWorld.CreateWorld();
 	boxWorld.LoadPositions();
 
-    LevelManager levelMgr(Level1Data, boxWorld);
-    //levelMgr.loadLevel(); // Load level 1
+    LevelManager levelMgr(boxWorld);
+    //levelMgr.loadLevel(Level3Data); // Load level 
+
     bool shouldCloseWindow = false;
 
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML works!");
-    window.setFramerateLimit(WINDOW_FRAME_RATE);
     InputHandler *inputHandler = new InputHandler(window);
     MenuManager menuManager;
+
+    Hud hud;
     while (window.isOpen())
     {
         sf::Event event;
@@ -40,37 +42,34 @@ int main()
                 window.close();
 
             //inputHandler->handleInput();
-            //if (menuManager.currentState == MAIN_MENU || menuManager.currentState == LEVEL_MENU) {
-            //    // Menu state: Only handle mouse clicks for navigation
-            //    if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
-            //        menuManager.handleClicks(window);
-            //    }
-            //}
-            //else if (menuManager.currentState == ACTIVE_GAME) {
-            //    // Active Game: Handle Pause Input (ESC)
-            //    if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape) {
-            //        std::cout << "ESC pressed. Entering PAUSED state." << std::endl;
-            //        // Note: You would typically load a PauseMenu object here
-            //        menuManager.setState(PAUSED);
-            //    }
-            //    // Handle other game inputs (WASD, etc.)
-            //}
-            //else if (menuManager.currentState == PAUSED) {
-            //    // Paused State: Handle Resume Input (ESC)
-            //    if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape) {
-            //        std::cout << "ESC pressed. Resuming ACTIVE_GAME state." << std::endl;
-            //        menuManager.setState(ACTIVE_GAME);
-            //    }
-            //    // Handle pause menu clicks/input if a PauseMenu is displayed
-            //}
+
+            if (menuManager.currentState == ACTIVE_GAME) {
+                // Active Game: Handle Pause Input (ESC)
+                if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape) {
+                    std::cout << "ESC pressed. Entering PAUSED state." << std::endl;
+                    // Note: You would typically load a PauseMenu object here
+                    menuManager.setState(PAUSED);
+                }
+                // Handle other game inputs (WASD, etc.)
+            }
+            else if (menuManager.currentState == PAUSED) {
+                // Paused State: Handle Resume Input (ESC)
+                if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape) {
+                    std::cout << "ESC pressed. Resuming ACTIVE_GAME state." << std::endl;
+                    menuManager.setState(ACTIVE_GAME);
+                }
+                // Handle pause menu clicks/input if a PauseMenu is displayed
+            }
 
             if (event.type == sf::Event::KeyPressed) {
-                if (menuManager.currentState == ACTIVE_GAME)
+                if (menuManager.currentState == ACTIVE_GAME) {
                     boxWorld.HandleKeyPress(event.key.code);
+                    //levelMgr.loadLevel(Level1Data);
+                }
             }
 
             // 2. Pass Left Click to place the wall
-            if (event.type == sf::Event::MouseButtonPressed) {
+            if (event.type == sf::Event::MouseButtonReleased) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     if (menuManager.currentState != ACTIVE_GAME)
                         menuManager.handleClicks(window);
@@ -88,6 +87,8 @@ int main()
 
         if (menuManager.currentState == ACTIVE_GAME)
         {
+            //hud.draw(window)
+;
             boxWorld.UpdatePreviewObject(worldPos);
             boxWorld.Step();
             boxWorld.Render(window);
@@ -103,14 +104,10 @@ int main()
                 menuManager.draw(window); // Draw the current menu screen
             }
 
-            else if (menuManager.currentState == ACTIVE_GAME || menuManager.currentState == PAUSED) {
-                //draw world and player
-            }
-
             //still need to code up pauseMenu.cpp, 
-            if (menuManager.currentState == PAUSED) {
+            else if (menuManager.currentState == PAUSED) {
                 // Draw Pause Menu overlay on top of the game
-                sf::RectangleShape overlay(sf::Vector2f(1024.f, 768.f));
+                sf::RectangleShape overlay((sf::Vector2f)boxWorld.Resolution());
                 overlay.setFillColor(sf::Color(150, 50, 0, 20)); // Dark overlay
                 window.draw(overlay);
 

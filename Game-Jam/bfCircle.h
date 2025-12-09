@@ -20,7 +20,9 @@ public:
 	bool updateSpriteSheet(int startIdx, int numFrames, float curTime, float frameTime = 0.1f);
 
 	void setSfPosition(const sf::Vector2f pos) override;
+	void setPositionFromTopLeft(const sf::Vector2f& topLeft) override;
 	void setRotation(float angle) override;
+	void setScale(const sf::Vector2f scale) override;
 
 	void setOrigin(const sf::Vector2f position);
 	void setRadius(float radius);

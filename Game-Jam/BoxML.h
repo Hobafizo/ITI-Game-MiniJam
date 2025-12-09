@@ -21,6 +21,9 @@ private:
 	WorldContactListener _contactListener;
 	std::list<bfObject*> _objs;
 
+	sf::Texture _backgroundTexture, _backgroundTexture2;
+	sf::Sprite _background, _background2;
+
 	class bfPlayer* _player;
 
 	sf::SoundBuffer _loseBuffer;
@@ -41,6 +44,8 @@ private:
 	bfObject* _placedWall = nullptr;
 	bfObject* _placedSpeedWall = nullptr;
 	bfObject* _placedMonster = nullptr;
+
+	static BoxML* _instance;
 
 public:
 	BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned short screenPixelPerUnit, float timeStep, int32 velocityIterations, int32 positionIterations);
@@ -66,9 +71,14 @@ public:
 
 	class bfCircle* CreateCircle(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0);
 	class bfRectangle* CreateRectangle(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool addToWorld = true);
-	class bfPlayer* CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f);
-	class bfMonster* CreateMonster(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f);
-	class bfWall* CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool addToWorld = true);
+	class bfPlayer* CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, bool loadSprite = true);
+	class bfMonster* CreateMonster(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, unsigned char spirteIndex = 0);
+	class bfWall* CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool addToWorld = true, bool loadSprite = true, bool invisible = false);
+	class bfKey* CreateKey(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool loadSprite = true);
+	class bfDoor* CreateDoor(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool loadSprite = true);
+
+	bool LoadBackground(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
+	bool LoadBackground2(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
 
 	void Step();
 	void Render(sf::RenderWindow& mainWnd);
@@ -82,7 +92,8 @@ public:
 	void OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCategory);
 	void OnMonsterContact(b2Fixture* monster, b2Fixture* object);
 
-
+	// Utilities
+	sf::Vector2u Resolution() const;
 	b2Vec2 pixelToMeter(const sf::Vector2f pixel) const;
 	sf::Vector2f meterToPixel(const b2Vec2 meter) const;
 	b2Vec2 centerAround(const b2Vec2 size, const sf::Vector2f targetPosition, const sf::Vector2f targetSize) const;
@@ -91,4 +102,8 @@ public:
 
 	template<typename T>
 	T* findObjectByBody(b2Body* body);
+
+public:
+	static void setInstance(BoxML* world);
+	static BoxML* Instance();
 };

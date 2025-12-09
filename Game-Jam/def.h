@@ -1,5 +1,11 @@
 #pragma once
 
+#define WINDOW_WIDTH      1920
+#define WINDOW_HEIGHT     1080
+#define WINDOW_FRAME_RATE 60
+
+#define PIXELS_PER_UNIT   10
+
 #define PLAYER_SPEED_X 10.0f
 #define PLAYER_SPEED_Y 5.0f
 #define PLAYER_SPEED   sqrt(PLAYER_SPEED_X * PLAYER_SPEED_X + PLAYER_SPEED_Y * PLAYER_SPEED_Y)

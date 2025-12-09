@@ -1,4 +1,5 @@
 #include "bfRectangle.h"
+#include "def.h"
 
 bfRectangle::bfRectangle(b2Body* body, const sf::Vector2f size, unsigned int color) : _body(body)
 {
@@ -16,9 +17,61 @@ void bfRectangle::setSfPosition(const sf::Vector2f pos)
 	_shape.setPosition(pos);
 }
 
+void bfRectangle::setPositionFromTopLeft(const sf::Vector2f& topLeft)
+{
+    sf::Vector2f size = _shape.getSize();
+
+    // Calculate center
+    sf::Vector2f centerPos = topLeft + (size * 0.5f);
+
+    // Use your existing position setter (handles Box2D sync)
+    setSfPosition(centerPos);
+}
+
 void bfRectangle::setRotation(float angle)
 {
 	_body->SetTransform(getB2Position(), angle);
+}
+
+void bfRectangle::setScale(const sf::Vector2f scale)
+{
+    _shape.setScale(scale);
+
+    if (_body)
+    {
+        // Calculate the "Real" size in pixels: (Base Size * Scale Factor)
+        sf::Vector2f baseSize = _shape.getSize();
+        float scaledWidth = baseSize.x * scale.x;
+        float scaledHeight = baseSize.y * scale.y;
+
+        // Convert to Box2D Half-Extents (Meters)
+        // Box2D uses half-width and half-height for boxes
+        float hx = (scaledWidth / 2.0f) / PIXELS_PER_UNIT;
+        float hy = (scaledHeight / 2.0f) / PIXELS_PER_UNIT;
+
+        // Iterate through fixtures to find and resize the box shape
+        for (b2Fixture* f = _body->GetFixtureList(); f; f = f->GetNext())
+        {
+            b2Shape* shape = f->GetShape();
+
+            // We only want to resize the polygon (box) shape
+            if (shape->GetType() == b2Shape::e_polygon)
+            {
+                b2PolygonShape* poly = (b2PolygonShape*)shape;
+
+                // Resize the shape geometry
+                // This assumes the shape is centered at (0,0) relative to the body
+                poly->SetAsBox(hx, hy);
+            }
+        }
+
+        // 3. IMPORTANT: Recalculate Mass
+        // Changing geometry changes mass/inertia. If you skip this, physics feels "floaty".
+        _body->ResetMassData();
+
+        // Wake the body so it reacts to the size change immediately
+        _body->SetAwake(true);
+    }
 }
 
 void bfRectangle::setOrigin(const sf::Vector2f position)

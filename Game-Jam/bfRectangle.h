@@ -22,7 +22,9 @@ public:
 	virtual ~bfRectangle();
 
 	void setSfPosition(const sf::Vector2f pos) override;
+	void setPositionFromTopLeft(const sf::Vector2f& topLeft) override;
 	void setRotation(float angle) override;
+	void setScale(const sf::Vector2f scale) override;
 
 	void setOrigin(const sf::Vector2f position);
 	void setSize(const sf::Vector2f size);

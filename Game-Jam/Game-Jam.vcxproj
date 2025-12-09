@@ -141,6 +141,8 @@
   <ItemGroup>
     <ClCompile Include="BaseMenu.hpp" />
     <ClCompile Include="bfCircle.cpp" />
+    <ClCompile Include="bfDoor.cpp" />
+    <ClCompile Include="bfKey.cpp" />
     <ClCompile Include="bfMonster.cpp" />
     <ClCompile Include="bfObject.cpp" />
     <ClCompile Include="bfCharacter.cpp" />
@@ -160,6 +162,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bfCircle.h" />
+    <ClInclude Include="bfDoor.h" />
+    <ClInclude Include="bfKey.h" />
     <ClInclude Include="bfMonster.h" />
     <ClInclude Include="bfObject.h" />
     <ClInclude Include="bfCharacter.h" />
@@ -170,11 +174,17 @@
     <ClInclude Include="BoxML.h" />
     <ClInclude Include="CharacterData.h" />
     <ClInclude Include="GameManager.hpp" />
+    <ClInclude Include="Hud.hpp" />
     <ClInclude Include="Level1.hpp" />
+    <ClInclude Include="Level2.hpp" />
+    <ClInclude Include="Level3.hpp" />
     <ClInclude Include="LevelData.hpp" />
     <ClInclude Include="LevelManager.hpp" />
     <ClInclude Include="def.h" />
+    <ClInclude Include="LoseMenu.hpp" />
     <ClInclude Include="ObjectCategory.h" />
+    <ClInclude Include="PauseMenu.hpp" />
+    <ClInclude Include="WinMenu.hpp" />
     <ClInclude Include="WorldContactListener.h" />
   </ItemGroup>
   <ItemGroup>

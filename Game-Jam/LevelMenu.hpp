@@ -1,4 +1,5 @@
 #include "BaseMenu.hpp"
+#include "BoxML.h"
 
 class LevelMenu : public BaseMenu {
 private:
@@ -8,16 +9,18 @@ private:
     sf::Sprite level1Sprite;
     sf::Texture exitTexture; // Reused for Back button
     sf::Sprite exitSprite;
-    sf::Vector2u windowSize = sf::Vector2u(1024, 768);
 
     bool loadAssets() {
-        if (!backgroundTexture.loadFromFile("Assets/UI/Menus/LevelMenu/LevelMenuBackground.jpeg")) return false;
-        if (!level1Texture.loadFromFile("Assets/UI/Menus/LevelMenu/Level1.jpeg")) return false;
-        if (!exitTexture.loadFromFile("Assets/UI/Menus/LevelMenu/Exit.jpg")) return false;
+        
+        if (!level1Texture.loadFromFile("Assets/UI/Menus/MenusUI1/Start.png")) return false;
+        if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MenusUI1/withoutButtons.jpg")) return false;
+        if (!exitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Back.png")) return false;
         return true;
     }
 
     void setupSprites() {
+        sf::Vector2u windowSize = BoxML::Instance()->Resolution();
+
         backgroundSprite.setTexture(backgroundTexture);
         level1Sprite.setTexture(level1Texture);
         exitSprite.setTexture(exitTexture);
@@ -27,7 +30,7 @@ private:
         backgroundSprite.setScale(scaleX, scaleY);
         backgroundSprite.setPosition(0.0f, 0.0f);
 
-        float desiredButtonWidth = 200.f;
+        float desiredButtonWidth = 1000.f;
         float centerX = (windowSize.x - desiredButtonWidth) / 2.0f;
 
         float startScale = desiredButtonWidth / level1Texture.getSize().x;

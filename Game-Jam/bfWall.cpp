@@ -1,4 +1,5 @@
 #include "bfWall.h"
+#include "def.h"
 
 bfWall::bfWall(b2Body* body, const sf::Vector2f size, unsigned int color) : _body(body)
 {
@@ -11,7 +12,7 @@ bfWall::~bfWall(void)
 {
 }
 
-bool bfWall::loadSpriteSheet(const std::string& filepath, int frameWidth, int frameHeight, int marginX, int marginY, int framePerLine, int numFrames, float curTime, float frameTime)
+bool bfWall::loadSpriteSheet(const std::string& filepath, int frameWidth, int frameHeight, int marginX, int marginY, int framePerLine, int numFrames, float curTime, float frameTime, bool autoResize)
 {
     if (!_texture.loadFromFile(filepath))
         return false;
@@ -35,11 +36,17 @@ bool bfWall::loadSpriteSheet(const std::string& filepath, int frameWidth, int fr
     // Optional: Reset color to White so it doesn't tint the texture
     _shape.setFillColor(sf::Color::White);
 
+    if (autoResize)
+        resizeToFitFrame();
+
     return true;
 }
 
 bool bfWall::updateSpriteSheet(int startIdx, int numFrames, float curTime, float frameTime)
 {
+    if (!_framesPerLine || !numFrames)
+        return false;
+
     // Update the state
     _frameStartIdx = startIdx;
     _numFrames = numFrames;
@@ -57,14 +64,92 @@ bool bfWall::updateSpriteSheet(int startIdx, int numFrames, float curTime, float
     return true;
 }
 
+void bfWall::resizeToFitFrame()
+{
+    // 1. Get current base size
+    sf::Vector2f currentSize = (sf::Vector2f)_texture.getSize();
+    sf::Vector2f textureSize = _shape.getSize();
+
+    // 2. Safety: If size is 0, set it directly instead of scaling
+    if (currentSize.x < 0.1f || currentSize.y < 0.1f)
+    {
+        sf::Vector2f newSize(textureSize.x, textureSize.y);
+        setSize(newSize);
+        setOrigin({ newSize.x / 2.0f, newSize.y / 2.0f });
+        setScale({ 1.0f, 1.0f });
+    }
+    else
+    {
+        // 3. Calculate Scale Ratio (Target / Current)
+        sf::Vector2f newScale;
+        newScale.x = textureSize.x / currentSize.x;
+        newScale.y = textureSize.y / currentSize.y;
+
+        // 4. Apply via setScale (Triggers Physics Update)
+        setScale(newScale);
+    }
+}
+
 void bfWall::setRotation(float angle)
 {
     _body->SetTransform(getB2Position(), angle);
 }
 
+void bfWall::setScale(const sf::Vector2f scale)
+{
+    _shape.setScale(scale);
+
+    if (_body)
+    {
+        // Calculate the "Real" size in pixels: (Base Size * Scale Factor)
+        sf::Vector2f baseSize = _shape.getSize();
+        float scaledWidth = baseSize.x * scale.x;
+        float scaledHeight = baseSize.y * scale.y;
+
+        // Convert to Box2D Half-Extents (Meters)
+        // Box2D uses half-width and half-height for boxes
+        float hx = (scaledWidth / 2.0f) / PIXELS_PER_UNIT;
+        float hy = (scaledHeight / 2.0f) / PIXELS_PER_UNIT;
+
+        // Iterate through fixtures to find and resize the box shape
+        for (b2Fixture* f = _body->GetFixtureList(); f; f = f->GetNext())
+        {
+            b2Shape* shape = f->GetShape();
+
+            // We only want to resize the polygon (box) shape
+            if (shape->GetType() == b2Shape::e_polygon)
+            {
+                b2PolygonShape* poly = (b2PolygonShape*)shape;
+
+                // Resize the shape geometry
+                // This assumes the shape is centered at (0,0) relative to the body
+                poly->SetAsBox(hx, hy);
+            }
+        }
+
+        // 3. IMPORTANT: Recalculate Mass
+        // Changing geometry changes mass/inertia. If you skip this, physics feels "floaty".
+        _body->ResetMassData();
+
+        // Wake the body so it reacts to the size change immediately
+        _body->SetAwake(true);
+    }
+}
+
 void bfWall::setSfPosition(const sf::Vector2f pos)
 {
 	_shape.setPosition(pos);
+}
+
+void bfWall::setPositionFromTopLeft(const sf::Vector2f& topLeft)
+{
+    sf::Vector2f size = _shape.getSize();
+
+    // Calculate center
+    sf::Vector2f centerPos = topLeft + (size * 0.5f);
+
+    // Use your existing position setter (handles Box2D sync)
+    setSfPosition(centerPos);
 }
 
 void bfWall::setOrigin(const sf::Vector2f position)

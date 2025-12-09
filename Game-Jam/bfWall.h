@@ -17,11 +17,17 @@ public:
 	bfWall(b2Body* body, const sf::Vector2f size, unsigned int color = 0xFFFFFFF);
 	virtual ~bfWall();
 
-	bool loadSpriteSheet(const std::string& filepath, int frameWidth, int frameHeight, int marginX, int marginY, int framePerLine, int numFrames, float curTime, float frameTime = 0.1f);
+	bool loadSpriteSheet(const std::string& filepath, int frameWidth, int frameHeight, int marginX, int marginY, int framePerLine, int numFrames, float curTime, float frameTime = 0.1f, bool autoResize = false);
 	bool updateSpriteSheet(int startIdx, int numFrames, float curTime, float frameTime = 0.1f);
 
+private:
+	void resizeToFitFrame();
+
+public:
 	void setSfPosition(const sf::Vector2f pos) override;
+	void setPositionFromTopLeft(const sf::Vector2f& topLeft) override;
 	void setRotation(float angle) override;
+	void setScale(const sf::Vector2f scale) override;
 
 	void setOrigin(const sf::Vector2f position);
 	void setSize(const sf::Vector2f size);

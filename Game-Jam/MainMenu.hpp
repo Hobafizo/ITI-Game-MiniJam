@@ -11,14 +11,13 @@ private:
     sf::Sprite startSprite;
     sf::Texture exitTexture;
     sf::Sprite exitSprite;
-    sf::Vector2u windowSize = sf::Vector2u(1024, 768);
+    sf::Vector2u windowSize = sf::Vector2u(1920, 1080);
 
 
     bool loadAssets() {
-        if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MainMenu/MenuBackground.jpeg")) return false;
-        if (!startTexture.loadFromFile("Assets/UI/Menus/MainMenu/Start.jpeg")) return false;
-        if (!exitTexture.loadFromFile("Assets/UI/Menus/MainMenu/Exit.jpg")) return false;
-
+        if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MenusUI1/withoutButtons.jpg")) return false;
+        if (!startTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Start.png")) return false;
+        if (!exitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/exit.png")) return false;
         return true;
     }
 
@@ -32,7 +31,7 @@ private:
         backgroundSprite.setScale(scaleX, scaleY);
         backgroundSprite.setPosition(0.0f, 0.0f);
 
-        float desiredButtonWidth = 300.0f;
+        float desiredButtonWidth = 1000.0f;
         float centerX = (windowSize.x - desiredButtonWidth) / 2.0f;
 
         float startScale = desiredButtonWidth / startTexture.getSize().x;
