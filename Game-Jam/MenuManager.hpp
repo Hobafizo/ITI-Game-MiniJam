@@ -1,9 +1,9 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <memory>
-#include "BaseMenu.cpp"
-#include "MainMenu.cpp"
-#include "LevelMenu.cpp"
+#include "BaseMenu.hpp"
+#include "MainMenu.hpp"
+#include "LevelMenu.hpp"
 class MenuManager {
 private:
     std::unique_ptr<BaseMenu> currentMenu;

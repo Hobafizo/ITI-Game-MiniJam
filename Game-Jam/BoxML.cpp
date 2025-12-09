@@ -48,18 +48,19 @@ void BoxML::CreateWorld(void)
 {
 	if (_player) RemoveObject(_player);
 
-	// 1. PLAYER
-	_player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f);
+	_player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 50, 0.01f, 0.3f);
+	_player->loadSpriteSheet("Assets/characters/frog.png", 50, 50, 0, 0, 3, 4, _timer.getElapsedTime().asSeconds(), 0.3);
 	_player->Body()->SetLinearVelocity({ PLAYER_SPEED_X, PLAYER_SPEED_Y });
 
-	// 2. RESTORED: SPEED WALL (Vertical in the middle)
-	CreateWall(b2_staticBody, pixelToMeter({ 500, 384 }), { 30, 368 }, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
+	/*_player->Body()->ApplyForceToCenter({5, 2}, true);
+	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);
+	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);*/
 
-	// 3. RESTORED: BORDER WALLS
-	CreateWall(b2_staticBody, pixelToMeter({ -15, 384 }), { 30, 768 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical);
-	CreateWall(b2_staticBody, pixelToMeter({ 1024 + 15, 384 }), { 30, 768 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical);
-	CreateWall(b2_staticBody, pixelToMeter({ 512, -15 }), { 1024, 30 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal);
-	CreateWall(b2_staticBody, pixelToMeter({ 512, 768 + 15 }), { 1024, 30 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal);
+	bfWall* wall = CreateWall(b2_staticBody, pixelToMeter({ 500, 384 }), { 30, 368 }, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
+	wall = CreateWall(b2_staticBody, pixelToMeter({ -15, 384 }), { 30, 768 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical);
+	wall = CreateWall(b2_staticBody, pixelToMeter({ 1024 + 15, 384 }), { 30, 768 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical);
+	wall = CreateWall(b2_staticBody, pixelToMeter({ 512, -15 }), { 1024, 30 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal);
+	wall = CreateWall(b2_staticBody, pixelToMeter({ 512, 768 + 15 }), { 1024, 30 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal);
 
 	// 4. RESTORED: MONSTER
 	bfMonster* monster = CreateMonster(b2_dynamicBody, b2Vec2{ 15, 15 }, 10, 0.01f, 0.3f);
@@ -278,6 +279,9 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 		// Sync rotation using helper
 		if (obj->Body()) ApplyRotation(obj, obj->Body()->GetAngle());
 		mainWnd.draw(*obj->Drawable());
+
+		/*float angle = obj->Body()->GetAngle() * 180.f / b2_pi;
+		obj->setRotation(angle);*/
 	}
 
 	if (_previewObject)

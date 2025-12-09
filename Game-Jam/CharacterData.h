@@ -6,6 +6,14 @@ enum class WalkStatus : unsigned char
 	Moving,
 };
 
+enum class WalkDirection : unsigned char
+{
+	Up,
+	Down,
+	Left,
+	Right,
+};
+
 enum class Monster_MovePattern : unsigned char
 {
 	Unknown,

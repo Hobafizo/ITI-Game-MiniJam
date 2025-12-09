@@ -2,7 +2,9 @@
 #include "bfCircle.h"
 #include "bfRectangle.h"
 #include "InputHandler.hpp"
-#include "MenuManager.cpp"
+#include "MenuManager.hpp"
+#include "LevelManager.hpp"
+#include "Level1.hpp"
 #define WINDOW_WIDTH      1024
 #define WINDOW_HEIGHT     768
 #define WINDOW_FRAME_RATE 60
@@ -20,6 +22,9 @@ int main()
 
 	boxWorld.CreateWorld();
 	boxWorld.LoadPositions();
+
+    LevelManager levelMgr(Level1Data, boxWorld);
+    //levelMgr.loadLevel(); // Load level 1
     bool shouldCloseWindow = false;
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML works!");
@@ -33,6 +38,7 @@ int main()
         {
             if (event.type == sf::Event::Closed || menuManager.currentState == EXIT)
                 window.close();
+
             //inputHandler->handleInput();
             //if (menuManager.currentState == MAIN_MENU || menuManager.currentState == LEVEL_MENU) {
             //    // Menu state: Only handle mouse clicks for navigation
@@ -57,14 +63,19 @@ int main()
             //    }
             //    // Handle pause menu clicks/input if a PauseMenu is displayed
             //}
+
             if (event.type == sf::Event::KeyPressed) {
-                boxWorld.HandleKeyPress(event.key.code);
+                if (menuManager.currentState == ACTIVE_GAME)
+                    boxWorld.HandleKeyPress(event.key.code);
             }
 
             // 2. Pass Left Click to place the wall
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    boxWorld.PlacePreviewObject();
+                    if (menuManager.currentState != ACTIVE_GAME)
+                        menuManager.handleClicks(window);
+                    else
+                        boxWorld.PlacePreviewObject();
                 }
             }
             else if (event.mouseButton.button == sf::Mouse::Right) {
@@ -75,38 +86,44 @@ int main()
         sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
        
 
+        if (menuManager.currentState == ACTIVE_GAME)
+        {
             boxWorld.UpdatePreviewObject(worldPos);
-        boxWorld.Step();
-        boxWorld.Render(window);
+            boxWorld.Step();
+            boxWorld.Render(window);
+        }
 
         //inputHandler->handleInput
-       /*
-       if (menuManager.currentState == MAIN_MENU || menuManager.currentState == LEVEL_MENU) {
-            menuManager.draw(window); // Draw the current menu screen
+       
+        else
+        {
+            window.clear();
+
+            if (menuManager.currentState == MAIN_MENU || menuManager.currentState == LEVEL_MENU) {
+                menuManager.draw(window); // Draw the current menu screen
+            }
+
+            else if (menuManager.currentState == ACTIVE_GAME || menuManager.currentState == PAUSED) {
+                //draw world and player
+            }
+
+            //still need to code up pauseMenu.cpp, 
+            if (menuManager.currentState == PAUSED) {
+                // Draw Pause Menu overlay on top of the game
+                sf::RectangleShape overlay(sf::Vector2f(1024.f, 768.f));
+                overlay.setFillColor(sf::Color(150, 50, 0, 20)); // Dark overlay
+                window.draw(overlay);
+
+                //sf::Text pauseText("PAUSED", sf::Font::getDefaultFont(), 72);
+                //pauseText.setFillColor(sf::Color::White);
+                //pauseText.setPosition(350.f, 300.f);
+                //pausemenu.draw(window);
+
+                // If you had a PauseMenu class, you would draw it here.
+            }
+
+            window.display();
         }
-
-        else if (menuManager.currentState == ACTIVE_GAME || menuManager.currentState == PAUSED){
-        //draw world and player
-        }
-
-        //still need to code up pauseMenu.cpp, 
-        if (menuManager.currentState == PAUSED) {
-            // Draw Pause Menu overlay on top of the game
-            sf::RectangleShape overlay(sf::Vector2f(1024.f, 768.f));
-            overlay.setFillColor(sf::Color(0, 0, 0, 150)); // Dark overlay
-            window.draw(overlay);
-
-            //sf::Text pauseText("PAUSED", sf::Font::getDefaultFont(), 72);
-            //pauseText.setFillColor(sf::Color::White);
-            //pauseText.setPosition(350.f, 300.f);
-            //pausemenu.draw(window);
-
-            // If you had a PauseMenu class, you would draw it here.
-        }
-        window.display();
-        */
-        
-        
     }
 
     return 0;

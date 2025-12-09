@@ -2,14 +2,41 @@
 #include <Box2D/Box2D.h>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "bfPlayer.h"
+#include "bfMonster.h"
+#include "bfWall.h"
+
 using namespace std;
 using namespace sf;
+struct PlayerData {
+    Vector2f spawnPos;
+};
+
+struct WallData {
+    Vector2f spawnPos;
+    Vector2f size;
+    float orientation;
+};
+
+struct EnemyData {
+    Vector2f spawnPos;
+    float radius;
+    unsigned int color;
+};
+
+struct KeyData {
+    Vector2f spawnPos;
+};
+
+struct DoorData {
+    Vector2f spawnPos;
+};
 
 struct LevelData {
-	Vector2f SpawnPoint;
-	vector <Vector2f> WallPoints;
-	vector <Vector2f>EnemySpawnPoints;
-	vector <Vector2f> TrapSpawnPoints;
-	Vector2f KeySpawnPoint;
-	Vector2f DoorSpawnPoint;
+    PlayerData player;
+    vector<WallData> walls;
+    vector<EnemyData> enemies;
+    vector<Vector2f> traps;
+    KeyData key;
+    DoorData door;
 };
