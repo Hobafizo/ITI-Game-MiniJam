@@ -72,6 +72,7 @@ void BoxML::CreateWorld(void)
 {
 	ClearObjects();
 
+	LoadWinBackground("Assets/background/win.png");
 	LoadBackground2("Assets/Enviroment/Water_Filter.png", sf::Color(255, 255, 255, 150));
 	LoadBackground("Assets/background/sea.png");
 
@@ -389,7 +390,7 @@ bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, cons
 		}
 
 		else if (isObject((ObjectCategory)categoryBits,
-			(ObjectCategory)((uint16)ObjectCategory::Wall_Horizontal | (uint16)ObjectCategory::SpeedWall_Horizontal)
+			(ObjectCategory)((uint16)ObjectCategory::Wall_Horizontal | (uint16)ObjectCategory::SpeedWall_Horizontal | (uint16)ObjectCategory::Wall | (uint16)ObjectCategory::SpeedWall)
 		))
 		{
 			std::uniform_int_distribution<int> typeNum(1, 3);
@@ -504,9 +505,23 @@ bool BoxML::LoadBackground2(const std::string& imagePath, sf::Color color)
 	return true;
 }
 
+bool BoxML::LoadWinBackground(const std::string& imagePath, sf::Color color)
+{
+	if (!_winTexture.loadFromFile(imagePath, {}))
+		return false;
+
+	_winBackground.setTexture(_winTexture);
+	_winBackground.setColor(color);
+	return true;
+}
+
 void BoxML::Step(void)
 {
-	_levelMusic.play();
+	if (_win)
+		return;
+
+	//_levelMusic.play();
+
 	if (_frameTimer.getElapsedTime().asMilliseconds() < _frameRefreshRate)
 		return;
 
@@ -523,38 +538,47 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 
 	mainWnd.clear();
 
-	mainWnd.draw(_background);
-	mainWnd.draw(_background2);
-
-	for (auto it = _objs.begin(); it != _objs.end(); ++it)
+	if (_win)
 	{
-		obj = *it;
-		if (!obj)
-			continue;
-
-		obj->setSfPosition(meterToPixel(obj->getB2Position()));
-
-		// --- FIX START ---
-		// Apply rotation to ALL objects that have a body, not just the player.
-		if (obj->Body())
-		{
-			ApplyRotation(obj, obj->Body()->GetAngle());
-		}
+		mainWnd.draw((_winBackground));
+	}
 	
-
-		mainWnd.draw(*obj->Drawable());
-	}
-
-	if (_previewObject)
+	else
 	{
-		_previewObject->setSfPosition(meterToPixel(_previewObject->getB2Position()));
+		mainWnd.draw(_background);
+		mainWnd.draw(_background2);
 
-		// Rotation for Preview
-		if (_previewObject->Body()) ApplyRotation(_previewObject, _previewObject->Body()->GetAngle());
-		else ApplyRotation(_previewObject, _previewRotation);
+		for (auto it = _objs.begin(); it != _objs.end(); ++it)
+		{
+			obj = *it;
+			if (!obj)
+				continue;
 
-		mainWnd.draw(*_previewObject->Drawable());
+			obj->setSfPosition(meterToPixel(obj->getB2Position()));
+
+			// --- FIX START ---
+			// Apply rotation to ALL objects that have a body, not just the player.
+			if (obj->Body())
+			{
+				ApplyRotation(obj, obj->Body()->GetAngle());
+			}
+
+
+			mainWnd.draw(*obj->Drawable());
+		}
+
+		if (_previewObject)
+		{
+			_previewObject->setSfPosition(meterToPixel(_previewObject->getB2Position()));
+
+			// Rotation for Preview
+			if (_previewObject->Body()) ApplyRotation(_previewObject, _previewObject->Body()->GetAngle());
+			else ApplyRotation(_previewObject, _previewRotation);
+
+			mainWnd.draw(*_previewObject->Drawable());
+		}
 	}
+
 	mainWnd.display();
 }
 
@@ -696,11 +720,10 @@ void BoxML::OnDoorContact(b2Fixture* door, b2Fixture* object)
 	if (keyObj)
 		return;
 
-	std::cout << "YOU WINNNNNNNN!" << std::endl;
-
 	_winSound.play();
-	_levelMusic.stop();
+	//_levelMusic.stop();
 
+	_win = true;
 	//CreateWorld();
 }
 
@@ -834,7 +857,7 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 		{
 			// Load Horizontal Wall Sprite
 			bfWall* w = CreateWall(b2_staticBody, mouseMeters, size, 0.0f, 0.0f,
-				(uint16)ObjectCategory::Wall_Horizontal, 0, false, true, false);
+				(uint16)ObjectCategory::Wall, 0, false, true, false);
 
 			// REMOVED: w->setColor(...) -> Now shows full opaque sprite
 			_previewObject = w;
@@ -844,7 +867,7 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 		{
 			// Load Horizontal Speed Wall Sprite
 			bfWall* w = CreateWall(b2_staticBody, mouseMeters, size, 0.0f, 0.0f,
-				(uint16)ObjectCategory::SpeedWall_Horizontal, 0, false, true, false);
+				(uint16)ObjectCategory::SpeedWall, 0, false, true, false);
 
 			_previewObject = w;
 		}
@@ -901,14 +924,14 @@ void BoxML::PlacePreviewObject()
 	case ObjectCategory::Wall:
 		if (_placedWall == nullptr) {
 			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f,
-				(uint16)ObjectCategory::Wall_Horizontal, 0, true, true, false);
+				(uint16)ObjectCategory::Wall, 0, true, true, false);
 			_placedWall = createdObj;
 		}
 		break;
 	case ObjectCategory::SpeedWall:
 		if (_placedSpeedWall == nullptr) {
 			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f,
-				(uint16)ObjectCategory::SpeedWall_Horizontal, 0, true, true, false);
+				(uint16)ObjectCategory::SpeedWall, 0, true, true, false);
 			_placedSpeedWall = createdObj;
 		}
 		break;

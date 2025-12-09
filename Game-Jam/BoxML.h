@@ -21,8 +21,9 @@ private:
 	WorldContactListener _contactListener;
 	std::list<bfObject*> _objs;
 
-	sf::Texture _backgroundTexture, _backgroundTexture2;
-	sf::Sprite _background, _background2;
+	bool _win = false;
+	sf::Texture _backgroundTexture, _backgroundTexture2, _winTexture;
+	sf::Sprite _background, _background2, _winBackground;
 
 	class bfPlayer* _player;
 
@@ -35,9 +36,6 @@ private:
 	sf::SoundBuffer _wallBuffer;
 	sf::Sound _wallSound;
 	bool _hasLost;
-
-
-
 
 	bfObject* _previewObject = nullptr;
 	ObjectCategory _currentPreviewType = ObjectCategory::Wall;
@@ -81,6 +79,7 @@ public:
 
 	bool LoadBackground(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
 	bool LoadBackground2(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
+	bool LoadWinBackground(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
 
 	void Step();
 	void Render(sf::RenderWindow& mainWnd);
