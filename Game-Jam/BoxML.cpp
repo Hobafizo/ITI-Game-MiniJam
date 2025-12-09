@@ -80,10 +80,10 @@ void BoxML::CreateWorld(void)
 	bfMonster* monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 108, 76 }, 0.01f, 0.3f, 1);
 	monster->setMovePattern(Monster_MovePattern::Down);
 
-	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 83, 87 }, 0.01f, 0.3f, 2);
+	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 200, PLAYGROUND_MARGIN_TOP + 400 }), { 83, 87 }, 0.01f, 0.3f, 2);
 	monster->setMovePattern(Monster_MovePattern::Down);
 
-	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 94, 56 }, 0.01f, 0.3f, 3);
+	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ (float)_screenWidth - 600, PLAYGROUND_MARGIN_TOP + 50}), {94, 56}, 0.01f, 0.3f, 3);
 	monster->setMovePattern(Monster_MovePattern::Right);
 }
 
@@ -304,7 +304,7 @@ bfMonster* BoxML::CreateMonster(const b2BodyType bodyType, const b2Vec2 position
 		break;
 
 	case 2:
-		bfObj->loadSpriteSheet("Assets/monsters/2.png", size.x, size.y, 0, 0, 3, 3, _timer.getElapsedTime().asSeconds(), 0.17);
+		bfObj->loadSpriteSheet("Assets/monsters/2.png", size.x, size.y, 0, 0, 3, 3, _timer.getElapsedTime().asSeconds(), 0.15);
 		break;
 
 	case 3:
@@ -410,9 +410,11 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 		if (!obj) continue;
 		obj->setSfPosition(meterToPixel(obj->getB2Position()));
 
-		// Sync rotation using helper
-		if (obj->Body())
+		// Sync rotation for player using helper
+		if (_player && _player->Body() == obj->Body())
+		{
 			ApplyRotation(obj, obj->Body()->GetAngle());
+		}
 
 		mainWnd.draw(*obj->Drawable());
 	}

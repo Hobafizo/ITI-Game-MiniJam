@@ -60,4 +60,6 @@ public:
 	float getBoostMultiplier() const;
 
 	static WalkDirection getWalkDirection(b2Vec2 velocity);
+	static WalkDirection getVerticalWalkDirection(b2Vec2 velocity);
+	static WalkDirection getHorizontalWalkDirection(b2Vec2 velocity);
 };
