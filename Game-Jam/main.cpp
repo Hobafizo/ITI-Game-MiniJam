@@ -1,4 +1,5 @@
 #include "def.h"
+#include "Hud.hpp"
 #include "BoxML.h"
 #include "bfCircle.h"
 #include "bfRectangle.h"
