@@ -70,6 +70,8 @@ BoxML::~BoxML(void)
 
 void BoxML::CreateWorld(void)
 {
+	ClearObjects();
+
 	LoadBackground2("Assets/Enviroment/Water_Filter.png", sf::Color(255, 255, 255, 150));
 	LoadBackground("Assets/background/sea.png");
 
@@ -165,7 +167,7 @@ void BoxML::ClearObjects()
 	{
 		cur = *it;
 		if (!cur) continue;
-		if (cur->Body()) _world.DestroyBody(cur->Body());
+		//if (cur->Body()) _world.DestroyBody(cur->Body());
 		delete cur;
 		*it = NULL;
 	}
@@ -690,7 +692,16 @@ void BoxML::OnKeyContact(b2Fixture* key, b2Fixture* object)
 
 void BoxML::OnDoorContact(b2Fixture* door, b2Fixture* object)
 {
+	bfKey* keyObj = findObjectByBody<bfKey>(ObjectCategory::Key);
+	if (keyObj)
+		return;
+
 	std::cout << "YOU WINNNNNNNN!" << std::endl;
+
+	_winSound.play();
+	_levelMusic.stop();
+
+	//CreateWorld();
 }
 
 sf::Vector2u BoxML::Resolution(void) const
@@ -787,7 +798,7 @@ void BoxML::HandleKeyPress(sf::Keyboard::Key key)
 	if (typeChanged) {
 		_previewRotation = 0.0f;
 		if (_previewObject) {
-			if (_previewObject->Body()) _world.DestroyBody(_previewObject->Body());
+			//if (_previewObject->Body()) _world.DestroyBody(_previewObject->Body());
 			delete _previewObject;
 			_previewObject = nullptr;
 		}
@@ -803,7 +814,7 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 
 	if (alreadyHasThisType) {
 		if (_previewObject) {
-			if (_previewObject->Body()) _world.DestroyBody(_previewObject->Body());
+			//if (_previewObject->Body()) _world.DestroyBody(_previewObject->Body());
 			delete _previewObject;
 			_previewObject = nullptr;
 		}
