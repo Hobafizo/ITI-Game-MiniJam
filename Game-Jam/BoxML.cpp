@@ -508,6 +508,12 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 		if (_previewObject && _previewObject->Body()) {
 			_previewObject->Body()->GetFixtureList()->SetSensor(true);
 			_previewObject->Body()->SetGravityScale(0.0f);
+			b2Fixture* fixture = _previewObject->Body()->GetFixtureList();
+			fixture->SetSensor(true);
+			b2Filter filter;
+			filter.categoryBits = 0;
+			filter.maskBits = 0;     
+			fixture->SetFilterData(filter);
 		}
 	}
 
