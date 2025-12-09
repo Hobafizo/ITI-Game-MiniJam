@@ -456,7 +456,6 @@ void BoxML::HandleKeyPress(sf::Keyboard::Key key)
 void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 {
 	// 1. LIMIT CHECK: If we already have this object placed, don't show ghost
-	bool alreadyHasThisType = false;
 	if (_currentPreviewType == ObjectCategory::Wall && _placedWall != nullptr) alreadyHasThisType = true;
 	if (_currentPreviewType == ObjectCategory::SpeedWall && _placedSpeedWall != nullptr) alreadyHasThisType = true;
 	if (_currentPreviewType == ObjectCategory::Monster && _placedMonster != nullptr) alreadyHasThisType = true;
