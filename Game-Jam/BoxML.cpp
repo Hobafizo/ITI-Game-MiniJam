@@ -553,20 +553,20 @@ void BoxML::PlacePreviewObject()
 	{
 	case ObjectCategory::Wall:
 		if (_placedWall == nullptr) {
-			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical);
+			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f, (uint16)ObjectCategory::Wall);
 			_placedWall = createdObj;
 		}
 		break;
 	case ObjectCategory::SpeedWall:
 		if (_placedSpeedWall == nullptr) {
-			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
+			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall);
 			_placedSpeedWall = createdObj;
 		}
 		break;
 	case ObjectCategory::Monster:
 		if (_placedMonster == nullptr) {
 			bfMonster* m = CreateMonster(b2_dynamicBody, pos, 15.0f, 0.01f, 0.3f);
-			m->setMovePattern(Monster_MovePattern::Down);
+			//m->setMovePattern(Monster_MovePattern::Down);
 			m->setFillColor(sf::Color::Red);
 			createdObj = m;
 			_placedMonster = m;
