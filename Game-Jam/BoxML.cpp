@@ -460,6 +460,7 @@ void BoxML::HandleKeyPress(sf::Keyboard::Key key)
 void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 {
 	// 1. LIMIT CHECK: If we already have this object placed, don't show ghost
+	bool alreadyHasThisType = false;
 	if (_currentPreviewType == ObjectCategory::Wall && _placedWall != nullptr) alreadyHasThisType = true;
 	if (_currentPreviewType == ObjectCategory::SpeedWall && _placedSpeedWall != nullptr) alreadyHasThisType = true;
 	if (_currentPreviewType == ObjectCategory::Monster && _placedMonster != nullptr) alreadyHasThisType = true;
@@ -523,12 +524,13 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 
 			// 4. SET IDENTITY TO "NOTHING" (Stops OnBeginContact from firing)
 			b2Filter filter;
-			filter.categoryBits = 0;
-			filter.maskBits = 0;     
+			filter.categoryBits = 0; // I am nothing
+			filter.maskBits = 0;     // I touch nothing
 			fixture->SetFilterData(filter);
 		}
 	}
 
+	// 3. UPDATE POSITION & ROTATION
 	if (_previewObject && _previewObject->Body())
 	{
 		_previewObject->Body()->SetTransform(mouseMeters, _previewRotation);
