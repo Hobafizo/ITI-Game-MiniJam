@@ -38,7 +38,7 @@ void bfRectangle::setFillColor(const sf::Color color)
 
 void bfRectangle::setOutlineColor(unsigned int color)
 {
-	setOutlineColor(sf::Color(color));
+	_shape.setOutlineColor(sf::Color(color));
 }
 
 void bfRectangle::setOutlineColor(const sf::Color color)

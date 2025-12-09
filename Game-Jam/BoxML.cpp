@@ -7,6 +7,7 @@
 #include "ObjectCategory.h"
 #include <iostream>
 
+
 BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned short screenPixelPerUnit,
 	float timeStep, int32 velocityIterations, int32 positionIterations)
 	: _gravity(0.0f, 0.0f), _world(_gravity),
@@ -124,6 +125,7 @@ bfCircle* BoxML::CreateCircle(const b2BodyType bodyType, const b2Vec2 position, 
 	body->CreateFixture(&fixtureDef);
 
 	bfCircle* bfObj = new bfCircle(body, radius);
+	body->GetUserData().pointer = (uintptr_t)bfObj;
 
 	AddObject(bfObj);
 	return bfObj;
@@ -154,6 +156,8 @@ bfRectangle* BoxML::CreateRectangle(const b2BodyType bodyType, const b2Vec2 posi
 	body->CreateFixture(&fixtureDef);
 
 	bfRectangle* bfObj = new bfRectangle(body, size);
+	body->GetUserData().pointer = (uintptr_t)bfObj;
+
 	if (addToWorld) AddObject(bfObj);
 	return bfObj;
 }
@@ -187,6 +191,7 @@ bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, 
 	body->CreateFixture(&fixtureDef);
 
 	bfPlayer* bfObj = new bfPlayer(body, radius);
+	body->GetUserData().pointer = (uintptr_t)bfObj;
 
 	AddObject(bfObj);
 	return bfObj;
@@ -219,6 +224,7 @@ bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, cons
 	body->CreateFixture(&fixtureDef);
 
 	bfWall* bfObj = new bfWall(body, size);
+	body->GetUserData().pointer = (uintptr_t)bfObj;
 
 	AddObject(bfObj);
 
@@ -252,8 +258,9 @@ bfSpeedWall* BoxML::CreateSpeedWall(const b2BodyType bodyType, const b2Vec2 posi
 	body->CreateFixture(&fixtureDef);
 
 	bfSpeedWall* bfObj = new bfSpeedWall(body, size);
+	body->GetUserData().pointer = (uintptr_t)bfObj;
 
-	AddObject(bfObj);
+	if (addToWorld) AddObject(bfObj);
 	return bfObj;
 }
 
@@ -299,12 +306,9 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 
 	if (_previewObject)
 	{
-		if (_previewObject->Body())
-			_world.DestroyBody(_previewObject->Body());
-		delete _previewObject;
-		_previewObject = nullptr;
+		_previewObject->setSfPosition(meterToPixel(_previewObject->getB2Position()));
+		mainWnd.draw(*_previewObject->Drawable());
 	}
-
 
 	mainWnd.display();
 }
@@ -392,44 +396,52 @@ b2Vec2 BoxML::centerAround(const b2Vec2 size, const sf::Vector2f targetPosition,
 }
 void BoxML::UpdatePreviewObject(const b2Vec2& mousePos)
 {
-	// 1. Manually clean up the previous preview
+	// clean previous preview (your existing cleanup is fine)
 	if (_previewObject)
 	{
-		// We cannot use RemoveObject() because the preview isn't in the _objs list yet.
+		// destroy previous body and delete old preview (you already do this, keep it)
 		if (_previewObject->Body())
 			_world.DestroyBody(_previewObject->Body());
-
 		delete _previewObject;
 		_previewObject = nullptr;
 	}
 
-	// 2. Create new preview object based on selected type
-	// (This part of your code was fine)
+	// Create new preview object (use addToWorld = false where supported)
 	switch (_currentPreviewType)
 	{
 	case ObjectCategory::Wall:
-		// addToWorld is false, so we handle the pointer manually above
 		_previewObject = CreateRectangle(b2_staticBody, mousePos, sf::Vector2f(60, 80), 1.0f, 0.3f, 0, 0, false);
 		break;
 	case ObjectCategory::PlayerWallRedirect:
 		_previewObject = CreateRectangle(b2_staticBody, mousePos, sf::Vector2f(60, 80), 1.0f, 0.3f, 0, 0, false);
-		// Ensure bfRectangle actually has this method defined!
-		// _previewObject->SetRedirectDirection(b2Vec2(0, 1)); 
+		// optionally set redirect direction here:
+		_previewObject->SetRedirectDirection(b2Vec2(0, 1));
 		break;
 	case ObjectCategory::SpeedWall:
-		_previewObject = CreateSpeedWall(b2_staticBody, mousePos, sf::Vector2f(60, 80), 1.0f, 0.3f,false);
-		// Note: You didn't implement 'addToWorld' logic in CreateSpeedWall, 
-		// so this might auto-add to the list and cause a double-delete crash later. 
-		// You should add the 'addToWorld' bool to CreateSpeedWall too.
+		_previewObject = CreateSpeedWall(b2_staticBody, mousePos, sf::Vector2f(60, 80), 1.0f, 0.3f, false); // ensure CreateSpeedWall supports addToWorld
 		break;
+	}
+
+	// If preview has a Box2D body, position it and disable it so it won't affect simulation.
+	if (_previewObject && _previewObject->Body())
+	{
+		// mousePos is in meters already (your function signature uses b2Vec2). If you pass pixels, convert first.
+		_previewObject->Body()->SetTransform(mousePos, 0.0f);
+		_previewObject->Body()->SetEnabled(false); // don't simulate preview body
 	}
 
 	if (_previewObject)
 		_previewObject->SetTransparent(true);
 }
+
 void BoxML::PlacePreviewObject()
 {
 	if (!_previewObject) return;
+
+	// enable physics if there is a body
+	if (_previewObject->Body())
+		_previewObject->Body()->SetEnabled(true);
+
 	_previewObject->SetTransparent(false);
 	AddObject(_previewObject);
 	_previewObject = nullptr;
@@ -437,8 +449,13 @@ void BoxML::PlacePreviewObject()
 
 void BoxML::HandleKeyPress(sf::Keyboard::Key key)
 {
-	if (key == sf::Keyboard::Num1) _currentPreviewType = ObjectCategory::Wall;
-	if (key == sf::Keyboard::Num2) _currentPreviewType = ObjectCategory::PlayerWallRedirect;
-	if (key == sf::Keyboard::Num3) _currentPreviewType = ObjectCategory::SpeedWall;
+	if (key == sf::Keyboard::Num1) {
+		_currentPreviewType = ObjectCategory::Wall;
+		std::cout << "Wall";
+		
+	}
+	if (key == sf::Keyboard::Num2) { _currentPreviewType = ObjectCategory::PlayerWallRedirect; std::cout << "Redirect Wall";
+	}
+	if (key == sf::Keyboard::Num3) { _currentPreviewType = ObjectCategory::SpeedWall; std::cout << "SpeedWall"; }
 }
 

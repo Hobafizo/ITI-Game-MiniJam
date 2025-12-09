@@ -7,3 +7,4 @@ bfSpeedWall::bfSpeedWall(b2Body* body, const sf::Vector2f size, unsigned int col
 bfSpeedWall::~bfSpeedWall(void)
 {
 }
+//ObjectCategory Category() const override { return ObjectCategory::SpeedWall; }

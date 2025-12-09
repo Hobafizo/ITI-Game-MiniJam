@@ -36,11 +36,13 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             //inputHandler->handleInput();
+            
         }
 
         boxWorld.Step();
         boxWorld.Render(window);
-        inputHandler->handleInput();
+        //inputHandler->handleInput();
+
     }
 
     return 0;
