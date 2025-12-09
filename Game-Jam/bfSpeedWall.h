@@ -6,8 +6,4 @@ class bfSpeedWall : public bfWall
 public:
 	bfSpeedWall(b2Body* body, const sf::Vector2f size, unsigned int color = 0xFFFFFFF);
 	virtual ~bfSpeedWall();
-
-	// bfSpeedWall.h / cpp
-	ObjectCategory Category() const override { return ObjectCategory::SpeedWall; }
-
 };

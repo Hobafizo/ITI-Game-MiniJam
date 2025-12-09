@@ -248,7 +248,7 @@ bfMonster* BoxML::CreateMonster(const b2BodyType bodyType, const b2Vec2 position
 	return bfObj;
 }
 
-bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits)
+bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits, bool addToWorld)
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
@@ -333,11 +333,6 @@ void BoxML::OnBeginContact(b2Contact* contact)
 
 	else if (isObject(ObjectCategory::Monster, fixtureB))
 		OnMonsterContact(fixtureB, fixtureA);
-}
-
-	player->Body()->SetLinearVelocity(vel);
-
-	//if (contact->GetFixtureA()->GetBody() == _player->Body());
 }
 
 void BoxML::OnEndContact(b2Contact* contact)

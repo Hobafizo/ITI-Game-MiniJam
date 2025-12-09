@@ -8,4 +8,6 @@ enum class ObjectCategory : unsigned short
 	SpeedWall_Vertical = 8,
 	SpeedWall_Horizontal = 16,
 	Monster = 32,
+	Wall,
+	SpeedWall,
 };

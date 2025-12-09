@@ -20,7 +20,7 @@ private:
 	std::list<bfObject*> _objs;
 
 	class bfPlayer* _player;
-	bfObject* _previewObject = nullptr;               // currently previewed object
+	bfObject* _previewObject = nullptr;              // currently previewed object
 	ObjectCategory _currentPreviewType = ObjectCategory::Wall; // 1,2,3 selection
 
 	
@@ -44,7 +44,7 @@ public:
 	class bfRectangle* CreateRectangle(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool addToWorld = true);
 	class bfPlayer* CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f);
 	class bfMonster* CreateMonster(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f);
-	class bfWall* CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0);
+	class bfWall* CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool addToWorld = true);
 
 	void Step();
 	void Render(sf::RenderWindow& mainWnd);
