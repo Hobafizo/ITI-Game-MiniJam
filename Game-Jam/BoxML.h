@@ -32,6 +32,8 @@ private:
 	sf::Sound _loseSound;
 	sf::Sound _winSound;
 	sf::Music _levelMusic;
+	sf::SoundBuffer _wallBuffer;
+	sf::Sound _wallSound;
 	bool _hasLost;
 
 

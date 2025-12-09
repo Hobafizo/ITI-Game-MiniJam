@@ -59,6 +59,8 @@ BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned s
 	_winSound.setBuffer(_winBuffer);
 	_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
 	_levelMusic.setLoop(true);
+	_wallBuffer.loadFromFile("Assets/Audio/Ocean Wave - Sound Effect - RazendeGijs.wav");
+	_wallSound.setBuffer(_wallBuffer);
 }
 
 BoxML::~BoxML(void)
@@ -523,12 +525,8 @@ void BoxML::OnPlayerContact(b2Fixture* player, b2Fixture* object)
 	if (isObject((ObjectCategory)objCategory,
 		(ObjectCategory)((uint16)ObjectCategory::Wall_Vertical | (uint16)ObjectCategory::Wall_Horizontal | (uint16)ObjectCategory::SpeedWall_Vertical | (uint16)ObjectCategory::SpeedWall_Horizontal)))
 	{
-		sf::SoundBuffer b;
-		b.loadFromFile("Assets/Audio/Ocean Wave - Sound Effect - RazendeGijs.wav");
-		sf::Sound soundimpact;
-		soundimpact.setBuffer(b);
-		soundimpact.play();
 
+		_wallSound.play();
 		OnPlayerWallContact(player, object, objCategory);
 	}
 	else if (isObject((ObjectCategory)objCategory, ObjectCategory::Monster))
