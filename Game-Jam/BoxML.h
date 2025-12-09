@@ -66,8 +66,8 @@ public:
 	class bfPlayer* CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, bool loadSprite = true);
 	class bfMonster* CreateMonster(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, unsigned char spirteIndex = 0);
 	class bfWall* CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool addToWorld = true, bool loadSprite = true, bool invisible = false);
-	class bfKey* CreateKey(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool loadSprite = true);
-	class bfDoor* CreateDoor(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool loadSprite = true);
+	class bfKey* CreateKey(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, bool loadSprite = true);
+	class bfDoor* CreateDoor(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, bool loadSprite = true);
 
 	bool LoadBackground(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
 	bool LoadBackground2(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
@@ -84,6 +84,8 @@ public:
 	void OnPlayerContact(b2Fixture* player, b2Fixture* object);
 	void OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCategory);
 	void OnMonsterContact(b2Fixture* monster, b2Fixture* object);
+	void OnKeyContact(b2Fixture* key, b2Fixture* object);
+	void OnDoorContact(b2Fixture* door, b2Fixture* object);
 
 	// Utilities
 	sf::Vector2u Resolution() const;
@@ -95,6 +97,9 @@ public:
 
 	template<typename T>
 	T* findObjectByBody(b2Body* body);
+
+	template<typename T>
+	T* findObjectByBody(const ObjectCategory category);
 
 public:
 	static void setInstance(BoxML* world);

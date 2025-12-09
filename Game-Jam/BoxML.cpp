@@ -83,11 +83,14 @@ void BoxML::CreateWorld(void)
 	bfMonster* monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 108, 76 }, 0.01f, 0.3f, 1);
 	monster->setMovePattern(Monster_MovePattern::Down);
 
-	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 200, PLAYGROUND_MARGIN_TOP + 400 }), { 83, 87 }, 0.01f, 0.3f, 2);
+	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ (float)_screenWidth - 600, PLAYGROUND_MARGIN_TOP + 50 }), { 83, 87 }, 0.01f, 0.3f, 2);
 	monster->setMovePattern(Monster_MovePattern::Down);
 
-	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ (float)_screenWidth - 600, PLAYGROUND_MARGIN_TOP + 50}), {94, 56}, 0.01f, 0.3f, 3);
+	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ (float)_screenWidth - 600, PLAYGROUND_MARGIN_TOP + 50}), { 94, 56 }, 0.01f, 0.3f, 3);
 	monster->setMovePattern(Monster_MovePattern::Right);
+
+	CreateKey(b2_staticBody, pixelToMeter({ 500, 500 }), { 71, 82 }, 0.01f, 0.3f);
+	CreateDoor(b2_staticBody, pixelToMeter({ 500, 800 }), { 202, 298 }, 0.01f, 0.3f);
 }
 
 // --- INPUT HANDLER (Call this from Main) ---
@@ -137,7 +140,7 @@ bool BoxML::RemoveObject(bfObject* obj)
 		if (!cur) continue;
 		if (cur == obj)
 		{
-			if (cur->Body()) _world.DestroyBody(cur->Body());
+			//if (cur->Body()) _world.DestroyBody(cur->Body());
 			delete cur;
 			_objs.erase(it);
 			return true;
@@ -400,14 +403,74 @@ bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, cons
 	return bfObj;
 }
 
-bfKey* BoxML::CreateKey(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits, bool loadSprite)
+bfKey* BoxML::CreateKey(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, bool loadSprite)
 {
-	return nullptr;
+	b2BodyDef bodyDef;
+	bodyDef.type = bodyType;
+
+	// --- ADJUSTMENT START ---
+	b2Vec2 bSize = pixelToMeter(size);
+	float hx = bSize.x / 2.0f;
+	float hy = bSize.y / 2.0f;
+
+	// Shift origin from Top-Left to Center
+	bodyDef.position = position + b2Vec2(hx, hy);
+	// --- ADJUSTMENT END ---
+
+	b2Body* body = _world.CreateBody(&bodyDef);
+
+	b2PolygonShape boxShape;
+	boxShape.SetAsBox(hx, hy);
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &boxShape;
+	fixtureDef.density = density;
+	fixtureDef.friction = friction;
+	fixtureDef.filter.categoryBits = (uint16)ObjectCategory::Key;
+	body->CreateFixture(&fixtureDef);
+
+	bfKey* bfObj = new bfKey(body, size);
+	AddObject(bfObj);
+
+	if (loadSprite)
+		bfObj->loadSpriteSheet("Assets/Enviroment/key.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
+
+	return bfObj;
 }
 
-bfDoor* BoxML::CreateDoor(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits, bool loadSprite)
+bfDoor* BoxML::CreateDoor(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, bool loadSprite)
 {
-	return nullptr;
+	b2BodyDef bodyDef;
+	bodyDef.type = bodyType;
+
+	// --- ADJUSTMENT START ---
+	b2Vec2 bSize = pixelToMeter(size);
+	float hx = bSize.x / 2.0f;
+	float hy = bSize.y / 2.0f;
+
+	// Shift origin from Top-Left to Center
+	bodyDef.position = position + b2Vec2(hx, hy);
+	// --- ADJUSTMENT END ---
+
+	b2Body* body = _world.CreateBody(&bodyDef);
+
+	b2PolygonShape boxShape;
+	boxShape.SetAsBox(hx, hy);
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &boxShape;
+	fixtureDef.density = density;
+	fixtureDef.friction = friction;
+	fixtureDef.filter.categoryBits = (uint16)ObjectCategory::Gate;
+	body->CreateFixture(&fixtureDef);
+
+	bfDoor* bfObj = new bfDoor(body, size);
+	AddObject(bfObj);
+
+	if (loadSprite)
+		bfObj->loadSpriteSheet("Assets/Enviroment/Gate_Closed.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
+
+	return bfObj;
 }
 
 bool BoxML::LoadBackground(const std::string& imagePath, sf::Color color)
@@ -454,7 +517,9 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 	for (auto it = _objs.begin(); it != _objs.end(); ++it)
 	{
 		obj = *it;
-		if (!obj) continue;
+		if (!obj)
+			continue;
+
 		obj->setSfPosition(meterToPixel(obj->getB2Position()));
 
 		// Sync rotation for player using helper
@@ -495,6 +560,16 @@ void BoxML::OnBeginContact(b2Contact* contact)
 		OnMonsterContact(fixtureA, fixtureB);
 	else if (isObject(ObjectCategory::Monster, fixtureB))
 		OnMonsterContact(fixtureB, fixtureA);
+
+	if (isObject(ObjectCategory::Key, fixtureA))
+		OnKeyContact(fixtureA, fixtureB);
+	else if (isObject(ObjectCategory::Key, fixtureB))
+		OnKeyContact(fixtureB, fixtureA);
+
+	if (isObject(ObjectCategory::Gate, fixtureA))
+		OnDoorContact(fixtureA, fixtureB);
+	else if (isObject(ObjectCategory::Gate, fixtureB))
+		OnDoorContact(fixtureB, fixtureA);
 }
 
 void BoxML::OnEndContact(b2Contact* contact)
@@ -570,10 +645,36 @@ void BoxML::OnMonsterContact(b2Fixture* monster, b2Fixture* object)
 	uint16 objCategory = object->GetFilterData().categoryBits;
 
 	if (isObject((ObjectCategory)objCategory,
-		(ObjectCategory)((uint16)ObjectCategory::Wall_Vertical | (uint16)ObjectCategory::Wall_Horizontal | (uint16)ObjectCategory::SpeedWall_Vertical | (uint16)ObjectCategory::SpeedWall_Horizontal)))
+		(ObjectCategory)((uint16)ObjectCategory::Wall_Vertical
+			| (uint16)ObjectCategory::Wall_Horizontal
+			| (uint16)ObjectCategory::SpeedWall_Vertical
+			| (uint16)ObjectCategory::SpeedWall_Horizontal
+			| (uint16)ObjectCategory::Wall
+			| (uint16)ObjectCategory::SpeedWall
+			)))
 	{
 		monsterObj->setMovePattern(monsterObj->toggleMovementPattern());
 	}
+}
+
+void BoxML::OnKeyContact(b2Fixture* key, b2Fixture* object)
+{
+	bfKey* keyObj = findObjectByBody<bfKey>(key->GetBody());
+	if (!keyObj)
+		return;
+
+	bfDoor* doorObj = findObjectByBody<bfDoor>(ObjectCategory::Gate);
+	if (!doorObj)
+		return;
+
+	RemoveObject(keyObj);
+
+	doorObj->loadSpriteSheet("Assets/Enviroment/Gate_Open.png", 202, 298, 0, 0, 1, 1, 0, 0, true);
+}
+
+void BoxML::OnDoorContact(b2Fixture* door, b2Fixture* object)
+{
+	std::cout << "YOU WINNNNNNNN!" << std::endl;
 }
 
 sf::Vector2u BoxML::Resolution(void) const
@@ -600,6 +701,32 @@ T* BoxML::findObjectByBody(b2Body* body)
 		obj = *it;
 		if (!obj) continue;
 		if (obj->Body() == body) return (T*)obj;
+	}
+	return nullptr;
+}
+
+template<typename T>
+T* BoxML::findObjectByBody(const ObjectCategory category)
+{
+	bfObject* obj;
+	b2Body* body;
+
+	for (auto it = _objs.begin(); it != _objs.end(); ++it)
+	{
+		obj = *it;
+		if (!obj)
+			continue;
+
+		body = obj->Body();
+		if (!body)
+			continue;
+
+		b2Fixture* fixture = body->GetFixtureList();
+		if (!fixture)
+			continue;
+
+		if (isObject(category, fixture))
+			return (T*)obj;
 	}
 	return nullptr;
 }
