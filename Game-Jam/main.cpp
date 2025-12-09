@@ -32,7 +32,7 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed|| menuManager.currentState == EXIT)
+            if (event.type == sf::Event::Closed || menuManager.currentState == EXIT)
                 window.close();
 
             //inputHandler->handleInput();
@@ -61,7 +61,19 @@ int main()
                 // Handle pause menu clicks/input if a PauseMenu is displayed
             }
 
+            // 2. Pass Left Click to place the wall
+            if (event.type == sf::Event::MouseButtonPressed) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    boxWorld.PlacePreviewObject();
+                }
+            }
+            else if (event.mouseButton.button == sf::Mouse::Right) {
+                boxWorld.HandleRightClick((sf::Vector2f)sf::Mouse::getPosition(window));
+            }
         }
+        sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
+        sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
+       
 
         if (menuManager.currentState == ACTIVE_GAME)
         {

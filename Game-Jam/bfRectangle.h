@@ -6,8 +6,18 @@ class bfRectangle : public bfObject
 private:
 	sf::RectangleShape _shape;
 	b2Body* _body;
+private:
+	b2Vec2 _redirectDirection{ 0,0 }; // default no redirect
+	bool _isTransparent = false;    // for preview
 
 public:
+	void SetRedirectDirection(const b2Vec2& dir) { _redirectDirection = dir; }
+	b2Vec2 RedirectDirection() const { return _redirectDirection; }
+
+	void SetTransparent(bool transparent);
+	bool IsTransparent() const { return _isTransparent; }
+
+
 	bfRectangle(b2Body* body, const sf::Vector2f size, unsigned int color = 0xFFFFFFF);
 	virtual ~bfRectangle();
 
