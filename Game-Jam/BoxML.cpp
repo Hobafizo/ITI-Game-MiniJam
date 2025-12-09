@@ -1,12 +1,20 @@
 #include "BoxML.h"
+#include "def.h"
 #include "bfCircle.h"
 #include "bfRectangle.h"
 #include "bfPlayer.h"
+#include "bfMonster.h"
 #include "bfWall.h"
 #include "bfSpeedWall.h"
-#include "ObjectCategory.h"
-#include <iostream>
 
+#include <iostream>
+#include <random>
+#include <cmath>
+
+#define WALL_SPEED_INC_MULTIPLIER 2.5f
+#define WALL_SPEED_INC_TIME       5.0f
+
+#define PI           (22 / 7.0f)
 
 BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned short screenPixelPerUnit,
 	float timeStep, int32 velocityIterations, int32 positionIterations)
@@ -30,12 +38,23 @@ void BoxML::CreateWorld(void)
 		RemoveObject(_player);
 
 	_player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f);
+	_player->Body()->SetLinearVelocity({ PLAYER_SPEED_X, PLAYER_SPEED_Y });
 
-	_player->Body()->ApplyForceToCenter({ 5, 2 }, true);
+	/*_player->Body()->ApplyForceToCenter({5, 2}, true);
 	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);
-	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);
+	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);*/
 
-	bfWall* wall = CreateWall(b2_staticBody, pixelToMeter({ 500, 384 }), { 30, 368 });
+	bfWall* wall = CreateWall(b2_staticBody, pixelToMeter({ 500, 384 }), { 30, 368 }, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
+	wall = CreateWall(b2_staticBody, pixelToMeter({ -15, 384 }), { 30, 768 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical);
+	wall = CreateWall(b2_staticBody, pixelToMeter({ 1024 + 15, 384 }), { 30, 768 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical);
+	wall = CreateWall(b2_staticBody, pixelToMeter({ 512, -15 }), { 1024, 30 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal);
+	wall = CreateWall(b2_staticBody, pixelToMeter({ 512, 768 + 15 }), { 1024, 30 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal);
+
+	bfMonster* monster = CreateMonster(b2_dynamicBody, b2Vec2{ 15, 15 }, 10, 0.01f, 0.3f);
+	monster->setMovePattern(Monster_MovePattern::Down);
+
+	monster->setFillColor(sf::Color::Red);
+	monster->Body()->SetLinearVelocity({ 0, PLAYER_SPEED / 2 });
 }
 
 void BoxML::LoadPositions(void)
@@ -197,10 +216,40 @@ bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, 
 	return bfObj;
 }
 
-bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction)
+bfMonster* BoxML::CreateMonster(const b2BodyType bodyType, const b2Vec2 position, float radius, float density, float friction)
 {
-	const uint16 categoryBits = (uint16)ObjectCategory::Wall, maskBits = 0;
+	const uint16 categoryBits = (uint16)ObjectCategory::Monster, maskBits = 0;
 
+	b2BodyDef bodyDef;
+	bodyDef.type = bodyType;
+	bodyDef.position = position;
+
+	b2Body* body = _world.CreateBody(&bodyDef);
+
+	b2CircleShape circleShape;
+	circleShape.m_radius = radius / _screenPixelPerUnit;
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &circleShape;
+	fixtureDef.density = density;
+	fixtureDef.friction = friction;
+
+	if (categoryBits)
+		fixtureDef.filter.categoryBits = categoryBits;
+	if (maskBits)
+		fixtureDef.filter.maskBits = maskBits;
+
+	body->CreateFixture(&fixtureDef);
+
+	bfMonster* bfObj = new bfMonster(body, radius);
+
+	AddObject(bfObj);
+
+	return bfObj;
+}
+
+bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits)
+{
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
 	bodyDef.position = position;
@@ -224,41 +273,6 @@ bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, cons
 	body->CreateFixture(&fixtureDef);
 
 	bfWall* bfObj = new bfWall(body, size);
-	body->GetUserData().pointer = (uintptr_t)bfObj;
-
-	AddObject(bfObj);
-
-	return bfObj;
-}
-
-bfSpeedWall* BoxML::CreateSpeedWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, bool addToWorld)
-{
-	const uint16 categoryBits = (uint16)ObjectCategory::SpeedWall, maskBits = 0;
-
-	b2BodyDef bodyDef;
-	bodyDef.type = bodyType;
-	bodyDef.position = position;
-
-	b2Body* body = _world.CreateBody(&bodyDef);
-
-	b2PolygonShape boxShape;
-	b2Vec2 bSize = pixelToMeter(size);
-	boxShape.SetAsBox(bSize.x / 2, bSize.y / 2);
-
-	b2FixtureDef fixtureDef;
-	fixtureDef.shape = &boxShape;
-	fixtureDef.density = density;
-	fixtureDef.friction = friction;
-
-	if (categoryBits)
-		fixtureDef.filter.categoryBits = categoryBits;
-	if (maskBits)
-		fixtureDef.filter.maskBits = maskBits;
-
-	body->CreateFixture(&fixtureDef);
-
-	bfSpeedWall* bfObj = new bfSpeedWall(body, size);
-	body->GetUserData().pointer = (uintptr_t)bfObj;
 
 	if (addToWorld) AddObject(bfObj);
 	return bfObj;
@@ -266,25 +280,14 @@ bfSpeedWall* BoxML::CreateSpeedWall(const b2BodyType bodyType, const b2Vec2 posi
 
 void BoxML::Step(void)
 {
-	if (_timer.getElapsedTime().asMilliseconds() < _frameRefreshRate)
+	if (_frameTimer.getElapsedTime().asMilliseconds() < _frameRefreshRate)
 		return;
 
+	for (auto it = _objs.begin(); it != _objs.end(); ++it)
+		(*it)->updatePosition(_timer.getElapsedTime().asSeconds());
+
 	_world.Step(_timeStep, _velocityIterations, _positionIterations);
-	float targetSpeed = 10.0f;
-	for (auto obj : _objs)
-	{
-		bfPlayer* playerObj = dynamic_cast<bfPlayer*>(obj);
-		if (!playerObj) continue;
-
-		b2Vec2 v = playerObj->Body()->GetLinearVelocity();
-		float currentSpeed = v.Length();
-		if (currentSpeed > 0.01f) {
-			v = b2Vec2(v.x / currentSpeed * targetSpeed, v.y / currentSpeed * targetSpeed);
-			playerObj->Body()->SetLinearVelocity(v);
-		}
-	}
-
-	_timer.restart();
+	_frameTimer.restart();
 }
 
 void BoxML::Render(sf::RenderWindow& mainWnd)
@@ -316,47 +319,21 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 
 void BoxML::OnBeginContact(b2Contact* contact)
 {
-	// Identify objects via user data
-	std::cout << "Collision began!\n";
-	void* bodyUserDataA = (void*)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
-	void* bodyUserDataB = (void*)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
+	b2Fixture *fixtureA = contact->GetFixtureA(),
+		*fixtureB = contact->GetFixtureB();
 
-	if (!bodyUserDataA || !bodyUserDataB) return;
+	if (isObject(ObjectCategory::Player, fixtureA))
+		OnPlayerContact(fixtureA, fixtureB);
 
-	bfPlayer* player = nullptr;
-	bfObject* wall = nullptr;
+	else if (isObject(ObjectCategory::Player, fixtureB))
+		OnPlayerContact(fixtureB, fixtureA);
 
-	bfObject* objA = reinterpret_cast<bfObject*>(bodyUserDataA);
-	bfObject* objB = reinterpret_cast<bfObject*>(bodyUserDataB);
+	if (isObject(ObjectCategory::Monster, fixtureA))
+		OnMonsterContact(fixtureA, fixtureB);
 
-	// Identify player
-	if (objA->Category() == ObjectCategory::Player) player = dynamic_cast<bfPlayer*>(objA);
-	if (objB->Category() == ObjectCategory::Player) player = dynamic_cast<bfPlayer*>(objB);
-
-	// Identify wall
-	if (objA->Category() == ObjectCategory::Wall || objA->Category() == ObjectCategory::PlayerWallRedirect)
-		wall = objA;
-	if (objB->Category() == ObjectCategory::Wall || objB->Category() == ObjectCategory::PlayerWallRedirect)
-		wall = objB;
-
-	if (!player || !wall) return;
-
-	b2Vec2 vel = player->Body()->GetLinearVelocity();
-
-	if (wall->Category() == ObjectCategory::Wall)
-	{
-		vel = b2Vec2(-vel.x, -vel.y); // simple opposite
-	}
-	else if (wall->Category() == ObjectCategory::PlayerWallRedirect)
-	{
-		b2Vec2 dir = wall->RedirectDirection();
-		float speed = vel.Length();
-		if (dir.LengthSquared() > 0.01f)
-		{
-			dir.Normalize();  // now dir.x, dir.y is unit vector
-			vel = b2Vec2(dir.x * speed, dir.y * speed); // scaled
-		}
-	}
+	else if (isObject(ObjectCategory::Monster, fixtureB))
+		OnMonsterContact(fixtureB, fixtureA);
+}
 
 	player->Body()->SetLinearVelocity(vel);
 
@@ -365,13 +342,140 @@ void BoxML::OnBeginContact(b2Contact* contact)
 
 void BoxML::OnEndContact(b2Contact* contact)
 {
-	std::cout << "Collision ended!\n";
+	//std::cout << "Collision ended!\n";
 }
 
 void BoxML::OnPostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 {
 	float force = impulse->normalImpulses[0];
-	std::cout << "Collision force: " << force << "\n";
+	//std::cout << "Collision force: " << force << "\n";
+}
+
+void BoxML::OnPlayerContact(b2Fixture* player, b2Fixture* object)
+{
+	if (!player || !object)
+		return;
+
+	printf("Player speed: %.2f\n", player->GetBody()->GetLinearVelocity().Length());
+
+	uint16 objCategory = object->GetFilterData().categoryBits;
+
+	if (isObject((ObjectCategory)objCategory,
+		(ObjectCategory)(
+			(uint16)ObjectCategory::Wall_Vertical
+			| (uint16)ObjectCategory::Wall_Horizontal
+			| (uint16)ObjectCategory::SpeedWall_Vertical
+			| (uint16)ObjectCategory::SpeedWall_Horizontal
+			)
+	))
+	{
+		OnPlayerWallContact(player, object, objCategory);
+	}
+
+	else if (isObject((ObjectCategory)objCategory, ObjectCategory::Monster))
+	{
+		printf("Player hit monster\n");
+	}
+}
+
+void BoxML::OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCategory)
+{
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
+
+	std::uniform_real_distribution<float> angleDist(0.0f, 2.0f * PI);
+
+	b2Body* playerBody = player->GetBody();
+
+	// get current speed
+	b2Vec2 currentVelocity = playerBody->GetLinearVelocity();
+	float currentSpeed = currentVelocity.Length();
+
+	// if player is barely moving, give them a minimum speed
+	if (currentSpeed < 0.1f)
+		currentSpeed = 5.0f;
+
+	// generate Random Direction
+	float randomAngle = angleDist(gen);
+	b2Vec2 randomDir(cos(randomAngle), sin(randomAngle));
+
+	if (isObject((ObjectCategory)objCategory, ObjectCategory::Wall_Vertical))
+	{
+		// reverse direction
+		if (currentVelocity.x > 0 && randomDir.x > 0
+			|| currentVelocity.x < 0 && randomDir.x < 0)
+			randomDir.x = -randomDir.x;
+
+		// Normal Wall: random direction, same speed
+		playerBody->SetLinearVelocity(currentSpeed * randomDir);
+	}
+
+	else if (isObject((ObjectCategory)objCategory, ObjectCategory::Wall_Horizontal))
+	{
+		// reverse direction
+		if (currentVelocity.y > 0 && randomDir.y > 0
+			|| currentVelocity.y < 0 && randomDir.y < 0)
+			randomDir.y = -randomDir.y;
+
+		// Normal Wall: random direction, same speed
+		playerBody->SetLinearVelocity(currentSpeed * randomDir);
+	}
+
+	else if (isObject((ObjectCategory)objCategory, ObjectCategory::SpeedWall_Vertical))
+	{
+		// reverse direction
+		if (currentVelocity.x > 0 && randomDir.x > 0
+			|| currentVelocity.x < 0 && randomDir.x < 0)
+			randomDir.x = -randomDir.x;
+
+		_player->setBoostMultiplier(WALL_SPEED_INC_MULTIPLIER);
+		_player->setSpeedBoostTimer(_timer.getElapsedTime().asSeconds() + WALL_SPEED_INC_TIME);
+
+		// Normal Wall: random direction, same speed
+		playerBody->SetLinearVelocity(currentSpeed * randomDir);
+	}
+
+	else if (isObject((ObjectCategory)objCategory, ObjectCategory::SpeedWall_Horizontal))
+	{
+		// reverse direction
+		if (currentVelocity.y > 0 && randomDir.y > 0
+			|| currentVelocity.y < 0 && randomDir.y < 0)
+			randomDir.y = -randomDir.y;
+
+		_player->setBoostMultiplier(WALL_SPEED_INC_MULTIPLIER);
+		_player->setSpeedBoostTimer(_timer.getElapsedTime().asSeconds() + WALL_SPEED_INC_TIME);
+
+		// Normal Wall: random direction, same speed
+		playerBody->SetLinearVelocity(currentSpeed * randomDir);
+	}
+}
+
+void BoxML::OnMonsterContact(b2Fixture* monster, b2Fixture* object)
+{
+	if (!monster || !object)
+		return;
+
+	b2Body* monsterBody = monster->GetBody();
+	bfMonster* monsterObj = findObjectByBody<bfMonster>(monsterBody);
+
+	if (!monsterBody || !monsterObj)
+		return;
+
+	printf("Monster speed: %.2f\n", monster->GetBody()->GetLinearVelocity().Length());
+
+	uint16 objCategory = object->GetFilterData().categoryBits;
+
+	if (isObject((ObjectCategory)objCategory,
+		(ObjectCategory)(
+		(uint16)ObjectCategory::Wall_Vertical
+			| (uint16)ObjectCategory::Wall_Horizontal
+			| (uint16)ObjectCategory::SpeedWall_Vertical
+			| (uint16)ObjectCategory::SpeedWall_Horizontal
+			)
+	))
+	{
+		monsterObj->setMovePattern(monsterObj->toggleMovementPattern());
+	}
 }
 
 b2Vec2 BoxML::pixelToMeter(const sf::Vector2f pixel) const
@@ -384,6 +488,24 @@ sf::Vector2f BoxML::meterToPixel(const b2Vec2 meter) const
 	return sf::Vector2f{ meter.x * _screenPixelPerUnit, meter.y * _screenPixelPerUnit };
 }
 
+template<typename T>
+T* BoxML::findObjectByBody(b2Body* body)
+{
+	bfObject* obj;
+
+	for (auto it = _objs.begin(); it != _objs.end(); ++it)
+	{
+		obj = *it;
+		if (!obj)
+			continue;
+
+		if (obj->Body() == body)
+			return (T*)obj;
+	}
+
+	return nullptr;
+}
+
 b2Vec2 BoxML::centerAround(const b2Vec2 size, const sf::Vector2f targetPosition, const sf::Vector2f targetSize) const
 {
 	b2Vec2 tPos = pixelToMeter(targetPosition);
@@ -394,68 +516,16 @@ b2Vec2 BoxML::centerAround(const b2Vec2 size, const sf::Vector2f targetPosition,
 
 	return tPos;
 }
-void BoxML::UpdatePreviewObject(const b2Vec2& mousePos)
+
+bool BoxML::isObject(const ObjectCategory category, const ObjectCategory object) const
 {
-	// clean previous preview (your existing cleanup is fine)
-	if (_previewObject)
-	{
-		// destroy previous body and delete old preview (you already do this, keep it)
-		if (_previewObject->Body())
-			_world.DestroyBody(_previewObject->Body());
-		delete _previewObject;
-		_previewObject = nullptr;
-	}
-
-	// Create new preview object (use addToWorld = false where supported)
-	switch (_currentPreviewType)
-	{
-	case ObjectCategory::Wall:
-		_previewObject = CreateRectangle(b2_staticBody, mousePos, sf::Vector2f(60, 80), 1.0f, 0.3f, 0, 0, false);
-		break;
-	case ObjectCategory::PlayerWallRedirect:
-		_previewObject = CreateRectangle(b2_staticBody, mousePos, sf::Vector2f(60, 80), 1.0f, 0.3f, 0, 0, false);
-		// optionally set redirect direction here:
-		_previewObject->SetRedirectDirection(b2Vec2(0, 1));
-		break;
-	case ObjectCategory::SpeedWall:
-		_previewObject = CreateSpeedWall(b2_staticBody, mousePos, sf::Vector2f(60, 80), 1.0f, 0.3f, false); // ensure CreateSpeedWall supports addToWorld
-		break;
-	}
-
-	// If preview has a Box2D body, position it and disable it so it won't affect simulation.
-	if (_previewObject && _previewObject->Body())
-	{
-		// mousePos is in meters already (your function signature uses b2Vec2). If you pass pixels, convert first.
-		_previewObject->Body()->SetTransform(mousePos, 0.0f);
-		_previewObject->Body()->SetEnabled(false); // don't simulate preview body
-	}
-
-	if (_previewObject)
-		_previewObject->SetTransparent(true);
+	return ((uint16)object & (uint16)category);
 }
 
-void BoxML::PlacePreviewObject()
+bool BoxML::isObject(const ObjectCategory category, b2Fixture* fixture) const
 {
-	if (!_previewObject) return;
+	if (!_player || !fixture)
+		return false;
 
-	// enable physics if there is a body
-	if (_previewObject->Body())
-		_previewObject->Body()->SetEnabled(true);
-
-	_previewObject->SetTransparent(false);
-	AddObject(_previewObject);
-	_previewObject = nullptr;
+	return isObject(category, (ObjectCategory)fixture->GetFilterData().categoryBits);
 }
-
-void BoxML::HandleKeyPress(sf::Keyboard::Key key)
-{
-	if (key == sf::Keyboard::Num1) {
-		_currentPreviewType = ObjectCategory::Wall;
-		std::cout << "Wall";
-		
-	}
-	if (key == sf::Keyboard::Num2) { _currentPreviewType = ObjectCategory::PlayerWallRedirect; std::cout << "Redirect Wall";
-	}
-	if (key == sf::Keyboard::Num3) { _currentPreviewType = ObjectCategory::SpeedWall; std::cout << "SpeedWall"; }
-}
-

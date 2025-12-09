@@ -1,107 +1,73 @@
-#include <SFML/Graphics.hpp>
-#include <iostream>
-class LevelMenu {
-	sf::Texture backgroundTexture;
-	sf::Sprite backgroundSprite;
+#include "BaseMenu.cpp"
 
-	sf::Texture level1Texture;
-	sf::Sprite level1Sprite;
+class LevelMenu : public BaseMenu {
+private:
+    sf::Texture backgroundTexture;
+    sf::Sprite backgroundSprite;
+    sf::Texture level1Texture;
+    sf::Sprite level1Sprite;
+    sf::Texture exitTexture; // Reused for Back button
+    sf::Sprite exitSprite;
+    sf::Vector2u windowSize = sf::Vector2u(1024, 768);
 
-	sf::Texture level2Texture;
-	sf::Sprite level2Sprite;
+    bool loadAssets() {
+        if (!backgroundTexture.loadFromFile("Assets/UI/Menus/LevelMenu/LevelMenuBackground.jpeg")) return false;
+        if (!level1Texture.loadFromFile("Assets/UI/Menus/LevelMenu/Level1.jpeg")) return false;
+        if (!exitTexture.loadFromFile("Assets/UI/Menus/LevelMenu/Exit.jpg")) return false;
+        return true;
+    }
 
-	sf::Texture exitTexture;
-	sf::Sprite exitSprite;
+    void setupSprites() {
+        backgroundSprite.setTexture(backgroundTexture);
+        level1Sprite.setTexture(level1Texture);
+        exitSprite.setTexture(exitTexture);
 
-	sf::Vector2u windowSize = sf::Vector2u(1024, 768);
+        float scaleX = (float)windowSize.x / backgroundTexture.getSize().x;
+        float scaleY = (float)windowSize.y / backgroundTexture.getSize().y;
+        backgroundSprite.setScale(scaleX, scaleY);
+        backgroundSprite.setPosition(0.0f, 0.0f);
+
+        float desiredButtonWidth = 200.f;
+        float centerX = (windowSize.x - desiredButtonWidth) / 2.0f;
+
+        float startScale = desiredButtonWidth / level1Texture.getSize().x;
+        level1Sprite.setScale(startScale, startScale);
+        level1Sprite.setPosition(centerX, 200.0f);
+
+        float exitScale = desiredButtonWidth / exitTexture.getSize().x;
+        exitSprite.setScale(exitScale, exitScale);
+        exitSprite.setPosition(centerX, 400.0f);
+    }
+
 public:
-	LevelMenu() {
-		if (!loadAssets()) {
-			// Handle error, e.g., throw an exception or log a message
-			std::cerr << "ERROR: Failed to load menu assets." << std::endl;
-		}
-		else {
-			setupSprites();
-		}
-	}
-	bool loadAssets() {
-		// Load the background image from the assets folder
-		if (!backgroundTexture.loadFromFile("Assets/UI/Menus/LevelMenu/LevelMenuBackground.jpeg")) {
-			// If loading fails, return false
-			return false;
-		}
-		if (!level1Texture.loadFromFile("Assets/UI/Menus/LevelMenu/Level1.jpeg")) {
-			// If loading fails, return false
-			return false;
-		}
-		if (!exitTexture.loadFromFile("Assets/UI/Menus/LevelMenu/Exit.jpg")) {
-			// If loading fails, return false
-			return false;
-		}
-		//if (!level2Texture.loadFromFile("Assets/UI/Menus/LevelMenu/Level2.png")) {
-		//	// If loading fails, return false
-		//	return false;
-		//}
+    LevelMenu() {
+        if (!loadAssets()) {
+            std::cerr << "ERROR: Failed to load LevelMenu assets." << std::endl;
+        }
+        else {
+            setupSprites();
+        }
+    }
 
-		// Add more asset loading here, e.g., button images
-		// if (!buttonTexture.loadFromFile("assets/button.png")) {
-		//     return false;
-		// }
+    void draw(sf::RenderWindow& window) override {
+        window.draw(backgroundSprite);
+        window.draw(exitSprite);
+        window.draw(level1Sprite);
+    }
 
-		return true; // All assets loaded successfully
-	}
-	void setupSprites() {
-		// Link the texture to the sprite
-		backgroundSprite.setTexture(backgroundTexture);
-		level1Sprite.setTexture(level1Texture);
-		exitSprite.setTexture(exitTexture);
-		std::cout << "Level 1 Scale: " << level1Sprite.getScale().x << std::endl;
-		// --- 1. Fix Background Scaling ---
-		// Calculate scale factors to fill the 1024x768 window
-		float scaleX = (float)windowSize.x / backgroundTexture.getSize().x;
-		float scaleY = (float)windowSize.y / backgroundTexture.getSize().y;
-		backgroundSprite.setScale(scaleX, scaleY);
-		backgroundSprite.setPosition(0.0f, 0.0f); // Place at top-left
+    MenuAction checkClick(sf::RenderWindow& window) override {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        sf::Vector2f worldMousePos = window.mapPixelToCoords(mousePos);
 
-		// --- 2. Fix Button Centering and Scaling ---
-		// Define a standard width for buttons (e.g., 300 pixels)
-		float desiredButtonWidth = 200.f;
+        if (level1Sprite.getGlobalBounds().contains(worldMousePos)) {
+            std::cout << "Level Menu -> Level 1 button clicked. Start Game." << std::endl;
+            return START_GAME;
+        }
 
-		// Calculate the horizontal center position
-		float centerX = (windowSize.x - desiredButtonWidth) / 2.0f;
-
-		// Calculate the scale factor for the Start button
-		float startScale = desiredButtonWidth / level1Texture.getSize().x;
-		level1Sprite.setScale(startScale, startScale);
-		std::cout << "Level 1 Scale: " << level1Sprite.getScale().x << std::endl;
-		// Position Start Button (Centered horizontally)
-		// Vertical position remains 200.0f for now
-		level1Sprite.setPosition(centerX, 200.0f);
-
-		// Calculate the scale factor for the Exit button
-		float exitScale = desiredButtonWidth / exitTexture.getSize().x;
-		exitSprite.setScale(exitScale, exitScale);
-
-		// Position Exit Button (Centered horizontally)
-		// Vertical position remains 300.0f for now
-		exitSprite.setPosition(centerX, 400.0f);
-	}
-	void checkClick() {
-		// Implement click detection logic here
-		if (level1Sprite.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y))) {
-			std::cout << "Start button clicked!" << std::endl;
-			//switch to level menu
-		};
-		if (exitSprite.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y))) {
-			std::cout << "Exit button clicked!" << std::endl;
-		};
-	}
-	void draw(sf::RenderWindow& window) {
-		window.draw(backgroundSprite);
-		window.draw(exitSprite);
-		window.draw(level1Sprite);
-		// Draw other elements like buttons
-		// window.draw(playButtonSprite);
-	}
-
+        if (exitSprite.getGlobalBounds().contains(worldMousePos)) {
+            std::cout << "Level Menu -> Exit button clicked. Go to Main Menu." << std::endl;
+            return GOTO_MAIN_MENU;
+        }
+        return NONE;
+    }
 };

@@ -19,6 +19,7 @@ public:
 	virtual ~bfObject();
 
 	virtual void setSfPosition(const sf::Vector2f pos) = 0;
+	virtual void updatePosition(float curTime) = 0;
 
 	virtual b2Body* Body() const = 0;
 	virtual sf::Drawable* Drawable() const = 0;

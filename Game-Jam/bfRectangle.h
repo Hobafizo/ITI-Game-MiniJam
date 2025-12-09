@@ -30,6 +30,8 @@ public:
 	void setOutlineColor(unsigned int color);
 	void setOutlineColor(const sf::Color color);
 
+	void updatePosition(float curTime) override;
+
 	b2Body* Body() const override;
 	sf::Drawable* Drawable() const override;
 	b2Vec2 getB2Position() const override;
