@@ -1,11 +1,8 @@
 #include "bfMonster.h"
 #include "def.h"
 
-bfMonster::bfMonster(b2Body* body, float radius, unsigned int color) : bfCharacter(body, radius, color)
+bfMonster::bfMonster(b2Body* body, const sf::Vector2f size, unsigned int color) : bfCharacter(body, size, color)
 {
-	setRadius(radius);
-	setOrigin({ radius, radius });
-	setFillColor(color);
 }
 
 bfMonster::~bfMonster(void)
@@ -20,6 +17,7 @@ void bfMonster::setMovePattern(Monster_MovePattern pattern)
 void bfMonster::updatePosition(float curTime)
 {
 	bfCharacter::updatePosition(curTime);
+	updateAnimation(curTime);
 
 	if (_movePattern == Monster_MovePattern::Up)
 		_body->SetLinearVelocity({ 0, -(PLAYER_SPEED / 2) });
@@ -29,6 +27,33 @@ void bfMonster::updatePosition(float curTime)
 		_body->SetLinearVelocity({ -(PLAYER_SPEED / 2), 0 });
 	else if (_movePattern == Monster_MovePattern::Right)
 		_body->SetLinearVelocity({ PLAYER_SPEED / 2, 0 });
+}
+
+void bfMonster::updateAnimation(float curTime)
+{
+	b2Body* body = Body();
+	b2Vec2 velocity = body->GetLinearVelocity();
+
+	int frameStartIdx = 0;
+	int frameCount = 1;
+	int frameDuration = 1;
+
+	WalkDirection dir = getWalkDirection(velocity);
+
+	switch (dir)
+	{
+	case WalkDirection::Left:
+		frameStartIdx = 0;
+		frameCount = 3;
+		break;
+
+	case WalkDirection::Right:
+		frameStartIdx = 3;
+		frameCount = 3;
+		break;
+	}
+
+	updateSpriteSheet(frameStartIdx, frameCount, curTime, frameDuration);
 }
 
 Monster_MovePattern bfMonster::getMovementPattern(void) const

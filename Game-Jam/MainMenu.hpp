@@ -10,7 +10,7 @@ private:
     sf::Sprite startSprite;
     sf::Texture exitTexture;
     sf::Sprite exitSprite;
-    sf::Vector2u windowSize = sf::Vector2u(1024, 768);
+    sf::Vector2u windowSize = sf::Vector2u(1920, 1080);
 
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MainMenu/MenuBackground.jpeg")) return false;

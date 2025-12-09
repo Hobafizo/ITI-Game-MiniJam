@@ -4,7 +4,7 @@
 class bfPlayer : public bfCharacter
 {
 public:
-	bfPlayer(b2Body* body, float radius = 0, unsigned int color = 0xFFFFFFF);
+	bfPlayer(b2Body* body, const sf::Vector2f size, unsigned int color = 0xFFFFFFF);
 	virtual ~bfPlayer();
 
 	void updatePosition(float curTime) override;

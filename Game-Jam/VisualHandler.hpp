@@ -1,4 +1,6 @@
 #pragma once
+#include "BoxML.h"
+
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -6,9 +8,6 @@
 //this should be integrated into the menus and object spawner later/animator
 class VisualHandler {
 private:
-    // 1. Reference Resolution (The size you design your assets and coordinates for)
-    const sf::Vector2u referenceSize = sf::Vector2u(1024, 768);
-
     // 2. Current Window Size (The actual size of the player's window)
     sf::Vector2u currentWindowSize;
 
@@ -25,6 +24,8 @@ public:
     // Call this whenever the window is resized
     void updateWindowSize(const sf::Vector2u& newWindowSize) {
         currentWindowSize = newWindowSize;
+
+        auto referenceSize = BoxML::Instance()->Resolution();
 
         // Calculate uniform scaling factors relative to the reference size
         scaleX = (float)currentWindowSize.x / referenceSize.x;
@@ -80,6 +81,6 @@ public:
     }
 
     sf::Vector2u getReferenceSize() const {
-        return referenceSize;
+        return BoxML::Instance()->Resolution();
     }
 };

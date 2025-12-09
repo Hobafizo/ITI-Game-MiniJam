@@ -29,7 +29,7 @@ public:
         {
             b2Vec2 boxCoors = boxWorld.pixelToMeter(levelData.player.spawnPos);
             b2Vec2 p = boxCoors;
-            spawnedPlayer = boxWorld.CreatePlayer(b2_dynamicBody, p, 1.f);
+            spawnedPlayer = boxWorld.CreatePlayer(b2_dynamicBody, p, { 1.f, 1.f });
             if (spawnedPlayer)
                 spawnedObjects.push_back(spawnedPlayer);
                 cout << "Player spawned at: (" << p.x << ", " << p.y << ")\n";
@@ -48,7 +48,7 @@ public:
         for (auto& e : levelData.enemies) {
             b2Vec2 boxCoors = boxWorld.pixelToMeter(e.spawnPos);
             b2Vec2 pos = boxCoors;
-            bfMonster* mon = boxWorld.CreateMonster(b2_dynamicBody, pos, e.radius);
+            bfMonster* mon = boxWorld.CreateMonster(b2_dynamicBody, pos, { e.radius, e.radius });
             if (mon)
                 spawnedObjects.push_back(mon);
         }
