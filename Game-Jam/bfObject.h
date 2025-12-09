@@ -19,7 +19,9 @@ public:
 	virtual ~bfObject();
 
 	virtual void setSfPosition(const sf::Vector2f pos) = 0;
+	virtual void setPositionFromTopLeft(const sf::Vector2f& topLeft) = 0;
 	virtual void setRotation(float angle) = 0;
+	virtual void setScale(const sf::Vector2f scale) = 0;
 	virtual void updatePosition(float curTime) = 0;
 
 	virtual b2Body* Body() const = 0;

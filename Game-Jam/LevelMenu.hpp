@@ -1,4 +1,5 @@
 #include "BaseMenu.hpp"
+#include "BoxML.h"
 
 class LevelMenu : public BaseMenu {
 private:
@@ -8,7 +9,6 @@ private:
     sf::Sprite level1Sprite;
     sf::Texture exitTexture; // Reused for Back button
     sf::Sprite exitSprite;
-    sf::Vector2u windowSize = sf::Vector2u(1920, 1080);
 
     bool loadAssets() {
         
@@ -19,6 +19,8 @@ private:
     }
 
     void setupSprites() {
+        sf::Vector2u windowSize = BoxML::Instance()->Resolution();
+
         backgroundSprite.setTexture(backgroundTexture);
         level1Sprite.setTexture(level1Texture);
         exitSprite.setTexture(exitTexture);

@@ -15,6 +15,19 @@
 #define WALL_SPEED_INC_TIME       5.0f
 #define PI           (22 / 7.0f)
 
+#define PLAYGROUND_MARGIN_LEFT   323
+#define PLAYGROUND_MARGIN_RIGHT  323
+#define PLAYGROUND_MARGIN_TOP    175
+#define PLAYGROUND_MARGIN_BOTTOM 185
+
+#define WALL_VERTICAL_WIDTH  103
+#define WALL_VERTICAL_HEIGHT 246
+
+static std::random_device randomDevice;
+static std::mt19937 randGenerator(randomDevice());
+
+BoxML* BoxML::_instance = nullptr;
+
 // --- HELPER: ROTATE VISUALS ---
 void ApplyRotation(bfObject* obj, float angleInRadians)
 {
@@ -46,27 +59,32 @@ BoxML::~BoxML(void)
 
 void BoxML::CreateWorld(void)
 {
-	if (_player) RemoveObject(_player);
+	LoadBackground("Assets/background/sea.png");
 
-	_player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 50, 0.01f, 0.3f);
-	_player->loadSpriteSheet("Assets/characters/frog.png", 50, 50, 0, 0, 3, 4, _timer.getElapsedTime().asSeconds(), 0.3);
+	if (_player)
+		RemoveObject(_player);
+
+	_player = CreatePlayer(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 50, PLAYGROUND_MARGIN_TOP + 50 }), { 165, 192 }, 0.01f, 0.3f);
 	_player->Body()->SetLinearVelocity({ PLAYER_SPEED_X, PLAYER_SPEED_Y });
 
-	/*_player->Body()->ApplyForceToCenter({5, 2}, true);
-	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);
-	_player->Body()->ApplyForceToCenter({ 5, 4 }, true);*/
+	bfWall* wall;
 
-	bfWall* wall = CreateWall(b2_staticBody, pixelToMeter({ 500, 384 }), { 30, 368 }, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
-	wall = CreateWall(b2_staticBody, pixelToMeter({ -15, 384 }), { 30, 768 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical);
-	wall = CreateWall(b2_staticBody, pixelToMeter({ 1024 + 15, 384 }), { 30, 768 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical);
-	wall = CreateWall(b2_staticBody, pixelToMeter({ 512, -15 }), { 1024, 30 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal);
-	wall = CreateWall(b2_staticBody, pixelToMeter({ 512, 768 + 15 }), { 1024, 30 }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal);
+	wall = CreateWall(b2_staticBody, pixelToMeter({ 800, 500 }), { WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT }, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
+
+	wall = CreateWall(b2_staticBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT - WALL_VERTICAL_WIDTH, 0 }), { WALL_VERTICAL_WIDTH, (float)_screenHeight }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical, 0, true, false, true);
+	wall = CreateWall(b2_staticBody, pixelToMeter({ (float)_screenWidth - PLAYGROUND_MARGIN_RIGHT, 0 }), { WALL_VERTICAL_WIDTH, (float)_screenHeight }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical, 0, true, false, true);
+	wall = CreateWall(b2_staticBody, pixelToMeter({ 0, PLAYGROUND_MARGIN_TOP - WALL_VERTICAL_WIDTH }), { (float)_screenWidth, WALL_VERTICAL_WIDTH }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal, 0, true, false, true);
+	wall = CreateWall(b2_staticBody, pixelToMeter({ 0, (float)_screenHeight - PLAYGROUND_MARGIN_BOTTOM }), { (float)_screenWidth, WALL_VERTICAL_WIDTH }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal, 0, true, false, true);
 
 	// 4. RESTORED: MONSTER
-	bfMonster* monster = CreateMonster(b2_dynamicBody, b2Vec2{ 15, 15 }, 10, 0.01f, 0.3f);
+	bfMonster* monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 108, 76 }, 0.01f, 0.3f, 1);
 	monster->setMovePattern(Monster_MovePattern::Down);
-	monster->setFillColor(sf::Color::Red);
-	monster->Body()->SetLinearVelocity({ 0, PLAYER_SPEED / 2 });
+
+	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 83, 87 }, 0.01f, 0.3f, 2);
+	monster->setMovePattern(Monster_MovePattern::Down);
+
+	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 94, 56 }, 0.01f, 0.3f, 3);
+	monster->setMovePattern(Monster_MovePattern::Right);
 }
 
 // --- INPUT HANDLER (Call this from Main) ---
@@ -143,11 +161,20 @@ bfCircle* BoxML::CreateCircle(const b2BodyType bodyType, const b2Vec2 position, 
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
-	bodyDef.position = position;
+
+	// --- ADJUSTMENT START ---
+	// Convert pixel radius to meters
+	float rMeters = radius / _screenPixelPerUnit;
+
+	// Shift origin from Top-Left to Center
+	bodyDef.position = position + b2Vec2(rMeters, rMeters);
+	// --- ADJUSTMENT END ---
+
 	b2Body* body = _world.CreateBody(&bodyDef);
 
 	b2CircleShape circleShape;
-	circleShape.m_radius = radius / _screenPixelPerUnit;
+	circleShape.m_radius = rMeters;
+
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &circleShape;
 	fixtureDef.density = density;
@@ -166,18 +193,33 @@ bfRectangle* BoxML::CreateRectangle(const b2BodyType bodyType, const b2Vec2 posi
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
-	bodyDef.position = position;
+
+	// --- ADJUSTMENT START ---
+	// Get full size in meters
+	b2Vec2 bSize = pixelToMeter(size);
+	// Calculate half-extents
+	float hx = bSize.x / 2.0f;
+	float hy = bSize.y / 2.0f;
+
+	// Shift origin from Top-Left to Center
+	bodyDef.position = position + b2Vec2(hx, hy);
+	// --- ADJUSTMENT END ---
+
 	b2Body* body = _world.CreateBody(&bodyDef);
 
 	b2PolygonShape boxShape;
-	b2Vec2 bSize = pixelToMeter(size);
-	boxShape.SetAsBox(bSize.x / 2, bSize.y / 2);
+	boxShape.SetAsBox(hx, hy);
+
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &boxShape;
 	fixtureDef.density = density;
 	fixtureDef.friction = friction;
-	if (categoryBits) fixtureDef.filter.categoryBits = categoryBits;
-	if (maskBits) fixtureDef.filter.maskBits = maskBits;
+
+	if (categoryBits)
+		fixtureDef.filter.categoryBits = categoryBits;
+	if (maskBits)
+		fixtureDef.filter.maskBits = maskBits;
+
 	body->CreateFixture(&fixtureDef);
 
 	bfRectangle* bfObj = new bfRectangle(body, size);
@@ -186,72 +228,160 @@ bfRectangle* BoxML::CreateRectangle(const b2BodyType bodyType, const b2Vec2 posi
 	return bfObj;
 }
 
-bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, float radius, float density, float friction)
+bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, bool loadSprite)
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
-	bodyDef.position = position;
+
+	// --- ADJUSTMENT START ---
+	b2Vec2 bSize = pixelToMeter(size);
+	float hx = bSize.x / 2.0f;
+	float hy = bSize.y / 2.0f;
+
+	// Shift origin from Top-Left to Center
+	bodyDef.position = position + b2Vec2(hx, hy);
+	// --- ADJUSTMENT END ---
+
 	b2Body* body = _world.CreateBody(&bodyDef);
 
-	b2CircleShape circleShape;
-	circleShape.m_radius = radius / _screenPixelPerUnit;
+	b2PolygonShape boxShape;
+	boxShape.SetAsBox(hx, hy);
+
 	b2FixtureDef fixtureDef;
-	fixtureDef.shape = &circleShape;
+	fixtureDef.shape = &boxShape;
 	fixtureDef.density = density;
 	fixtureDef.friction = 0.0f;
 	fixtureDef.restitution = 1.0f;
 	fixtureDef.filter.categoryBits = (uint16)ObjectCategory::Player;
 	body->CreateFixture(&fixtureDef);
 
-	bfPlayer* bfObj = new bfPlayer(body, radius);
+	bfPlayer* bfObj = new bfPlayer(body, size);
 	body->GetUserData().pointer = (uintptr_t)bfObj;
 	AddObject(bfObj);
+
+	if (loadSprite)
+		bfObj->loadSpriteSheet("Assets/characters/frog.png", size.x, size.y, 0, 0, 5, 5, _timer.getElapsedTime().asSeconds(), 0.17f);
+
+	bfObj->setScale({ 0.7f, 0.7f });
+
 	return bfObj;
 }
 
-bfMonster* BoxML::CreateMonster(const b2BodyType bodyType, const b2Vec2 position, float radius, float density, float friction)
+bfMonster* BoxML::CreateMonster(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, unsigned char spirteIndex)
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
-	bodyDef.position = position;
-	b2Body* body = _world.CreateBody(&bodyDef);
 
-	b2CircleShape circleShape;
-	circleShape.m_radius = radius / _screenPixelPerUnit;
-	b2FixtureDef fixtureDef;
-	fixtureDef.shape = &circleShape;
-	fixtureDef.density = density;
-	fixtureDef.friction = friction;
-	fixtureDef.filter.categoryBits = (uint16)ObjectCategory::Monster;
-	body->CreateFixture(&fixtureDef);
+	// --- ADJUSTMENT START ---
+	b2Vec2 bSize = pixelToMeter(size);
+	float hx = bSize.x / 2.0f;
+	float hy = bSize.y / 2.0f;
 
-	bfMonster* bfObj = new bfMonster(body, radius);
-	AddObject(bfObj);
-	return bfObj;
-}
+	// Shift origin from Top-Left to Center
+	bodyDef.position = position + b2Vec2(hx, hy);
+	// --- ADJUSTMENT END ---
 
-bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits, bool addToWorld)
-{
-	b2BodyDef bodyDef;
-	bodyDef.type = bodyType;
-	bodyDef.position = position;
 	b2Body* body = _world.CreateBody(&bodyDef);
 
 	b2PolygonShape boxShape;
-	b2Vec2 bSize = pixelToMeter(size);
-	boxShape.SetAsBox(bSize.x / 2, bSize.y / 2);
+	boxShape.SetAsBox(hx, hy);
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &boxShape;
 	fixtureDef.density = density;
 	fixtureDef.friction = friction;
-	if (categoryBits) fixtureDef.filter.categoryBits = categoryBits;
-	if (maskBits) fixtureDef.filter.maskBits = maskBits;
+	fixtureDef.filter.categoryBits = (uint16)ObjectCategory::Monster;
+	body->CreateFixture(&fixtureDef);
+
+	bfMonster* bfObj = new bfMonster(body, size);
+	AddObject(bfObj);
+
+	switch (spirteIndex)
+	{
+	case 1:
+		bfObj->loadSpriteSheet("Assets/monsters/1.png", size.x, size.y, 0, 0, 3, 3, _timer.getElapsedTime().asSeconds(), 0.17);
+		bfObj->setScale({ 0.8f, 0.8f });
+		break;
+
+	case 2:
+		bfObj->loadSpriteSheet("Assets/monsters/2.png", size.x, size.y, 0, 0, 3, 3, _timer.getElapsedTime().asSeconds(), 0.17);
+		break;
+
+	case 3:
+		bfObj->loadSpriteSheet("Assets/monsters/3.png", size.x, size.y, 0, 0, 3, 3, _timer.getElapsedTime().asSeconds(), 0.17);
+		break;
+	}	
+
+	return bfObj;
+}
+
+bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits, bool addToWorld, bool loadSprite, bool invisible)
+{
+	b2BodyDef bodyDef;
+	bodyDef.type = bodyType;
+
+	// --- ADJUSTMENT START ---
+	b2Vec2 bSize = pixelToMeter(size);
+	float hx = bSize.x / 2.0f;
+	float hy = bSize.y / 2.0f;
+
+	// Shift origin from Top-Left to Center
+	bodyDef.position = position + b2Vec2(hx, hy);
+	// --- ADJUSTMENT END ---
+
+	b2Body* body = _world.CreateBody(&bodyDef);
+
+	b2PolygonShape boxShape;
+	boxShape.SetAsBox(hx, hy);
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &boxShape;
+	fixtureDef.density = density;
+	fixtureDef.friction = friction;
+	if (categoryBits)
+		fixtureDef.filter.categoryBits = categoryBits;
+	if (maskBits)
+		fixtureDef.filter.maskBits = maskBits;
 	body->CreateFixture(&fixtureDef);
 
 	bfWall* bfObj = new bfWall(body, size);
-	if (addToWorld) AddObject(bfObj);
+	if (addToWorld)
+		AddObject(bfObj);
+
+	if (invisible)
+		bfObj->setFillColor(sf::Color::Transparent);
+
+	else if (loadSprite)
+	{
+		if (isObject((ObjectCategory)categoryBits,
+			(ObjectCategory)((uint16)ObjectCategory::Wall_Vertical | (uint16)ObjectCategory::SpeedWall_Vertical)
+		))
+		{
+			std::uniform_int_distribution<int> typeNum(1, 2);
+
+			switch (typeNum(randGenerator))
+			{
+			case 1:
+				bfObj->loadSpriteSheet("Assets/walls/wall_v_1.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
+				break;
+
+			case 2:
+				bfObj->loadSpriteSheet("Assets/walls/wall_v_2.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
+				break;
+			}
+		}
+	}
+
 	return bfObj;
+}
+
+bool BoxML::LoadBackground(const std::string& imagePath)
+{
+	if (!_backgroundTexture.loadFromFile(imagePath, {}))
+		return false;
+
+	_background.setTexture(_backgroundTexture);
+	return true;
 }
 
 void BoxML::Step(void)
@@ -269,24 +399,28 @@ void BoxML::Step(void)
 void BoxML::Render(sf::RenderWindow& mainWnd)
 {
 	bfObject* obj;
+
 	mainWnd.clear();
+
+	mainWnd.draw(_background);
 
 	for (auto it = _objs.begin(); it != _objs.end(); ++it)
 	{
 		obj = *it;
 		if (!obj) continue;
 		obj->setSfPosition(meterToPixel(obj->getB2Position()));
-		// Sync rotation using helper
-		if (obj->Body()) ApplyRotation(obj, obj->Body()->GetAngle());
-		mainWnd.draw(*obj->Drawable());
 
-		/*float angle = obj->Body()->GetAngle() * 180.f / b2_pi;
-		obj->setRotation(angle);*/
+		// Sync rotation using helper
+		if (obj->Body())
+			ApplyRotation(obj, obj->Body()->GetAngle());
+
+		mainWnd.draw(*obj->Drawable());
 	}
 
 	if (_previewObject)
 	{
 		_previewObject->setSfPosition(meterToPixel(_previewObject->getB2Position()));
+
 		// Rotation for Preview
 		if (_previewObject->Body()) ApplyRotation(_previewObject, _previewObject->Body()->GetAngle());
 		else ApplyRotation(_previewObject, _previewRotation);
@@ -303,15 +437,24 @@ void BoxML::OnBeginContact(b2Contact* contact)
 	b2Fixture* fixtureA = contact->GetFixtureA();
 	b2Fixture* fixtureB = contact->GetFixtureB();
 
-	if (isObject(ObjectCategory::Player, fixtureA)) OnPlayerContact(fixtureA, fixtureB);
-	else if (isObject(ObjectCategory::Player, fixtureB)) OnPlayerContact(fixtureB, fixtureA);
+	if (isObject(ObjectCategory::Player, fixtureA))
+		OnPlayerContact(fixtureA, fixtureB);
+	else if (isObject(ObjectCategory::Player, fixtureB))
+		OnPlayerContact(fixtureB, fixtureA);
 
-	if (isObject(ObjectCategory::Monster, fixtureA)) OnMonsterContact(fixtureA, fixtureB);
-	else if (isObject(ObjectCategory::Monster, fixtureB)) OnMonsterContact(fixtureB, fixtureA);
+	if (isObject(ObjectCategory::Monster, fixtureA))
+		OnMonsterContact(fixtureA, fixtureB);
+	else if (isObject(ObjectCategory::Monster, fixtureB))
+		OnMonsterContact(fixtureB, fixtureA);
 }
 
-void BoxML::OnEndContact(b2Contact* contact) {}
-void BoxML::OnPostSolve(b2Contact* contact, const b2ContactImpulse* impulse) {}
+void BoxML::OnEndContact(b2Contact* contact)
+{
+}
+
+void BoxML::OnPostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
+{
+}
 
 void BoxML::OnPlayerContact(b2Fixture* player, b2Fixture* object)
 {
@@ -331,8 +474,6 @@ void BoxML::OnPlayerContact(b2Fixture* player, b2Fixture* object)
 
 void BoxML::OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCategory)
 {
-	static std::random_device rd;
-	static std::mt19937 gen(rd());
 	std::uniform_real_distribution<float> angleDist(0.0f, 2.0f * PI);
 
 	b2Body* playerBody = player->GetBody();
@@ -340,7 +481,7 @@ void BoxML::OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCa
 	float currentSpeed = currentVelocity.Length();
 	if (currentSpeed < 0.1f) currentSpeed = 5.0f;
 
-	float randomAngle = angleDist(gen);
+	float randomAngle = angleDist(randGenerator);
 	b2Vec2 randomDir(cos(randomAngle), sin(randomAngle));
 
 	// Generalized bounce
@@ -384,6 +525,11 @@ void BoxML::OnMonsterContact(b2Fixture* monster, b2Fixture* object)
 	{
 		monsterObj->setMovePattern(monsterObj->toggleMovementPattern());
 	}
+}
+
+sf::Vector2u BoxML::Resolution(void) const
+{
+	return { _screenWidth, _screenHeight };
 }
 
 b2Vec2 BoxML::pixelToMeter(const sf::Vector2f pixel) const
@@ -459,6 +605,7 @@ void BoxML::HandleKeyPress(sf::Keyboard::Key key)
 
 void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 {
+	// 1. LIMIT CHECK: If we already have this object placed, don't show ghost
 	bool alreadyHasThisType = false;
 	if (_currentPreviewType == ObjectCategory::Wall && _placedWall != nullptr) alreadyHasThisType = true;
 	if (_currentPreviewType == ObjectCategory::SpeedWall && _placedSpeedWall != nullptr) alreadyHasThisType = true;
@@ -475,6 +622,7 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 
 	b2Vec2 mouseMeters = pixelToMeter(pixelMousePos);
 
+	// 2. CREATE GHOST (If needed)
 	if (_previewObject == nullptr)
 	{
 		sf::Vector2f size(50.f, 20.f);
@@ -497,8 +645,8 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 		break;
 		case ObjectCategory::Monster:
 		{
-			bfMonster* m = CreateMonster(b2_dynamicBody, mouseMeters, 15.0f, 0.0f, 0.0f);
-			// Remove from main list for preview
+			bfMonster* m = CreateMonster(b2_dynamicBody, mouseMeters, { 15.0f, 15.0f }, 0.0f, 0.0f);
+			// Remove from main list so it doesn't get standard updates
 			bool removed = false;
 			for (auto it = _objs.begin(); it != _objs.end(); ++it) {
 				if (*it == m) { _objs.erase(it); removed = true; break; }
@@ -509,12 +657,26 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 		break;
 		}
 
+		// --- CRITICAL FIX: DISABLE SENSING ---
 		if (_previewObject && _previewObject->Body()) {
-			_previewObject->Body()->GetFixtureList()->SetSensor(true);
+			// 1. Disable Gravity
 			_previewObject->Body()->SetGravityScale(0.0f);
+
+			// 2. Get the fixture
+			b2Fixture* fixture = _previewObject->Body()->GetFixtureList();
+
+			// 3. Make it a Sensor (No physical collision)
+			fixture->SetSensor(true);
+
+			// 4. SET IDENTITY TO "NOTHING" (Stops OnBeginContact from firing)
+			b2Filter filter;
+			filter.categoryBits = 0; // I am nothing
+			filter.maskBits = 0;     // I touch nothing
+			fixture->SetFilterData(filter);
 		}
 	}
 
+	// 3. UPDATE POSITION & ROTATION
 	if (_previewObject && _previewObject->Body())
 	{
 		_previewObject->Body()->SetTransform(mouseMeters, _previewRotation);
@@ -537,20 +699,20 @@ void BoxML::PlacePreviewObject()
 	{
 	case ObjectCategory::Wall:
 		if (_placedWall == nullptr) {
-			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical);
+			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f, (uint16)ObjectCategory::Wall);
 			_placedWall = createdObj;
 		}
 		break;
 	case ObjectCategory::SpeedWall:
 		if (_placedSpeedWall == nullptr) {
-			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
+			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall);
 			_placedSpeedWall = createdObj;
 		}
 		break;
 	case ObjectCategory::Monster:
 		if (_placedMonster == nullptr) {
-			bfMonster* m = CreateMonster(b2_dynamicBody, pos, 15.0f, 0.01f, 0.3f);
-			m->setMovePattern(Monster_MovePattern::Down);
+			bfMonster* m = CreateMonster(b2_dynamicBody, pos, { 15.0f, 15.0f }, 0.01f, 0.3f);
+			//m->setMovePattern(Monster_MovePattern::Down);
 			m->setFillColor(sf::Color::Red);
 			createdObj = m;
 			_placedMonster = m;
@@ -583,4 +745,14 @@ void BoxML::HandleRightClick(const sf::Vector2f& pixelMousePos)
 			}
 		}
 	}
+}
+
+void BoxML::setInstance(BoxML* world)
+{
+	_instance = world;
+}
+
+BoxML* BoxML::Instance(void)
+{
+	return _instance;
 }

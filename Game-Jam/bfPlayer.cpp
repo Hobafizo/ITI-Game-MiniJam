@@ -1,6 +1,6 @@
 #include "bfPlayer.h"
 
-bfPlayer::bfPlayer(b2Body* body, float radius, unsigned int color) : bfCharacter(body, radius, color)
+bfPlayer::bfPlayer(b2Body* body, const sf::Vector2f size, unsigned int color) : bfCharacter(body, size, color)
 {
 }
 
@@ -11,7 +11,7 @@ bfPlayer::~bfPlayer(void)
 void bfPlayer::updatePosition(float curTime)
 {
 	bfCharacter::updatePosition(curTime);
-	updateAnimation(curTime);
+	//updateAnimation(curTime);
 }
 
 void bfPlayer::updateAnimation(float curTime)

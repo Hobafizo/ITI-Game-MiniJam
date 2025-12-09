@@ -1,4 +1,5 @@
 #include "bfCircle.h"
+#include "def.h"
 
 bfCircle::bfCircle(b2Body* body, float radius, unsigned int color) : _body(body)
 {
@@ -57,9 +58,66 @@ void bfCircle::setSfPosition(const sf::Vector2f pos)
 	_shape.setPosition(pos);
 }
 
+void bfCircle::setPositionFromTopLeft(const sf::Vector2f& topLeft)
+{
+    // 1. Get the current visual radius
+    float r = _shape.getRadius();
+
+    // 2. Account for Scale (just in case the sprite was scaled up/down)
+    sf::Vector2f scale = _shape.getScale();
+    float effectiveRadiusX = r * scale.x;
+    float effectiveRadiusY = r * scale.y;
+
+    // 3. Calculate Center
+    // Center = TopLeft + Radius
+    sf::Vector2f centerPos;
+    centerPos.x = topLeft.x + effectiveRadiusX;
+    centerPos.y = topLeft.y + effectiveRadiusY;
+
+    // 4. Apply using your existing sync function
+    setSfPosition(centerPos);
+}
+
 void bfCircle::setRotation(float angle)
 {
     _body->SetTransform(getB2Position(), angle);
+}
+
+void bfCircle::setScale(const sf::Vector2f scale)
+{
+    // 1. Update Visuals (SFML)
+    _shape.setScale(scale);
+
+    // 2. Update Physics (Box2D)
+    if (_body)
+    {
+        // Calculate the new visual radius based on the X scale 
+        // (Box2D circles cannot be ovals, so we must pick one axis, usually X)
+        float currentRadius = _shape.getRadius();
+        float scaledRadius = currentRadius * scale.x;
+
+        // Convert to Meters
+        float radiusMeters = scaledRadius / PIXELS_PER_UNIT;
+
+        // Iterate through fixtures
+        for (b2Fixture* f = _body->GetFixtureList(); f; f = f->GetNext())
+        {
+            b2Shape* shape = f->GetShape();
+
+            // Check if this fixture is actually a CIRCLE
+            if (shape->GetType() == b2Shape::e_circle)
+            {
+                b2CircleShape* circle = (b2CircleShape*)shape;
+
+                // Update the physics radius directly
+                circle->m_radius = radiusMeters;
+            }
+        }
+
+        // 3. Recalculate Mass
+        _body->ResetMassData();
+        _body->SetAwake(true);
+    }
 }
 
 void bfCircle::setOrigin(const sf::Vector2f position)
