@@ -455,6 +455,7 @@ void BoxML::HandleKeyPress(sf::Keyboard::Key key)
 
 void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 {
+	// 1. LIMIT CHECK: If we already have this object placed, don't show ghost
 	bool alreadyHasThisType = false;
 	if (_currentPreviewType == ObjectCategory::Wall && _placedWall != nullptr) alreadyHasThisType = true;
 	if (_currentPreviewType == ObjectCategory::SpeedWall && _placedSpeedWall != nullptr) alreadyHasThisType = true;
@@ -471,6 +472,7 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 
 	b2Vec2 mouseMeters = pixelToMeter(pixelMousePos);
 
+	// 2. CREATE GHOST (If needed)
 	if (_previewObject == nullptr)
 	{
 		sf::Vector2f size(50.f, 20.f);
@@ -494,7 +496,7 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 		case ObjectCategory::Monster:
 		{
 			bfMonster* m = CreateMonster(b2_dynamicBody, mouseMeters, 15.0f, 0.0f, 0.0f);
-			// Remove from main list for preview
+			// Remove from main list so it doesn't get standard updates
 			bool removed = false;
 			for (auto it = _objs.begin(); it != _objs.end(); ++it) {
 				if (*it == m) { _objs.erase(it); removed = true; break; }
@@ -505,11 +507,18 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 		break;
 		}
 
+		// --- CRITICAL FIX: DISABLE SENSING ---
 		if (_previewObject && _previewObject->Body()) {
-			_previewObject->Body()->GetFixtureList()->SetSensor(true);
+			// 1. Disable Gravity
 			_previewObject->Body()->SetGravityScale(0.0f);
+
+			// 2. Get the fixture
 			b2Fixture* fixture = _previewObject->Body()->GetFixtureList();
+
+			// 3. Make it a Sensor (No physical collision)
 			fixture->SetSensor(true);
+
+			// 4. SET IDENTITY TO "NOTHING" (Stops OnBeginContact from firing)
 			b2Filter filter;
 			filter.categoryBits = 0;
 			filter.maskBits = 0;     
