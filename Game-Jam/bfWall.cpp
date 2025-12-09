@@ -46,6 +46,11 @@ void bfWall::setOutlineColor(const sf::Color color)
 	_shape.setOutlineColor(color);
 }
 
+void bfWall::updatePosition(float curTime)
+{
+
+}
+
 b2Body* bfWall::Body(void) const
 {
 	return _body;

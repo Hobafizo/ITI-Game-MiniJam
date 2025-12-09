@@ -140,7 +140,9 @@
   <ItemGroup>
     <ClCompile Include="BaseMenu.cpp" />
     <ClCompile Include="bfCircle.cpp" />
+    <ClCompile Include="bfMonster.cpp" />
     <ClCompile Include="bfObject.cpp" />
+    <ClCompile Include="bfCharacter.cpp" />
     <ClCompile Include="bfPlayer.cpp" />
     <ClCompile Include="bfRectangle.cpp" />
     <ClCompile Include="bfSpeedWall.cpp" />
@@ -157,12 +159,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bfCircle.h" />
+    <ClInclude Include="bfMonster.h" />
     <ClInclude Include="bfObject.h" />
+    <ClInclude Include="bfCharacter.h" />
     <ClInclude Include="bfPlayer.h" />
     <ClInclude Include="bfRectangle.h" />
     <ClInclude Include="bfSpeedWall.h" />
     <ClInclude Include="bfWall.h" />
     <ClInclude Include="BoxML.h" />
+    <ClInclude Include="CharacterData.h" />
     <ClInclude Include="GameManager.hpp" />
     <ClInclude Include="LevelData.hpp" />
     <ClInclude Include="LevelManager.cpp" />

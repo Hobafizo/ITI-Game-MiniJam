@@ -34,6 +34,9 @@
     <Filter Include="Scripts\Managers">
       <UniqueIdentifier>{b1672de3-4c2e-4217-9b12-a146990c12ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{214f2ee4-02cb-4888-a991-78f50b3f4879}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -53,15 +56,6 @@
     </ClCompile>
     <ClCompile Include="WorldContactListener.cpp">
       <Filter>Engines</Filter>
-    </ClCompile>
-    <ClCompile Include="bfPlayer.cpp">
-      <Filter>Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="bfSpeedWall.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="bfWall.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MainMenu.cpp">
       <Filter>UI</Filter>
@@ -84,6 +78,21 @@
     <ClCompile Include="MenuManager.cpp">
       <Filter>Scripts\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="bfMonster.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="bfCharacter.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="bfPlayer.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="bfSpeedWall.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="bfWall.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxML.h">
@@ -101,29 +110,38 @@
     <ClInclude Include="WorldContactListener.h">
       <Filter>Engines</Filter>
     </ClInclude>
-    <ClInclude Include="bfPlayer.h">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="bfSpeedWall.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bfWall.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelData.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectCategory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="def.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LevelManager.cpp">
       <Filter>Scripts\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="bfMonster.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="bfCharacter.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="bfPlayer.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectCategory.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelData.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="bfSpeedWall.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="bfWall.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterData.h">
+      <Filter>Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

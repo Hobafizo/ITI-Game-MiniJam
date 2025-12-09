@@ -46,6 +46,11 @@ void bfCircle::setOutlineColor(const sf::Color color)
 	_shape.setOutlineColor(color);
 }
 
+void bfCircle::updatePosition(float curTime)
+{
+
+}
+
 b2Body* bfCircle::Body(void) const
 {
 	return _body;

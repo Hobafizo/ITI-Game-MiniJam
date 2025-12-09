@@ -38,6 +38,7 @@ public:
 	class bfCircle* CreateCircle(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0);
 	class bfRectangle* CreateRectangle(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0);
 	class bfPlayer* CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f);
+	class bfMonster* CreateMonster(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f);
 	class bfWall* CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0);
 
 	void Step();
@@ -49,10 +50,14 @@ public:
 
 	void OnPlayerContact(b2Fixture* player, b2Fixture* object);
 	void OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCategory);
+	void OnMonsterContact(b2Fixture* monster, b2Fixture* object);
 
 	b2Vec2 pixelToMeter(const sf::Vector2f pixel) const;
 	sf::Vector2f meterToPixel(const b2Vec2 meter) const;
 	b2Vec2 centerAround(const b2Vec2 size, const sf::Vector2f targetPosition, const sf::Vector2f targetSize) const;
 	bool isObject(const ObjectCategory category, const ObjectCategory object) const;
 	bool isObject(const ObjectCategory category, b2Fixture* fixture) const;
+
+	template<typename T>
+	T* findObjectByBody(b2Body* body);
 };

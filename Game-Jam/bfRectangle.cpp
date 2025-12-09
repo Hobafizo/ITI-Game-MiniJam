@@ -46,6 +46,11 @@ void bfRectangle::setOutlineColor(const sf::Color color)
 	_shape.setOutlineColor(color);
 }
 
+void bfRectangle::updatePosition(float curTime)
+{
+
+}
+
 b2Body* bfRectangle::Body(void) const
 {
 	return _body;
