@@ -9,6 +9,7 @@
 #include "bfKey.h"
 #include "bfDoor.h"
 
+#include<SFML/Audio.hpp>
 #include <iostream>
 #include <random>
 #include <cmath>
@@ -52,6 +53,14 @@ BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned s
 	_placedSpeedWall = nullptr;
 	_placedMonster = nullptr;
 	_previewRotation = 0.0f;
+	_loseBuffer.loadFromFile("Assets/Audio/Creepy Bell Sound Effect - KiiroKarol.wav");
+	_loseSound.setBuffer(_loseBuffer);
+	_winBuffer.loadFromFile("Assets/Audio/Won.wav");
+	_winSound.setBuffer(_winBuffer);
+	_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
+	_levelMusic.setLoop(true);
+	_wallBuffer.loadFromFile("Assets/Audio/Ocean Wave - Sound Effect - RazendeGijs.wav");
+	_wallSound.setBuffer(_wallBuffer);
 }
 
 BoxML::~BoxML(void)
@@ -93,7 +102,7 @@ void BoxML::CreateWorld(void)
 	CreateDoor(b2_staticBody, pixelToMeter({ 500, 800 }), { 202, 298 }, 0.01f, 0.3f);
 }
 
-// --- INPUT HANDLER (Call this from Main) ---
+
 void BoxML::HandleInput(sf::RenderWindow& window, sf::Event& event)
 {
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
@@ -495,6 +504,7 @@ bool BoxML::LoadBackground2(const std::string& imagePath, sf::Color color)
 
 void BoxML::Step(void)
 {
+	_levelMusic.play();
 	if (_frameTimer.getElapsedTime().asMilliseconds() < _frameRefreshRate)
 		return;
 
@@ -522,11 +532,13 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 
 		obj->setSfPosition(meterToPixel(obj->getB2Position()));
 
-		// Sync rotation for player using helper
-		if (_player && _player->Body() == obj->Body())
+		// --- FIX START ---
+		// Apply rotation to ALL objects that have a body, not just the player.
+		if (obj->Body())
 		{
 			ApplyRotation(obj, obj->Body()->GetAngle());
 		}
+	
 
 		mainWnd.draw(*obj->Drawable());
 	}
@@ -544,10 +556,10 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 	mainWnd.display();
 }
 
-// --- COLLISION LOGIC ---
 
 void BoxML::OnBeginContact(b2Contact* contact)
 {
+
 	b2Fixture* fixtureA = contact->GetFixtureA();
 	b2Fixture* fixtureB = contact->GetFixtureB();
 
@@ -588,10 +600,14 @@ void BoxML::OnPlayerContact(b2Fixture* player, b2Fixture* object)
 	if (isObject((ObjectCategory)objCategory,
 		(ObjectCategory)((uint16)ObjectCategory::Wall_Vertical | (uint16)ObjectCategory::Wall_Horizontal | (uint16)ObjectCategory::SpeedWall_Vertical | (uint16)ObjectCategory::SpeedWall_Horizontal)))
 	{
+
+		_wallSound.play();
 		OnPlayerWallContact(player, object, objCategory);
 	}
 	else if (isObject((ObjectCategory)objCategory, ObjectCategory::Monster))
 	{
+		_levelMusic.stop();
+		_loseSound.play();
 		printf("Player hit monster\n");
 	}
 }
@@ -751,7 +767,7 @@ bool BoxML::isObject(const ObjectCategory category, b2Fixture* fixture) const
 	return isObject(category, (ObjectCategory)fixture->GetFilterData().categoryBits);
 }
 
-// --- INTERACTION LOGIC (Keys 1-3, R, Mouse) ---
+
 
 void BoxML::HandleKeyPress(sf::Keyboard::Key key)
 {
@@ -759,9 +775,8 @@ void BoxML::HandleKeyPress(sf::Keyboard::Key key)
 
 	if (key == sf::Keyboard::Num1) { _currentPreviewType = ObjectCategory::Wall; typeChanged = true; }
 	else if (key == sf::Keyboard::Num2) { _currentPreviewType = ObjectCategory::SpeedWall; typeChanged = true; }
-	else if (key == sf::Keyboard::Num3) { _currentPreviewType = ObjectCategory::Monster; typeChanged = true; }
+	//else if (key == sf::Keyboard::Num3) { _currentPreviewType = ObjectCategory::Monster; typeChanged = true; }
 
-	// ROTATION (R Key)
 	if (key == sf::Keyboard::R) {
 		_previewRotation += 90.0f * (PI / 180.0f);
 		if (_previewObject && _previewObject->Body()) {
@@ -781,7 +796,6 @@ void BoxML::HandleKeyPress(sf::Keyboard::Key key)
 
 void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 {
-	// 1. LIMIT CHECK: If we already have this object placed, don't show ghost
 	bool alreadyHasThisType = false;
 	if (_currentPreviewType == ObjectCategory::Wall && _placedWall != nullptr) alreadyHasThisType = true;
 	if (_currentPreviewType == ObjectCategory::SpeedWall && _placedSpeedWall != nullptr) alreadyHasThisType = true;
@@ -798,61 +812,59 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 
 	b2Vec2 mouseMeters = pixelToMeter(pixelMousePos);
 
-	// 2. CREATE GHOST (If needed)
 	if (_previewObject == nullptr)
 	{
-		sf::Vector2f size(50.f, 20.f);
+		// FIX: Increased size from 50x20 to 250x60 so it's visible
+		sf::Vector2f size(250.f, 60.f);
 
 		switch (_currentPreviewType)
 		{
 		case ObjectCategory::Wall:
 		{
-			bfWall* w = CreateWall(b2_staticBody, mouseMeters, size, 0.0f, 0.0f, 0, 0, false);
-			w->setFillColor(sf::Color(0, 255, 0, 150));
+			// Load Horizontal Wall Sprite
+			bfWall* w = CreateWall(b2_staticBody, mouseMeters, size, 0.0f, 0.0f,
+				(uint16)ObjectCategory::Wall_Horizontal, 0, false, true, false);
+
+			// REMOVED: w->setColor(...) -> Now shows full opaque sprite
 			_previewObject = w;
 		}
 		break;
 		case ObjectCategory::SpeedWall:
 		{
-			bfWall* w = CreateWall(b2_staticBody, mouseMeters, size, 0.0f, 0.0f, 0, 0, false);
-			w->setFillColor(sf::Color(0, 0, 255, 150));
+			// Load Horizontal Speed Wall Sprite
+			bfWall* w = CreateWall(b2_staticBody, mouseMeters, size, 0.0f, 0.0f,
+				(uint16)ObjectCategory::SpeedWall_Horizontal, 0, false, true, false);
+
 			_previewObject = w;
 		}
 		break;
 		case ObjectCategory::Monster:
 		{
-			bfMonster* m = CreateMonster(b2_dynamicBody, mouseMeters, { 15.0f, 15.0f }, 0.0f, 0.0f);
+			// FIX: Increased monster size from 15x15 to 80x80
+			bfMonster* m = CreateMonster(b2_dynamicBody, mouseMeters, { 80.0f, 80.0f }, 0.0f, 0.0f, 1);
+
 			// Remove from main list so it doesn't get standard updates
 			bool removed = false;
 			for (auto it = _objs.begin(); it != _objs.end(); ++it) {
 				if (*it == m) { _objs.erase(it); removed = true; break; }
 			}
-			m->setFillColor(sf::Color(255, 0, 0, 150));
+
 			_previewObject = m;
 		}
 		break;
 		}
 
-		// --- CRITICAL FIX: DISABLE SENSING ---
 		if (_previewObject && _previewObject->Body()) {
-			// 1. Disable Gravity
 			_previewObject->Body()->SetGravityScale(0.0f);
-
-			// 2. Get the fixture
 			b2Fixture* fixture = _previewObject->Body()->GetFixtureList();
-
-			// 3. Make it a Sensor (No physical collision)
 			fixture->SetSensor(true);
-
-			// 4. SET IDENTITY TO "NOTHING" (Stops OnBeginContact from firing)
 			b2Filter filter;
-			filter.categoryBits = 0; // I am nothing
-			filter.maskBits = 0;     // I touch nothing
+			filter.categoryBits = 0;
+			filter.maskBits = 0;
 			fixture->SetFilterData(filter);
 		}
 	}
 
-	// 3. UPDATE POSITION & ROTATION
 	if (_previewObject && _previewObject->Body())
 	{
 		_previewObject->Body()->SetTransform(mouseMeters, _previewRotation);
@@ -867,7 +879,9 @@ void BoxML::PlacePreviewObject()
 {
 	if (!_previewObject) return;
 	b2Vec2 pos = _previewObject->getB2Position();
-	sf::Vector2f size(50.f, 20.f);
+
+	// FIX: Make sure the placed object uses the same larger size
+	sf::Vector2f size(250.f, 60.f);
 
 	bfObject* createdObj = nullptr;
 
@@ -875,21 +889,22 @@ void BoxML::PlacePreviewObject()
 	{
 	case ObjectCategory::Wall:
 		if (_placedWall == nullptr) {
-			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f, (uint16)ObjectCategory::Wall);
+			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f,
+				(uint16)ObjectCategory::Wall_Horizontal, 0, true, true, false);
 			_placedWall = createdObj;
 		}
 		break;
 	case ObjectCategory::SpeedWall:
 		if (_placedSpeedWall == nullptr) {
-			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall);
+			createdObj = CreateWall(b2_staticBody, pos, size, 0.01f, 0.3f,
+				(uint16)ObjectCategory::SpeedWall_Horizontal, 0, true, true, false);
 			_placedSpeedWall = createdObj;
 		}
 		break;
 	case ObjectCategory::Monster:
 		if (_placedMonster == nullptr) {
-			bfMonster* m = CreateMonster(b2_dynamicBody, pos, { 15.0f, 15.0f }, 0.01f, 0.3f);
-			//m->setMovePattern(Monster_MovePattern::Down);
-			m->setFillColor(sf::Color::Red);
+			// FIX: Use 80x80 size for the placed monster too
+			bfMonster* m = CreateMonster(b2_dynamicBody, pos, { 80.0f, 80.0f }, 0.01f, 0.3f, 1);
 			createdObj = m;
 			_placedMonster = m;
 		}
@@ -900,7 +915,6 @@ void BoxML::PlacePreviewObject()
 		createdObj->Body()->SetTransform(pos, _previewRotation);
 	}
 }
-
 void BoxML::HandleRightClick(const sf::Vector2f& pixelMousePos)
 {
 	b2Vec2 mouseMeters = pixelToMeter(pixelMousePos);

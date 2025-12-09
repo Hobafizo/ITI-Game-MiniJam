@@ -1,4 +1,5 @@
 #include "BaseMenu.hpp"
+#include<SFML/Audio.hpp>
 
 // "Assets/UI/Menus/LevelMenu/"
 //"Assets/UI/Menus/MainMenu/"
@@ -11,6 +12,7 @@ private:
     sf::Texture exitTexture;
     sf::Sprite exitSprite;
     sf::Vector2u windowSize = sf::Vector2u(1920, 1080);
+
 
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MenusUI1/withoutButtons.jpg")) return false;

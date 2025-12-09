@@ -1,22 +1,33 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include <memory>
 #include "BaseMenu.hpp"
 #include "MainMenu.hpp"
 #include "LevelMenu.hpp"
+
 class MenuManager {
 private:
     std::unique_ptr<BaseMenu> currentMenu;
+    sf::Music _mainMusic;
+    sf::Music _levelMusic;
+    sf::SoundBuffer ck;
+    sf::Sound ck_s;
 
 public:
-    // This must be public for main loop control
     GameState currentState = MAIN_MENU;
 
-    
-        MenuManager() {
-        // Since Menu is defined above, we can instantiate it here
+    MenuManager() {
+        _mainMusic.openFromFile("Assets/Audio/John Powell This Is Berk (Piano Arrangement by Felipe Queiroga) - Felipe Queiroga.wav");
+
+        ck.loadFromFile("Assets/Audio/Water Plop - Sound Effect (HD) - Gaming Sound FX.wav");
+        ck_s.setBuffer(ck);
+
         currentMenu = std::make_unique<Menu>();
         std::cout << "MenuManager initialized with Main Menu." << std::endl;
+
+        _mainMusic.setLoop(true);
+        _mainMusic.play();
     }
 
     void draw(sf::RenderWindow& window) {
@@ -30,6 +41,10 @@ public:
 
         MenuAction action = currentMenu->checkClick(window);
 
+        if (action != NONE) {
+            ck_s.play();
+        }
+
         switch (action) {
         case QUIT:
             currentState = EXIT;
@@ -42,14 +57,18 @@ public:
             break;
 
         case GOTO_MAIN_MENU:
-            currentMenu = std::make_unique<Menu>(); // New Main Menu instance
+            currentMenu = std::make_unique<Menu>();
             currentState = MAIN_MENU;
             std::cout << "--- MenuManager switched state to Main Menu ---" << std::endl;
             break;
 
         case START_GAME:
-            currentMenu.reset(); // Destroy the menu, resources are freed
+            currentMenu.reset();
             currentState = ACTIVE_GAME;
+            _mainMusic.stop();
+            _levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
+            _levelMusic.setLoop(true);
+            _levelMusic.play();
             std::cout << "--- MenuManager switched state to ACTIVE GAME ---" << std::endl;
             break;
 
@@ -58,7 +77,6 @@ public:
         }
     }
 
-    // Helper to change state directly (used by main loop for pause)
     void setState(GameState newState) {
         currentState = newState;
     }
