@@ -5,8 +5,11 @@
 #include "MenuManager.hpp"
 #include "LevelManager.hpp"
 #include "Level1.hpp"
-#define WINDOW_WIDTH      1024
-#define WINDOW_HEIGHT     768
+#include "Level2.hpp"
+#include "Level3.hpp"
+#include "Hud.hpp"
+#define WINDOW_WIDTH      1920
+#define WINDOW_HEIGHT     1080
 #define WINDOW_FRAME_RATE 60
 
 #define PIXELS_PER_UNIT   10
@@ -23,14 +26,16 @@ int main()
 	boxWorld.CreateWorld();
 	boxWorld.LoadPositions();
 
-    LevelManager levelMgr(Level1Data, boxWorld);
-    //levelMgr.loadLevel(); // Load level 1
+    LevelManager levelMgr(boxWorld);
+    //levelMgr.loadLevel(Level3Data); // Load level 
+
     bool shouldCloseWindow = false;
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML works!");
     window.setFramerateLimit(WINDOW_FRAME_RATE);
     InputHandler *inputHandler = new InputHandler(window);
     MenuManager menuManager;
+    Hud hud;
     while (window.isOpen())
     {
         sf::Event event;
@@ -65,8 +70,10 @@ int main()
             //}
 
             if (event.type == sf::Event::KeyPressed) {
-                if (menuManager.currentState == ACTIVE_GAME)
+                if (menuManager.currentState == ACTIVE_GAME) {
                     boxWorld.HandleKeyPress(event.key.code);
+                    //levelMgr.loadLevel(Level1Data);
+                }
             }
 
             // 2. Pass Left Click to place the wall
@@ -88,6 +95,8 @@ int main()
 
         if (menuManager.currentState == ACTIVE_GAME)
         {
+            //hud.draw(window)
+;
             boxWorld.UpdatePreviewObject(worldPos);
             boxWorld.Step();
             boxWorld.Render(window);

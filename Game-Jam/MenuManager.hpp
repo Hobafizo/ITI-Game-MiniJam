@@ -12,7 +12,8 @@ public:
     // This must be public for main loop control
     GameState currentState = MAIN_MENU;
 
-    MenuManager() {
+    
+        MenuManager() {
         // Since Menu is defined above, we can instantiate it here
         currentMenu = std::make_unique<Menu>();
         std::cout << "MenuManager initialized with Main Menu." << std::endl;
