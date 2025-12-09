@@ -1,4 +1,5 @@
 #include "BaseMenu.hpp"
+#include<SFML/Audio.hpp>
 
 // "Assets/UI/Menus/LevelMenu/"
 //"Assets/UI/Menus/MainMenu/"
@@ -12,10 +13,12 @@ private:
     sf::Sprite exitSprite;
     sf::Vector2u windowSize = sf::Vector2u(1024, 768);
 
+
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MainMenu/MenuBackground.jpeg")) return false;
         if (!startTexture.loadFromFile("Assets/UI/Menus/MainMenu/Start.jpeg")) return false;
         if (!exitTexture.loadFromFile("Assets/UI/Menus/MainMenu/Exit.jpg")) return false;
+
         return true;
     }
 

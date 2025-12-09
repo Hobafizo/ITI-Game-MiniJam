@@ -57,26 +57,8 @@
     <ClCompile Include="WorldContactListener.cpp">
       <Filter>Engines</Filter>
     </ClCompile>
-    <ClCompile Include="MainMenu.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelMenu.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
     <ClCompile Include="InputHandler.hpp">
       <Filter>Scripts\InputHandler</Filter>
-    </ClCompile>
-    <ClCompile Include="VisualHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MenuLoader.cpp">
-      <Filter>Scripts\MenuLoader</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseMenu.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="MenuManager.cpp">
-      <Filter>Scripts\Managers</Filter>
     </ClCompile>
     <ClCompile Include="bfMonster.cpp">
       <Filter>Objects</Filter>
@@ -92,6 +74,24 @@
     </ClCompile>
     <ClCompile Include="bfWall.cpp">
       <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuLoader.hpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VisualHandler.hpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -112,9 +112,6 @@
     </ClInclude>
     <ClInclude Include="def.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelManager.cpp">
-      <Filter>Scripts\Managers</Filter>
     </ClInclude>
     <ClInclude Include="bfMonster.h">
       <Filter>Objects</Filter>
@@ -142,6 +139,12 @@
     </ClInclude>
     <ClInclude Include="CharacterData.h">
       <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Level1.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelManager.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

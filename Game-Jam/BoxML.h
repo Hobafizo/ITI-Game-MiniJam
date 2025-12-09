@@ -4,6 +4,7 @@
 #include "ObjectCategory.h"
 #include <list>
 #include <SFML/Graphics.hpp> // Required for sf::RenderWindow and sf::Event
+#include<SFML/Audio.hpp>
 
 class BoxML
 {
@@ -22,12 +23,21 @@ private:
 
 	class bfPlayer* _player;
 
-	// --- PREVIEW & SELECTION VARIABLES ---
+	sf::SoundBuffer _loseBuffer;
+	sf::SoundBuffer _winBuffer;
+
+	sf::Sound _loseSound;
+	sf::Sound _winSound;
+	sf::Music _levelMusic;
+	bool _hasLost;
+
+
+
+
 	bfObject* _previewObject = nullptr;
 	ObjectCategory _currentPreviewType = ObjectCategory::Wall;
 	float _previewRotation;
 
-	// --- TRACKING SPECIFIC OBJECTS (Pointers) ---
 	bfObject* _placedWall = nullptr;
 	bfObject* _placedSpeedWall = nullptr;
 	bfObject* _placedMonster = nullptr;
@@ -39,11 +49,9 @@ public:
 	void CreateWorld();
 	void LoadPositions();
 
-	// --- NEW: THE MISSING FUNCTION DECLARATIONS ---
-	// This makes "HandleInput" visible to main.cpp
 	void HandleInput(sf::RenderWindow& window, sf::Event& event);
 
-	// These internal helpers are now declared so BoxML.cpp can find them
+
 	void HandleKeyPress(sf::Keyboard::Key key);
 	void UpdatePreviewObject(const sf::Vector2f& pixelMousePos);
 	void PlacePreviewObject();
@@ -55,18 +63,17 @@ private:
 	void ClearObjects();
 
 public:
-	// Factory Functions
+
 	class bfCircle* CreateCircle(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0);
 	class bfRectangle* CreateRectangle(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool addToWorld = true);
 	class bfPlayer* CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f);
 	class bfMonster* CreateMonster(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f);
 	class bfWall* CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool addToWorld = true);
 
-	// Simulation & Rendering
 	void Step();
 	void Render(sf::RenderWindow& mainWnd);
 
-	// Physics Callbacks
+
 	void OnBeginContact(b2Contact* contact);
 	void OnEndContact(b2Contact* contact);
 	void OnPostSolve(b2Contact* contact, const b2ContactImpulse* impulse);
@@ -75,7 +82,7 @@ public:
 	void OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCategory);
 	void OnMonsterContact(b2Fixture* monster, b2Fixture* object);
 
-	// Utilities
+
 	b2Vec2 pixelToMeter(const sf::Vector2f pixel) const;
 	sf::Vector2f meterToPixel(const b2Vec2 meter) const;
 	b2Vec2 centerAround(const b2Vec2 size, const sf::Vector2f targetPosition, const sf::Vector2f targetSize) const;
