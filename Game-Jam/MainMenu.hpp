@@ -1,25 +1,27 @@
-#include "BaseMenu.cpp"
+#include "BaseMenu.hpp"
 
-class LevelMenu : public BaseMenu {
+// "Assets/UI/Menus/LevelMenu/"
+//"Assets/UI/Menus/MainMenu/"
+class Menu : public BaseMenu {
 private:
     sf::Texture backgroundTexture;
     sf::Sprite backgroundSprite;
-    sf::Texture level1Texture;
-    sf::Sprite level1Sprite;
-    sf::Texture exitTexture; // Reused for Back button
+    sf::Texture startTexture;
+    sf::Sprite startSprite;
+    sf::Texture exitTexture;
     sf::Sprite exitSprite;
     sf::Vector2u windowSize = sf::Vector2u(1024, 768);
 
     bool loadAssets() {
-        if (!backgroundTexture.loadFromFile("Assets/UI/Menus/LevelMenu/LevelMenuBackground.jpeg")) return false;
-        if (!level1Texture.loadFromFile("Assets/UI/Menus/LevelMenu/Level1.jpeg")) return false;
-        if (!exitTexture.loadFromFile("Assets/UI/Menus/LevelMenu/Exit.jpg")) return false;
+        if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MainMenu/MenuBackground.jpeg")) return false;
+        if (!startTexture.loadFromFile("Assets/UI/Menus/MainMenu/Start.jpeg")) return false;
+        if (!exitTexture.loadFromFile("Assets/UI/Menus/MainMenu/Exit.jpg")) return false;
         return true;
     }
 
     void setupSprites() {
         backgroundSprite.setTexture(backgroundTexture);
-        level1Sprite.setTexture(level1Texture);
+        startSprite.setTexture(startTexture);
         exitSprite.setTexture(exitTexture);
 
         float scaleX = (float)windowSize.x / backgroundTexture.getSize().x;
@@ -27,12 +29,12 @@ private:
         backgroundSprite.setScale(scaleX, scaleY);
         backgroundSprite.setPosition(0.0f, 0.0f);
 
-        float desiredButtonWidth = 200.f;
+        float desiredButtonWidth = 300.0f;
         float centerX = (windowSize.x - desiredButtonWidth) / 2.0f;
 
-        float startScale = desiredButtonWidth / level1Texture.getSize().x;
-        level1Sprite.setScale(startScale, startScale);
-        level1Sprite.setPosition(centerX, 200.0f);
+        float startScale = desiredButtonWidth / startTexture.getSize().x;
+        startSprite.setScale(startScale, startScale);
+        startSprite.setPosition(centerX, 200.0f);
 
         float exitScale = desiredButtonWidth / exitTexture.getSize().x;
         exitSprite.setScale(exitScale, exitScale);
@@ -40,9 +42,9 @@ private:
     }
 
 public:
-    LevelMenu() {
+    Menu() {
         if (!loadAssets()) {
-            std::cerr << "ERROR: Failed to load LevelMenu assets." << std::endl;
+            std::cerr << "ERROR: Failed to load MainMenu assets." << std::endl;
         }
         else {
             setupSprites();
@@ -52,21 +54,20 @@ public:
     void draw(sf::RenderWindow& window) override {
         window.draw(backgroundSprite);
         window.draw(exitSprite);
-        window.draw(level1Sprite);
+        window.draw(startSprite);
     }
 
     MenuAction checkClick(sf::RenderWindow& window) override {
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
         sf::Vector2f worldMousePos = window.mapPixelToCoords(mousePos);
 
-        if (level1Sprite.getGlobalBounds().contains(worldMousePos)) {
-            std::cout << "Level Menu -> Level 1 button clicked. Start Game." << std::endl;
-            return START_GAME;
+        if (startSprite.getGlobalBounds().contains(worldMousePos)) {
+            std::cout << "Main Menu -> Start button clicked." << std::endl;
+            return GOTO_LEVEL_MENU;
         }
-
         if (exitSprite.getGlobalBounds().contains(worldMousePos)) {
-            std::cout << "Level Menu -> Exit button clicked. Go to Main Menu." << std::endl;
-            return GOTO_MAIN_MENU;
+            std::cout << "Main Menu -> Exit button clicked." << std::endl;
+            return QUIT;
         }
         return NONE;
     }
