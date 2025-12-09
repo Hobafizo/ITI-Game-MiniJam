@@ -64,10 +64,18 @@ int main()
             //    // Handle pause menu clicks/input if a PauseMenu is displayed
             //}
 
+            if (event.type == sf::Event::KeyPressed) {
+                if (menuManager.currentState == ACTIVE_GAME)
+                    boxWorld.HandleKeyPress(event.key.code);
+            }
+
             // 2. Pass Left Click to place the wall
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    boxWorld.PlacePreviewObject();
+                    if (menuManager.currentState != ACTIVE_GAME)
+                        menuManager.handleClicks(window);
+                    else
+                        boxWorld.PlacePreviewObject();
                 }
             }
             else if (event.mouseButton.button == sf::Mouse::Right) {
