@@ -16,6 +16,11 @@ void bfRectangle::setSfPosition(const sf::Vector2f pos)
 	_shape.setPosition(pos);
 }
 
+void bfRectangle::setRotation(float angle)
+{
+	_body->SetTransform(getB2Position(), angle);
+}
+
 void bfRectangle::setOrigin(const sf::Vector2f position)
 {
 	_shape.setOrigin(position);

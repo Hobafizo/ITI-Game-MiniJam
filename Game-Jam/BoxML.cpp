@@ -37,7 +37,8 @@ void BoxML::CreateWorld(void)
 	if (_player)
 		RemoveObject(_player);
 
-	_player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 10, 0.01f, 0.3f);
+	_player = CreatePlayer(b2_dynamicBody, b2Vec2{ 10, 10 }, 50, 0.01f, 0.3f);
+	_player->loadSpriteSheet("Assets/characters/frog.png", 50, 50, 0, 0, 3, 4, _timer.getElapsedTime().asSeconds(), 0.3);
 	_player->Body()->SetLinearVelocity({ PLAYER_SPEED_X, PLAYER_SPEED_Y });
 
 	/*_player->Body()->ApplyForceToCenter({5, 2}, true);
@@ -297,6 +298,9 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 
 		obj->setSfPosition(meterToPixel(obj->getB2Position()));
 		mainWnd.draw(*obj->Drawable());
+
+		float angle = obj->Body()->GetAngle() * 180.f / b2_pi;
+		obj->setRotation(angle);
 	}
 
 	mainWnd.display();
