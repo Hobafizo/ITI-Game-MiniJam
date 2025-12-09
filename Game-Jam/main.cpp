@@ -1,4 +1,5 @@
 #include "def.h"
+#include "Hud.hpp"
 #include "BoxML.h"
 #include "bfCircle.h"
 #include "bfRectangle.h"
@@ -23,13 +24,15 @@ int main()
 	boxWorld.CreateWorld();
 	boxWorld.LoadPositions();
 
-    LevelManager levelMgr(Level1Data, boxWorld);
-    //levelMgr.loadLevel(); // Load level 1
+    LevelManager levelMgr(boxWorld);
+    //levelMgr.loadLevel(Level3Data); // Load level 
+
     bool shouldCloseWindow = false;
 
     InputHandler *inputHandler = new InputHandler(window);
     MenuManager menuManager;
 
+    Hud hud;
     while (window.isOpen())
     {
         sf::Event event;
@@ -59,8 +62,10 @@ int main()
             }
 
             if (event.type == sf::Event::KeyPressed) {
-                if (menuManager.currentState == ACTIVE_GAME)
+                if (menuManager.currentState == ACTIVE_GAME) {
                     boxWorld.HandleKeyPress(event.key.code);
+                    //levelMgr.loadLevel(Level1Data);
+                }
             }
 
             // 2. Pass Left Click to place the wall
@@ -82,6 +87,8 @@ int main()
 
         if (menuManager.currentState == ACTIVE_GAME)
         {
+            //hud.draw(window)
+;
             boxWorld.UpdatePreviewObject(worldPos);
             boxWorld.Step();
             boxWorld.Render(window);

@@ -1,8 +1,9 @@
-#include "BaseMenu.hpp"
+#pragma once
 
+#include "BaseMenu.hpp"
 // "Assets/UI/Menus/LevelMenu/"
 //"Assets/UI/Menus/MainMenu/"
-class Menu : public BaseMenu {
+class Hud {
 private:
     sf::Texture backgroundTexture;
     sf::Sprite backgroundSprite;
@@ -13,9 +14,9 @@ private:
     sf::Vector2u windowSize = sf::Vector2u(1920, 1080);
 
     bool loadAssets() {
-        if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MenusUI1/withoutButtons.jpg")) return false;
-        if (!startTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Start.png")) return false;
-        if (!exitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/exit.png")) return false;
+        if (!backgroundTexture.loadFromFile("Assets/UI/HudUI2/hud.png")) { cout << "did load hud?";return false; };
+        /*if (!startTexture.loadFromFile("Assets/UI/HudUI2/withoutButtons.jpg")) return false;
+        if (!exitTexture.loadFromFile("Assets/UI/HudUI2/withoutButtons.jpg")) return false;*/
         return true;
     }
 
@@ -26,10 +27,10 @@ private:
 
         float scaleX = (float)windowSize.x / backgroundTexture.getSize().x;
         float scaleY = (float)windowSize.y / backgroundTexture.getSize().y;
-        backgroundSprite.setScale(scaleX, scaleY);
+        backgroundSprite.setScale(scaleX-50.f, scaleY-50.f);
         backgroundSprite.setPosition(0.0f, 0.0f);
 
-        float desiredButtonWidth = 1000.0f;
+       /* float desiredButtonWidth = 1000.0f;
         float centerX = (windowSize.x - desiredButtonWidth) / 2.0f;
 
         float startScale = desiredButtonWidth / startTexture.getSize().x;
@@ -38,37 +39,23 @@ private:
 
         float exitScale = desiredButtonWidth / exitTexture.getSize().x;
         exitSprite.setScale(exitScale, exitScale);
-        exitSprite.setPosition(centerX, 400.0f);
+        exitSprite.setPosition(centerX, 400.0f);*/
     }
 
 public:
-    Menu() {
+    Hud() {
         if (!loadAssets()) {
-            std::cerr << "ERROR: Failed to load MainMenu assets." << std::endl;
+            std::cerr << "ERROR: Failed to load Hud assets." << std::endl;
         }
         else {
             setupSprites();
         }
     }
 
-    void draw(sf::RenderWindow& window) override {
+    void draw(sf::RenderWindow& window){
         window.draw(backgroundSprite);
         window.draw(exitSprite);
         window.draw(startSprite);
     }
 
-    MenuAction checkClick(sf::RenderWindow& window) override {
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-        sf::Vector2f worldMousePos = window.mapPixelToCoords(mousePos);
-
-        if (startSprite.getGlobalBounds().contains(worldMousePos)) {
-            std::cout << "Main Menu -> Start button clicked." << std::endl;
-            return GOTO_LEVEL_MENU;
-        }
-        if (exitSprite.getGlobalBounds().contains(worldMousePos)) {
-            std::cout << "Main Menu -> Exit button clicked." << std::endl;
-            return QUIT;
-        }
-        return NONE;
-    }
 };

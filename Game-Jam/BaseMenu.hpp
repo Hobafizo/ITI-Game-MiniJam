@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <memory> // Required for std::unique_ptr
-
+using namespace std;
 enum MenuAction {
     NONE,
     GOTO_LEVEL_MENU,
@@ -10,7 +10,7 @@ enum MenuAction {
     START_GAME,
     QUIT
 };
-
+const string path = "Assets/UI/Menus/MenusUI1";
 // Define the authoritative states for the entire application
 enum GameState {
     MAIN_MENU,

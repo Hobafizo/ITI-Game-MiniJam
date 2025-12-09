@@ -2,7 +2,10 @@
 #include "LevelData.hpp"
 #include "BoxML.h"
 #include <vector>
-
+//1920.f-1366.f
+//1080.f-768.f
+float shiftFactorX=0;
+float shiftFactorY=0;
 class LevelManager {
     LevelData levelData;
     BoxML& boxWorld;
@@ -13,8 +16,8 @@ class LevelManager {
     bfPlayer* spawnedPlayer = nullptr;
 
 public:
-    LevelManager(const LevelData& lvl, BoxML& bw)
-        : levelData(lvl),
+    LevelManager( BoxML& bw)
+        :
         boxWorld(bw)
     {}
 
@@ -22,22 +25,27 @@ public:
         unloadLevel();
     }
 
-    void loadLevel() {
+    void loadLevel(const LevelData& lvl) {
+        levelData = lvl;
+        cout << "new level loaded";
         if (_levelLoaded) return;
 
-        // Player
+        // Player remember to uncomment, having an issue currently
         {
-            b2Vec2 boxCoors = boxWorld.pixelToMeter(levelData.player.spawnPos);
+            /*Vector2f shiftedPos = Vector2f(levelData.player.spawnPos.x+shiftFactorX, levelData.player.spawnPos.y + shiftFactorY);
+            b2Vec2 boxCoors = boxWorld.pixelToMeter(shiftedPos);
             b2Vec2 p = boxCoors;
             spawnedPlayer = boxWorld.CreatePlayer(b2_dynamicBody, p, { 1.f, 1.f });
             if (spawnedPlayer)
                 spawnedObjects.push_back(spawnedPlayer);
-                cout << "Player spawned at: (" << p.x << ", " << p.y << ")\n";
+                cout << "Player spawned at: (" << p.x << ", " << p.y << ")\n";*/
         }
 
         // Walls
         for (auto& w : levelData.walls) {
-            b2Vec2 boxCoors = boxWorld.pixelToMeter(w.spawnPos);
+            Vector2f shiftedPos = Vector2f(w.spawnPos.x + shiftFactorX, w.spawnPos.y + shiftFactorY);
+
+            b2Vec2 boxCoors = boxWorld.pixelToMeter(shiftedPos);
             b2Vec2 pos = boxCoors;
             bfWall* wall = boxWorld.CreateWall(b2_staticBody, pos, w.size);
             if (wall)
@@ -46,7 +54,9 @@ public:
 
         // Enemies
         for (auto& e : levelData.enemies) {
-            b2Vec2 boxCoors = boxWorld.pixelToMeter(e.spawnPos);
+            Vector2f shiftedPos = Vector2f(e.spawnPos.x + shiftFactorX, e.spawnPos.y + shiftFactorY);
+
+            b2Vec2 boxCoors = boxWorld.pixelToMeter(shiftedPos);
             b2Vec2 pos = boxCoors;
             bfMonster* mon = boxWorld.CreateMonster(b2_dynamicBody, pos, { e.radius, e.radius });
             if (mon)
