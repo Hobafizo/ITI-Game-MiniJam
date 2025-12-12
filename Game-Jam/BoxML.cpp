@@ -104,6 +104,8 @@ void BoxML::CreateWorld(void)
 	LoadBackground2("Assets/Enviroment/Water_Filter.png", sf::Color(255, 255, 255, 150));
 	LoadBackground("Assets/background/sea.png");
 	_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
+
+	_levelMusic.play();
 	_levelMusic.setLoop(true);
 	if (_player)
 		RemoveObject(_player);
