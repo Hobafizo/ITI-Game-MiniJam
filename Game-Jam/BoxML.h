@@ -4,6 +4,7 @@
 #include "ObjectCategory.h"
 #include <list>
 #include <SFML/Graphics.hpp> // Required for sf::RenderWindow and sf::Event
+#include<SFML/Audio.hpp>
 
 class BoxML
 {
@@ -18,19 +19,29 @@ private:
 	b2Vec2 _gravity;
 	b2World _world;
 	WorldContactListener _contactListener;
+	std::list<b2Body*> _objsToDelete;
 	std::list<bfObject*> _objs;
 
-	sf::Texture _backgroundTexture;
-	sf::Sprite _background;
+	bool _win = false;
+	sf::Texture _backgroundTexture, _backgroundTexture2, _winTexture;
+	sf::Sprite _background, _background2, _winBackground;
 
 	class bfPlayer* _player;
 
-	// --- PREVIEW & SELECTION VARIABLES ---
+	sf::SoundBuffer _loseBuffer;
+	sf::SoundBuffer _winBuffer;
+
+	sf::Sound _loseSound;
+	sf::Sound _winSound;
+	sf::Music _levelMusic;
+	sf::SoundBuffer _wallBuffer;
+	sf::Sound _wallSound;
+	bool _hasLost;
+
 	bfObject* _previewObject = nullptr;
 	ObjectCategory _currentPreviewType = ObjectCategory::Wall;
 	float _previewRotation;
 
-	// --- TRACKING SPECIFIC OBJECTS (Pointers) ---
 	bfObject* _placedWall = nullptr;
 	bfObject* _placedSpeedWall = nullptr;
 	bfObject* _placedMonster = nullptr;
@@ -44,11 +55,9 @@ public:
 	void CreateWorld();
 	void LoadPositions();
 
-	// --- NEW: THE MISSING FUNCTION DECLARATIONS ---
-	// This makes "HandleInput" visible to main.cpp
 	void HandleInput(sf::RenderWindow& window, sf::Event& event);
 
-	// These internal helpers are now declared so BoxML.cpp can find them
+
 	void HandleKeyPress(sf::Keyboard::Key key);
 	void UpdatePreviewObject(const sf::Vector2f& pixelMousePos);
 	void PlacePreviewObject();
@@ -58,22 +67,26 @@ private:
 	void AddObject(bfObject* obj);
 	bool RemoveObject(bfObject* obj);
 	void ClearObjects();
+	void DispatchDestroyBody();
 
 public:
-	// Factory Functions
+
 	class bfCircle* CreateCircle(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0);
 	class bfRectangle* CreateRectangle(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool addToWorld = true);
 	class bfPlayer* CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, bool loadSprite = true);
 	class bfMonster* CreateMonster(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, unsigned char spirteIndex = 0);
 	class bfWall* CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool addToWorld = true, bool loadSprite = true, bool invisible = false);
+	class bfKey* CreateKey(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, bool loadSprite = true);
+	class bfDoor* CreateDoor(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, bool loadSprite = true);
 
-	bool LoadBackground(const std::string& imagePath);
+	bool LoadBackground(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
+	bool LoadBackground2(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
+	bool LoadWinBackground(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
 
-	// Simulation & Rendering
 	void Step();
 	void Render(sf::RenderWindow& mainWnd);
 
-	// Physics Callbacks
+
 	void OnBeginContact(b2Contact* contact);
 	void OnEndContact(b2Contact* contact);
 	void OnPostSolve(b2Contact* contact, const b2ContactImpulse* impulse);
@@ -81,6 +94,8 @@ public:
 	void OnPlayerContact(b2Fixture* player, b2Fixture* object);
 	void OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCategory);
 	void OnMonsterContact(b2Fixture* monster, b2Fixture* object);
+	void OnKeyContact(b2Fixture* key, b2Fixture* object);
+	void OnDoorContact(b2Fixture* door, b2Fixture* object);
 
 	// Utilities
 	sf::Vector2u Resolution() const;
@@ -92,6 +107,9 @@ public:
 
 	template<typename T>
 	T* findObjectByBody(b2Body* body);
+
+	template<typename T>
+	T* findObjectByBody(const ObjectCategory category);
 
 public:
 	static void setInstance(BoxML* world);

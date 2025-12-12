@@ -59,15 +59,14 @@ public:
     }
 
     MenuAction checkClick(sf::RenderWindow& window) override {
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-        sf::Vector2f worldMousePos = window.mapPixelToCoords(mousePos);
+        sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(window);
 
-        if (level1Sprite.getGlobalBounds().contains(worldMousePos)) {
+        if (level1Sprite.getGlobalBounds().contains(mousePos)) {
             std::cout << "Level Menu -> Level 1 button clicked. Start Game." << std::endl;
             return START_GAME;
         }
 
-        if (exitSprite.getGlobalBounds().contains(worldMousePos)) {
+        if (exitSprite.getGlobalBounds().contains(mousePos)) {
             std::cout << "Level Menu -> Exit button clicked. Go to Main Menu." << std::endl;
             return GOTO_MAIN_MENU;
         }

@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include <memory>
 #include "BaseMenu.hpp"
@@ -9,6 +10,10 @@
 class MenuManager {
 private:
     std::unique_ptr<BaseMenu> currentMenu;
+    sf::Music _mainMusic;
+    sf::Music _levelMusic;
+    sf::SoundBuffer ck;
+    sf::Sound ck_s;
 
 public:
     GameState currentState = MAIN_MENU;
@@ -16,6 +21,9 @@ public:
     MenuManager() {
         currentMenu = std::make_unique<Menu>();
         std::cout << "MenuManager initialized with Main Menu." << std::endl;
+
+        _mainMusic.setLoop(true);
+        _mainMusic.play();
     }
 
     void draw(sf::RenderWindow& window) {
@@ -28,6 +36,10 @@ public:
         if (!currentMenu) return;
 
         MenuAction action = currentMenu->checkClick(window);
+
+        if (action != NONE) {
+            ck_s.play();
+        }
 
         switch (action) {
         case QUIT:
@@ -49,6 +61,10 @@ public:
         case START_GAME:
             currentMenu.reset();
             currentState = ACTIVE_GAME;
+            _mainMusic.stop();
+            _levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
+            _levelMusic.setLoop(true);
+            _levelMusic.play();
             std::cout << "--- MenuManager switched state to ACTIVE GAME ---" << std::endl;
             break;
 

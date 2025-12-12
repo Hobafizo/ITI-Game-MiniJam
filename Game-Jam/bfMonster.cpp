@@ -36,9 +36,13 @@ void bfMonster::updateAnimation(float curTime)
 
 	int frameStartIdx = 0;
 	int frameCount = 1;
-	int frameDuration = 1;
 
-	WalkDirection dir = getWalkDirection(velocity);
+	WalkDirection dir;
+
+	if (_movePattern == Monster_MovePattern::Up || _movePattern == Monster_MovePattern::Down)
+		dir = getVerticalWalkDirection(velocity);
+	else
+		dir = getHorizontalWalkDirection(velocity);
 
 	switch (dir)
 	{
@@ -51,9 +55,19 @@ void bfMonster::updateAnimation(float curTime)
 		frameStartIdx = 3;
 		frameCount = 3;
 		break;
+
+	default:
+	{
+		frameStartIdx = 0;
+		frameCount = 3;
+		break;
+	}
 	}
 
-	updateSpriteSheet(frameStartIdx, frameCount, curTime, frameDuration);
+	if (_frameStartIdx == frameStartIdx && _numFrames == frameCount)
+		return;
+
+	updateSpriteSheet(frameStartIdx, frameCount, curTime, _frameDuration);
 }
 
 Monster_MovePattern bfMonster::getMovementPattern(void) const
