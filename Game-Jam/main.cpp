@@ -42,32 +42,41 @@ int main()
     while (window.isOpen())
     {
         sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed || menuManager.currentState == EXIT) {
-                //levelMgr.unloadLevel();
-                window.close();
-            }
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed || menuManager.currentState == EXIT) {
+				levelMgr.unloadLevel();
+				window.close();
+			}
 
-            if (menuManager.currentState == ACTIVE_GAME) {
-                // Active Game: Handle Pause Input (ESC)
-                //levelMgr.loadLevel(Level3Data);
-                if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape) {
-                    std::cout << "ESC pressed. Entering PAUSED state." << std::endl;
+			if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape)
+			{
+				if (menuManager.currentState == ACTIVE_GAME) {
+					// Active Game: Handle Pause Input (ESC)
+					//levelMgr.loadLevel(Level3Data);
+					std::cout << "ESC pressed. Entering PAUSED state." << std::endl;
 
-                    menuManager.setState(PAUSED);
-                }
-                // Handle other game inputs (WASD, etc.)
-            }
-            else if (menuManager.currentState == PAUSED) {
+					menuManager.setState(PAUSED);
+					boxWorld.SetRenderState(WorldRenderState::Paused);
+					// Handle other game inputs (WASD, etc.)
+				}
+				else if (menuManager.currentState == PAUSED) {
+					std::cout << "ESC pressed. Resuming ACTIVE_GAME state." << std::endl;
+					menuManager.setState(ACTIVE_GAME);
+					boxWorld.SetRenderState(WorldRenderState::Running);
+				}
+			}
 
-                if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape) {
-                    std::cout << "ESC pressed. Resuming ACTIVE_GAME state." << std::endl;
-                    menuManager.setState(ACTIVE_GAME);
-                }
-                
-                // Handle pause menu clicks/input if a PauseMenu is displayed
-            }
+			if (menuManager.currentState == MAIN_MENU)
+			{
+				levelMgr.unloadLevel();
+			}
+
+			else if (menuManager.currentState == LOADING_LEVEL)
+			{
+				levelMgr.loadLevel(Level3Data);
+				menuManager.setState(ACTIVE_GAME);
+			}
 
             if (event.type == sf::Event::KeyPressed) {
                 if (menuManager.currentState == ACTIVE_GAME) {
@@ -96,9 +105,12 @@ int main()
 
         if (menuManager.currentState == ACTIVE_GAME)
         {
-            boxWorld.UpdatePreviewObject(worldPos);
-            boxWorld.Step();
+			boxWorld.UpdatePreviewObject(worldPos);
+			boxWorld.Step();
+
+			window.clear();
             boxWorld.Render(window);
+			window.display();
         }
 
         //inputHandler->handleInput
@@ -107,16 +119,21 @@ int main()
         {
             window.clear();
 
-            if (menuManager.currentState == MAIN_MENU || menuManager.currentState == LEVEL_MENU) {
-                levelMgr.unloadLevel(); // Unload any active level
+            if (menuManager.currentState == MAIN_MENU
+				|| menuManager.currentState == LEVEL_MENU
+				|| menuManager.currentState == LOADING_LEVEL
+				)
+			{
                 menuManager.draw(window); // Draw the current menu screen
             }
 
             //still need to code up pauseMenu.cpp, 
-            else if (menuManager.currentState == PAUSED) {
+            else if (menuManager.currentState == PAUSED)
+			{
+				boxWorld.Render(window);
+				
                 menuManager.showPauseMenu();
                 menuManager.draw(window); // Draw the pause menu
-
             }
 
             window.display();

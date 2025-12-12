@@ -59,14 +59,22 @@ public:
             break;
 
         case START_GAME:
-            currentMenu.reset();
-            currentState = ACTIVE_GAME;
+            //currentMenu.reset();
+            currentState = LOADING_LEVEL;
             _mainMusic.stop();
             /*_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
             _levelMusic.setLoop(true);
             _levelMusic.play();*/
             std::cout << "--- MenuManager switched state to ACTIVE GAME ---" << std::endl;
             break;
+
+		case RESUME_GAME:
+			currentState = ACTIVE_GAME;
+			BoxML::Instance()->SetRenderState(WorldRenderState::Running);
+
+			//_mainMusic.stop();
+			std::cout << "--- MenuManager switched state to ACTIVE GAME ---" << std::endl;
+			break;
 
         case NONE:
             break;

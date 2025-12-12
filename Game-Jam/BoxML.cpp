@@ -13,17 +13,7 @@
 #include <random>
 #include <cmath>
 
-#define WALL_SPEED_INC_MULTIPLIER 2.5f
-#define WALL_SPEED_INC_TIME       5.0f
-#define PI           (22 / 7.0f)
-
-#define PLAYGROUND_MARGIN_LEFT   303
-#define PLAYGROUND_MARGIN_RIGHT  243
-#define PLAYGROUND_MARGIN_TOP    135
-#define PLAYGROUND_MARGIN_BOTTOM 145
-
-#define WALL_VERTICAL_WIDTH      103
-#define WALL_VERTICAL_HEIGHT     246
+#define PI (22 / 7.0f)
 
 static std::random_device randomDevice;
 static std::mt19937 randGenerator(randomDevice());
@@ -78,6 +68,7 @@ BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned s
 	_contactListener(this), _player(nullptr)
 {
 	_world.SetContactListener(&_contactListener);
+
 	_placedWall = nullptr;
 	_placedSpeedWall = nullptr;
 	_placedMonster = nullptr;
@@ -95,32 +86,37 @@ BoxML::~BoxML(void)
 	ClearObjects();
 }
 
-void BoxML::CreateWorld(void)
+void BoxML::PrepareWorld(void)
 {
-	ClearObjects();
-
-	LoadWinBackground("Assets/background/win.png");
 	LoadBackground2("Assets/Enviroment/Water_Filter.png", sf::Color(255, 255, 255, 150));
 	LoadBackground("Assets/background/sea.png");
+	LoadWinBackground("Assets/background/win.png");
+	LoadPauseBackground("Assets/background/pause.png");
+
 	_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
 	_levelMusic.setLoop(true);
-	if (_player)
-		RemoveObject(_player);
 
-	//_player = CreatePlayer(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 50, PLAYGROUND_MARGIN_TOP + 50 }), { 165, 192 }, 0.01f, 0.3f);
-	//_player->Body()->SetLinearVelocity({ PLAYER_SPEED_X, PLAYER_SPEED_Y });
-
+	// Default map walls
 	bfWall* wall;
-
-	//wall = CreateWall(b2_staticBody, pixelToMeter({ 800, 500 }), { WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT }, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
 
 	wall = CreateWall(b2_staticBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT - WALL_VERTICAL_WIDTH, 0 }), { WALL_VERTICAL_WIDTH, (float)_screenHeight }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical, 0, true, false, true);
 	wall = CreateWall(b2_staticBody, pixelToMeter({ (float)_screenWidth - PLAYGROUND_MARGIN_RIGHT, 0 }), { WALL_VERTICAL_WIDTH, (float)_screenHeight }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical, 0, true, false, true);
 	wall = CreateWall(b2_staticBody, pixelToMeter({ 0, PLAYGROUND_MARGIN_TOP - WALL_VERTICAL_WIDTH }), { (float)_screenWidth, WALL_VERTICAL_WIDTH }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal, 0, true, false, true);
 	wall = CreateWall(b2_staticBody, pixelToMeter({ 0, (float)_screenHeight - PLAYGROUND_MARGIN_BOTTOM }), { (float)_screenWidth, WALL_VERTICAL_WIDTH }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal, 0, true, false, true);
+}
+
+void BoxML::CreateWorld(void)
+{
+	ClearObjects();
+	PrepareWorld();
+
+	//_player = CreatePlayer(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 50, PLAYGROUND_MARGIN_TOP + 50 }), { 165, 192 }, 0.01f, 0.3f);
+	//_player->Body()->SetLinearVelocity({ PLAYER_SPEED_X, PLAYER_SPEED_Y });
+
+	//bfWall* wall = CreateWall(b2_staticBody, pixelToMeter({ 800, 500 }), { WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT }, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
 
 	// 4. RESTORED: MONSTER
-	bfMonster* monster;
+	// bfMonster* monster;
 
 	//monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 108, 76 }, 0.01f, 0.3f, 1);
 	//monster->setMovePattern(Monster_MovePattern::Down);
@@ -227,6 +223,16 @@ void BoxML::DispatchDestroyBody(void)
 	}
 
 	_objsToDelete.clear();
+}
+
+void BoxML::SetRenderState(const WorldRenderState state)
+{
+	_state = state;
+}
+
+void BoxML::SetPlayer(bfPlayer* player)
+{
+	_player = player;
 }
 
 bfCircle* BoxML::CreateCircle(const b2BodyType bodyType, const b2Vec2 position, float radius, float density, float friction, uint16 categoryBits, uint16 maskBits)
@@ -384,9 +390,9 @@ bfMonster* BoxML::CreateMonster(const b2BodyType bodyType, const b2Vec2 position
 
 	case 3:
 		bfObj->loadSpriteSheet("Assets/monsters/3.png", size.x, size.y, 0, 0, 3, 3, _timer.getElapsedTime().asSeconds(), 0.17);
-		bfObj->setMovePattern(Monster_MovePattern::Unknown);
+		bfObj->setMovePattern(Monster_MovePattern::Right);
 		break;
-	}	
+	}
 
 	return bfObj;
 }
@@ -573,9 +579,19 @@ bool BoxML::LoadWinBackground(const std::string& imagePath, sf::Color color)
 	return true;
 }
 
+bool BoxML::LoadPauseBackground(const std::string& imagePath, sf::Color color)
+{
+	if (!_pauseTexture.loadFromFile(imagePath, {}))
+		return false;
+
+	_pauseBackground.setTexture(_pauseTexture);
+	_pauseBackground.setColor(color);
+	return true;
+}
+
 void BoxML::Step(void)
 {
-	if (_win)
+	if (RenderState() != WorldRenderState::Running)
 		return;
 
 	if (_frameTimer.getElapsedTime().asMilliseconds() < _frameRefreshRate)
@@ -593,10 +609,11 @@ void BoxML::Step(void)
 void BoxML::Render(sf::RenderWindow& mainWnd)
 {
 	bfObject* obj;
+	const WorldRenderState state = RenderState();
 
-	mainWnd.clear();
+	//mainWnd.clear();
 
-	if (_win)
+	if (state == WorldRenderState::Win)
 	{
 		mainWnd.draw((_winBackground));
 		if (_levelMusic.getStatus() == sf::SoundSource::Playing) {
@@ -641,22 +658,31 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 
 			mainWnd.draw(*_previewObject->Drawable());
 		}
+
+		if (state == WorldRenderState::Paused)
+			mainWnd.draw((_pauseBackground));
 	}
 
-	mainWnd.display();
+	//mainWnd.display();
 }
 
 
 void BoxML::OnBeginContact(b2Contact* contact)
 {
-	if (contact->GetFixtureA()->IsSensor() ||
-		contact->GetFixtureB()->IsSensor())
+	b2Fixture* fixtureA = contact->GetFixtureA();
+	b2Fixture* fixtureB = contact->GetFixtureB();
+
+	if (isObject(ObjectCategory::Monster, fixtureA)
+		|| isObject(ObjectCategory::Monster, fixtureB))
+	{
+		printf("Monster collided\n");
+	}
+
+	if (fixtureA->IsSensor() ||
+		fixtureB->IsSensor())
 	{
 		return;
 	}
-
-	b2Fixture* fixtureA = contact->GetFixtureA();
-	b2Fixture* fixtureB = contact->GetFixtureB();
 
 	if (isObject(ObjectCategory::Player, fixtureA))
 		OnPlayerContact(fixtureA, fixtureB);
@@ -807,7 +833,12 @@ void BoxML::OnDoorContact(b2Fixture* door, b2Fixture* object)
 	_levelMusic.setLoop(false);
 	_winSound.play();
 
-	_win = true;
+	SetRenderState(WorldRenderState::Win);
+}
+
+WorldRenderState BoxML::RenderState(void) const
+{
+	return _state;
 }
 
 sf::Vector2u BoxML::Resolution(void) const
@@ -880,7 +911,8 @@ bool BoxML::isObject(const ObjectCategory category, const ObjectCategory object)
 
 bool BoxML::isObject(const ObjectCategory category, b2Fixture* fixture) const
 {
-	if (!_player || !fixture) return false;
+	if (!fixture)
+		return false;
 	return isObject(category, (ObjectCategory)fixture->GetFilterData().categoryBits);
 }
 

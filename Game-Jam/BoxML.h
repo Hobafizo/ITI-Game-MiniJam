@@ -1,5 +1,6 @@
 #pragma once
 #include "bfObject.h"
+#include "GameData.h"
 #include "WorldContactListener.h"
 #include "ObjectCategory.h"
 #include <list>
@@ -22,9 +23,9 @@ private:
 	std::list<b2Body*> _objsToDelete;
 	std::list<bfObject*> _objs;
 
-	bool _win = false;
-	sf::Texture _backgroundTexture, _backgroundTexture2, _winTexture;
-	sf::Sprite _background, _background2, _winBackground;
+	WorldRenderState _state;
+	sf::Texture _backgroundTexture, _backgroundTexture2, _winTexture, _pauseTexture;
+	sf::Sprite _background, _background2, _winBackground, _pauseBackground;
 
 	class bfPlayer* _player;
 
@@ -52,24 +53,27 @@ public:
 	BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned short screenPixelPerUnit, float timeStep, int32 velocityIterations, int32 positionIterations);
 	~BoxML();
 
+	void PrepareWorld();
 	void CreateWorld();
 	void LoadPositions();
 
 	void HandleInput(sf::RenderWindow& window, sf::Event& event);
-
-
 	void HandleKeyPress(sf::Keyboard::Key key);
+	void HandleRightClick(const sf::Vector2f& pixelMousePos);
 	void UpdatePreviewObject(const sf::Vector2f& pixelMousePos);
 	void PlacePreviewObject();
-	void HandleRightClick(const sf::Vector2f& pixelMousePos);
 
 private:
 	void AddObject(bfObject* obj);
 	bool RemoveObject(bfObject* obj);
+public:
 	void ClearObjects();
+private:
 	void DispatchDestroyBody();
 
 public:
+	void SetRenderState(const WorldRenderState state);
+	void SetPlayer(bfPlayer* player);
 
 	class bfCircle* CreateCircle(const b2BodyType bodyType, const b2Vec2 position, float radius, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0);
 	class bfRectangle* CreateRectangle(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool addToWorld = true);
@@ -82,6 +86,7 @@ public:
 	bool LoadBackground(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
 	bool LoadBackground2(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
 	bool LoadWinBackground(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
+	bool LoadPauseBackground(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
 
 	void Step();
 	void Render(sf::RenderWindow& mainWnd);
@@ -98,6 +103,7 @@ public:
 	void OnDoorContact(b2Fixture* door, b2Fixture* object);
 
 	// Utilities
+	WorldRenderState RenderState() const;
 	sf::Vector2u Resolution() const;
 	b2Vec2 pixelToMeter(const sf::Vector2f pixel) const;
 	sf::Vector2f meterToPixel(const b2Vec2 meter) const;

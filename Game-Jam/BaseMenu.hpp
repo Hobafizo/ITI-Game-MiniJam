@@ -8,6 +8,7 @@ enum MenuAction {
     GOTO_LEVEL_MENU,
     GOTO_MAIN_MENU,
     START_GAME,
+	RESUME_GAME,
     QUIT
 };
 const string path = "Assets/UI/Menus/MenusUI1";
@@ -15,6 +16,7 @@ const string path = "Assets/UI/Menus/MenusUI1";
 enum GameState {
     MAIN_MENU,
     LEVEL_MENU,
+	LOADING_LEVEL,
     ACTIVE_GAME,
     PAUSED,
     EXIT

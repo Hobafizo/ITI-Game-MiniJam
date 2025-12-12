@@ -24,7 +24,7 @@ private:
     }
 
     void setupSprites() {
-        sf::Vector2u windowSize = { 1920,1080 };
+		sf::Vector2u windowSize = BoxML::Instance()->Resolution();
 
         backgroundSprite.setTexture(backgroundTexture);
 
@@ -67,7 +67,7 @@ public:
 
         if (resumeSprite.getGlobalBounds().contains(mousePos)) {
             std::cout << "PauseMenu -> Resume clicked\n";
-            return START_GAME;
+            return RESUME_GAME;
         }
         if (quitSprite.getGlobalBounds().contains(mousePos)) {
             std::cout << "PauseMenu -> Quit clicked\n";
