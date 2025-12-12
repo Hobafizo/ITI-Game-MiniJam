@@ -20,9 +20,6 @@
 #define PLAYGROUND_MARGIN_TOP    175
 #define PLAYGROUND_MARGIN_BOTTOM 185
 
-#define WALL_VERTICAL_WIDTH  103
-#define WALL_VERTICAL_HEIGHT 246
-
 static std::random_device randomDevice;
 static std::mt19937 randGenerator(randomDevice());
 
@@ -65,11 +62,11 @@ void BoxML::CreateWorld(void)
 		RemoveObject(_player);
 
 	_player = CreatePlayer(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 50, PLAYGROUND_MARGIN_TOP + 50 }), { 165, 192 }, 0.01f, 0.3f);
-	_player->Body()->SetLinearVelocity({ PLAYER_SPEED_X, PLAYER_SPEED_Y });
+	_player->Body()->SetLinearVelocity({ PLAYER_SPEED_X+400, PLAYER_SPEED_Y+400 });
 
 	bfWall* wall;
 
-	wall = CreateWall(b2_staticBody, pixelToMeter({ 800, 500 }), { WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT }, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
+	//wall = CreateWall(b2_staticBody, pixelToMeter({ 800, 500 }), { WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT }, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
 
 	wall = CreateWall(b2_staticBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT - WALL_VERTICAL_WIDTH, 0 }), { WALL_VERTICAL_WIDTH, (float)_screenHeight }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical, 0, true, false, true);
 	wall = CreateWall(b2_staticBody, pixelToMeter({ (float)_screenWidth - PLAYGROUND_MARGIN_RIGHT, 0 }), { WALL_VERTICAL_WIDTH, (float)_screenHeight }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical, 0, true, false, true);
@@ -607,7 +604,7 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 {
 	// 1. LIMIT CHECK: If we already have this object placed, don't show ghost
 	bool alreadyHasThisType = false;
-	if (_currentPreviewType == ObjectCategory::Wall && _placedWall != nullptr) alreadyHasThisType = true;
+	if (_currentPreviewType == ObjectCategory::Wall_Horizontal && _placedWall != nullptr) alreadyHasThisType = true;
 	if (_currentPreviewType == ObjectCategory::SpeedWall && _placedSpeedWall != nullptr) alreadyHasThisType = true;
 	if (_currentPreviewType == ObjectCategory::Monster && _placedMonster != nullptr) alreadyHasThisType = true;
 

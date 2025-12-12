@@ -4,7 +4,7 @@
 #include <vector>
 //1920.f-1366.f
 //1080.f-768.f
-float shiftFactorX=0;
+float shiftFactorX= 1920.f - 1366.f;
 float shiftFactorY=0;
 class LevelManager {
     LevelData levelData;
@@ -47,7 +47,7 @@ public:
 
             b2Vec2 boxCoors = boxWorld.pixelToMeter(shiftedPos);
             b2Vec2 pos = boxCoors;
-            bfWall* wall = boxWorld.CreateWall(b2_staticBody, pos, w.size);
+            bfWall* wall = boxWorld.CreateWall(b2_staticBody, pos, w.size, 0.01f, 0.3f, (uint16)w.type);
             if (wall)
                 spawnedObjects.push_back(wall);
         }
@@ -58,7 +58,7 @@ public:
 
             b2Vec2 boxCoors = boxWorld.pixelToMeter(shiftedPos);
             b2Vec2 pos = boxCoors;
-            bfMonster* mon = boxWorld.CreateMonster(b2_dynamicBody, pos, { e.radius, e.radius });
+            bfMonster* mon = boxWorld.CreateMonster(b2_dynamicBody, pos, { e.radius+10, e.radius+10 },(unsigned char) e.type);
             if (mon)
                 spawnedObjects.push_back(mon);
         }

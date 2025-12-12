@@ -16,12 +16,13 @@ struct WallData {
     Vector2f spawnPos;
     Vector2f size;
     float orientation;
+    ObjectCategory type;
 };
 
 struct EnemyData {
     Vector2f spawnPos;
     float radius;
-    unsigned int color;
+    unsigned char type;
 };
 
 struct KeyData {

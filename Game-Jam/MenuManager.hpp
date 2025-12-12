@@ -4,17 +4,16 @@
 #include "BaseMenu.hpp"
 #include "MainMenu.hpp"
 #include "LevelMenu.hpp"
+#include "PauseMenu.hpp"   // <--- NEW
+
 class MenuManager {
 private:
     std::unique_ptr<BaseMenu> currentMenu;
 
 public:
-    // This must be public for main loop control
     GameState currentState = MAIN_MENU;
 
-    
-        MenuManager() {
-        // Since Menu is defined above, we can instantiate it here
+    MenuManager() {
         currentMenu = std::make_unique<Menu>();
         std::cout << "MenuManager initialized with Main Menu." << std::endl;
     }
@@ -42,13 +41,13 @@ public:
             break;
 
         case GOTO_MAIN_MENU:
-            currentMenu = std::make_unique<Menu>(); // New Main Menu instance
+            currentMenu = std::make_unique<Menu>();
             currentState = MAIN_MENU;
             std::cout << "--- MenuManager switched state to Main Menu ---" << std::endl;
             break;
 
         case START_GAME:
-            currentMenu.reset(); // Destroy the menu, resources are freed
+            currentMenu.reset();
             currentState = ACTIVE_GAME;
             std::cout << "--- MenuManager switched state to ACTIVE GAME ---" << std::endl;
             break;
@@ -58,8 +57,19 @@ public:
         }
     }
 
-    // Helper to change state directly (used by main loop for pause)
     void setState(GameState newState) {
         currentState = newState;
+    }
+
+    // ----- NEW: Pause menu functions -----
+
+    void showPauseMenu() {
+        currentMenu = std::make_unique<PauseMenu>();
+        currentState = PAUSED;
+    }
+
+    void resumeGame() {
+        currentMenu.reset();
+        currentState = ACTIVE_GAME;
     }
 };

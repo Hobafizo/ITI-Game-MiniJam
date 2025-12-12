@@ -17,9 +17,9 @@ private:
     sf::Vector2u windowSize = sf::Vector2u(1920, 1080);
 
     bool loadAssets() {
-        if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MenuUI1/pause.png")) return false;
-        if (!resumeTexture.loadFromFile("Assets/UI/Menus/MenuUI1/Resume.png")) return false;
-        if (!quitTexture.loadFromFile("Assets/UI/Menus/MenuUI1/exit.png")) return false;
+        if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MenusUI1/pause.png")) return false;
+        if (!resumeTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Resume.png")) return false;
+        if (!quitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/exit.png")) return false;
         return true;
     }
 

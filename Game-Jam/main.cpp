@@ -6,7 +6,10 @@
 #include "InputHandler.hpp"
 #include "MenuManager.hpp"
 #include "LevelManager.hpp"
+#include "PauseMenu.hpp"
 #include "Level1.hpp"
+#include "Level2.hpp"
+#include "Level3.hpp"
 
 int active_menu= 0; // 0 - main menu, 1 - level menu 3-pause menu 4-game over menu 5-win menu 6-none
 int main()
@@ -25,7 +28,7 @@ int main()
 	boxWorld.LoadPositions();
 
     LevelManager levelMgr(boxWorld);
-    //levelMgr.loadLevel(Level3Data); // Load level 
+    
 
     bool shouldCloseWindow = false;
 
@@ -33,6 +36,8 @@ int main()
     MenuManager menuManager;
 
     Hud hud;
+    PauseMenu pausemenu;
+    levelMgr.loadLevel(Level3Data); // Load level 
     while (window.isOpen())
     {
         sf::Event event;
@@ -54,15 +59,20 @@ int main()
             }
             else if (menuManager.currentState == PAUSED) {
                 // Paused State: Handle Resume Input (ESC)
+                /*window.clear();
+                menuManager.draw(window);
+                window.display();*/
                 if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape) {
                     std::cout << "ESC pressed. Resuming ACTIVE_GAME state." << std::endl;
                     menuManager.setState(ACTIVE_GAME);
                 }
+                
                 // Handle pause menu clicks/input if a PauseMenu is displayed
             }
 
             if (event.type == sf::Event::KeyPressed) {
                 if (menuManager.currentState == ACTIVE_GAME) {
+                    
                     boxWorld.HandleKeyPress(event.key.code);
                     //levelMgr.loadLevel(Level1Data);
                 }
@@ -107,9 +117,7 @@ int main()
             //still need to code up pauseMenu.cpp, 
             else if (menuManager.currentState == PAUSED) {
                 // Draw Pause Menu overlay on top of the game
-                sf::RectangleShape overlay((sf::Vector2f)boxWorld.Resolution());
-                overlay.setFillColor(sf::Color(150, 50, 0, 20)); // Dark overlay
-                window.draw(overlay);
+                pausemenu.draw(window);
 
                 //sf::Text pauseText("PAUSED", sf::Font::getDefaultFont(), 72);
                 //pauseText.setFillColor(sf::Color::White);
