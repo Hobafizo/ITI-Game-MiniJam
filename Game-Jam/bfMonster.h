@@ -1,6 +1,6 @@
 #pragma once
 #include "bfCharacter.h"
-#include "CharacterData.h"
+#include "GameData.h"
 
 class bfMonster : public bfCharacter
 {

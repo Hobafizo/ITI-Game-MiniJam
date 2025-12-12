@@ -31,8 +31,16 @@ public:
     void loadLevel(const LevelData& lvl) {
         levelData = lvl;
         
-        if (_levelLoaded) return;
+        if (_levelLoaded)
+			return;
+
+		_levelLoaded = true;
         cout << "new level loaded";
+
+		const sf::Vector2u screen = boxWorld.Resolution();
+
+		boxWorld.PrepareWorld();
+
         // Player remember to uncomment, having an issue currently
         float playWidth = 1366.f;
         float playHeight = 768.f;
@@ -73,6 +81,7 @@ public:
             );
 
             if (spawnedPlayer) {
+				boxWorld.SetPlayer(spawnedPlayer);
                 spawnedPlayer->Body()->SetLinearVelocity({ PLAYER_SPEED_X, PLAYER_SPEED_Y });
                 spawnedObjects.push_back(spawnedPlayer);
             }
@@ -148,10 +157,6 @@ public:
             if (door)
                 spawnedObjects.push_back(door);
         }
-
-
-
-        _levelLoaded = true;
     }
 
     
@@ -161,6 +166,8 @@ public:
 
         /*for (auto* obj : spawnedObjects)
             delete obj;*/
+
+		boxWorld.ClearObjects();
 
         spawnedObjects.clear();
         spawnedPlayer = nullptr;

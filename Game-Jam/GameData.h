@@ -22,3 +22,11 @@ enum class Monster_MovePattern : unsigned char
 	Left,
 	Right,
 };
+
+enum class WorldRenderState
+{
+	Running,
+	Win,
+	Lose,
+	Paused
+};
