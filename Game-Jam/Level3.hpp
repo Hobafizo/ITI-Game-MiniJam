@@ -7,48 +7,57 @@ static LevelData Level3Data = {
     // (500, 100) means the player starts 500px from the left and 100px from the top.
     { sf::Vector2f(960.f, 900.f) },
 
-    // Wall data: list of walls with spawn position and size in pixels.
-    // These walls are thin because the sizes are small.
-    // Example: size (100, 2) pixels becomes (10m x 0.2m) after conversion.
+
+     //wall = CreateWall(b2_staticBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT - WALL_VERTICAL_WIDTH, 0 }), { WALL_VERTICAL_WIDTH, (float)_screenHeight }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical, 0, true, false, true);
+	//wall = CreateWall(b2_staticBody, pixelToMeter({ (float)_screenWidth - PLAYGROUND_MARGIN_RIGHT, 0 }), { WALL_VERTICAL_WIDTH, (float)_screenHeight }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical, 0, true, false, true);
+	//wall = CreateWall(b2_staticBody, pixelToMeter({ 0, PLAYGROUND_MARGIN_TOP - WALL_VERTICAL_WIDTH }), { (float)_screenWidth, WALL_VERTICAL_WIDTH }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal, 0, true, false, true);
+	//wall = CreateWall(b2_staticBody, pixelToMeter({ 0, (float)_screenHeight - PLAYGROUND_MARGIN_BOTTOM }), { (float)_screenWidth, WALL_VERTICAL_WIDTH }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal, 0, true, false, true);
+    
+    //wall takes: pos, size, Type
     {
     // Vertical wall (you already had this one correct)
     { sf::Vector2f(960.f, 700.f),
-      sf::Vector2f(WALL_VERTICAL_HEIGHT,WALL_VERTICAL_WIDTH),
-      0.f,
+      sf::Vector2f(WALL_VERTICAL_WIDTH,WALL_VERTICAL_HEIGHT),
       ObjectCategory::Wall_Vertical },
 
-      // Horizontal wall (100 wide, 20 tall)
       { sf::Vector2f(960.f, 200.f),
         sf::Vector2f(WALL_VERTICAL_HEIGHT,WALL_VERTICAL_WIDTH),
-        0.f,
-        ObjectCategory::Wall_Vertical },
+        ObjectCategory::Wall_Vertical},
 
-        // Vertical wall (20 wide, 100 tall)
-        { sf::Vector2f(910.f, 100.f),
+        
+        { sf::Vector2f(910.f, 200.f),
           sf::Vector2f(WALL_VERTICAL_WIDTH,WALL_VERTICAL_HEIGHT),
-          0.f,
+
           ObjectCategory::Wall_Vertical },
 
-          // Vertical wall (20 wide, 100 tall)
           { sf::Vector2f(100.f, 300.f),
             sf::Vector2f(WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT),
-            0.f,
+
             ObjectCategory::Wall_Vertical },
      },
     // Enemy data: enemy spawn position and radius in pixels.
-    // radius 1.5f becomes 0.15 meters in Box2D.
+    /*
+    monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 108, 76 }, 0.01f, 0.3f, 1);
+    */
+
+    //1 up
+    //2 right
+    //3 unknown
     {
-        { sf::Vector2f(1300.f, 700.f), 20.5f, 1},
+        { sf::Vector2f(1300.f, 700.f),{ 108, 76 } , 1},
         // EnemyData object 2
-        { sf::Vector2f(20.f, 900.f), 20.5f, 2  },
+        { sf::Vector2f(20.f, 900.f), { 83, 87 }, 2  },
+
+        // EnemyData object 3
+		{ sf::Vector2f(1700.f, 500.f), { 94, 56 }, 3  }
     },
 
     // Traps (empty for now)
     {},
 
     // Key position in pixels
-    { sf::Vector2f(1800.f, 900.f) },
+    { sf::Vector2f(1800.f, 900.f),{ 71, 82 } },
 
     // Door position in pixels
-    { sf::Vector2f(960.f, 1.f) }
+    { sf::Vector2f(960.f, 20.f),{ 202, 298 } }
 };

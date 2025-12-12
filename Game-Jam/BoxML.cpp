@@ -108,8 +108,8 @@ void BoxML::CreateWorld(void)
 	if (_player)
 		RemoveObject(_player);
 
-	_player = CreatePlayer(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 50, PLAYGROUND_MARGIN_TOP + 50 }), { 165, 192 }, 0.01f, 0.3f);
-	_player->Body()->SetLinearVelocity({ PLAYER_SPEED_X+400, PLAYER_SPEED_Y+400 });
+	//_player = CreatePlayer(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 50, PLAYGROUND_MARGIN_TOP + 50 }), { 165, 192 }, 0.01f, 0.3f);
+	//_player->Body()->SetLinearVelocity({ PLAYER_SPEED_X, PLAYER_SPEED_Y });
 
 	bfWall* wall;
 
@@ -123,17 +123,17 @@ void BoxML::CreateWorld(void)
 	// 4. RESTORED: MONSTER
 	bfMonster* monster;
 
-	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 108, 76 }, 0.01f, 0.3f, 1);
-	monster->setMovePattern(Monster_MovePattern::Down);
+	//monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 108, 76 }, 0.01f, 0.3f, 1);
+	//monster->setMovePattern(Monster_MovePattern::Down);
 
-	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ (float)_screenWidth - 600, PLAYGROUND_MARGIN_TOP + 50 }), { 83, 87 }, 0.01f, 0.3f, 2);
-	monster->setMovePattern(Monster_MovePattern::Down);
+	//monster = CreateMonster(b2_dynamicBody, pixelToMeter({ (float)_screenWidth - 600, PLAYGROUND_MARGIN_TOP + 50 }), { 83, 87 }, 0.01f, 0.3f, 2);
+	//monster->setMovePattern(Monster_MovePattern::Down);
 
-	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ (float)_screenWidth - 600, PLAYGROUND_MARGIN_TOP + 100}), { 94, 56 }, 0.01f, 0.3f, 3);
-	monster->setMovePattern(Monster_MovePattern::Right);
+	//monster = CreateMonster(b2_dynamicBody, pixelToMeter({ (float)_screenWidth - 600, PLAYGROUND_MARGIN_TOP + 100}), { 94, 56 }, 0.01f, 0.3f, 3);
+	//monster->setMovePattern(Monster_MovePattern::Right);
 
-	CreateKey(b2_staticBody, pixelToMeter({ 500, 500 }), { 71, 82 }, 0.01f, 0.3f);
-	CreateDoor(b2_staticBody, pixelToMeter({ 500, 800 }), { 202, 298 }, 0.01f, 0.3f);
+	//CreateKey(b2_staticBody, pixelToMeter({ 500, 500 }), { 71, 82 }, 0.01f, 0.3f);
+	//CreateDoor(b2_staticBody, pixelToMeter({ 500, 800 }), { 202, 298 }, 0.01f, 0.3f);
 }
 
 
@@ -374,14 +374,18 @@ bfMonster* BoxML::CreateMonster(const b2BodyType bodyType, const b2Vec2 position
 	case 1:
 		bfObj->loadSpriteSheet("Assets/monsters/1.png", size.x, size.y, 0, 0, 3, 3, _timer.getElapsedTime().asSeconds(), 0.17);
 		bfObj->setScale({ 0.8f, 0.8f });
+		bfObj->setMovePattern(Monster_MovePattern::Up);
 		break;
 
 	case 2:
 		bfObj->loadSpriteSheet("Assets/monsters/2.png", size.x, size.y, 0, 0, 3, 3, _timer.getElapsedTime().asSeconds(), 0.15);
+		bfObj->setMovePattern(Monster_MovePattern::Left);
+
 		break;
 
 	case 3:
 		bfObj->loadSpriteSheet("Assets/monsters/3.png", size.x, size.y, 0, 0, 3, 3, _timer.getElapsedTime().asSeconds(), 0.17);
+		bfObj->setMovePattern(Monster_MovePattern::Unknown);
 		break;
 	}	
 

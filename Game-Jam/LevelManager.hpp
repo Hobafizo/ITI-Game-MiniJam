@@ -2,10 +2,13 @@
 #include "LevelData.hpp"
 #include "BoxML.h"
 #include <vector>
+#include <iostream>
+#include "bfKey.h"
+#include "bfDoor.h"
 //1920.f-1366.f
 //1080.f-768.f
-float shiftFactorX= 1920.f - 1366.f;
-float shiftFactorY=0;
+float shiftFactorX= (1920.f - 1366.f) / 2.f;;
+float shiftFactorY= (1080.f - 768.f) / 2.f;
 class LevelManager {
     LevelData levelData;
     BoxML& boxWorld;
@@ -31,40 +34,127 @@ public:
         if (_levelLoaded) return;
 
         // Player remember to uncomment, having an issue currently
+        float playWidth = 1366.f;
+        float playHeight = 768.f;
+
+        float centerX = playWidth * 0.5f;
+        float centerY = playHeight * 0.5f;
+
+        float shiftX = shiftFactorX;
+        float shiftY = shiftFactorY;
+
+        // Decide shift direction based on player position
+        if (levelData.player.spawnPos.x > centerX)
+            shiftX = -abs(shiftX);
+        else
+            shiftX = abs(shiftX);
+
+        if (levelData.player.spawnPos.y > centerY)
+            shiftY = -abs(shiftY);
+        else
+            shiftY = abs(shiftY);
+
+        // Lambda to shift any position
+        auto shifted = [&](Vector2f p) {
+            return Vector2f(p.x + shiftX, p.y + shiftY);
+            };
+
+        // ---------------- Player ----------------
         {
-            /*Vector2f shiftedPos = Vector2f(levelData.player.spawnPos.x+shiftFactorX, levelData.player.spawnPos.y + shiftFactorY);
-            b2Vec2 boxCoors = boxWorld.pixelToMeter(shiftedPos);
-            b2Vec2 p = boxCoors;
-            spawnedPlayer = boxWorld.CreatePlayer(b2_dynamicBody, p, { 1.f, 1.f });
-            if (spawnedPlayer)
+            Vector2f sp = shifted(levelData.player.spawnPos);
+            b2Vec2 p = boxWorld.pixelToMeter(sp);
+
+            bfPlayer* spawnedPlayer = boxWorld.CreatePlayer(
+                b2_dynamicBody,
+                p,
+                { 165, 192 },
+                0.01f,
+                0.3f
+            );
+
+            if (spawnedPlayer) {
+                spawnedPlayer->Body()->SetLinearVelocity({ PLAYER_SPEED_X, PLAYER_SPEED_Y });
                 spawnedObjects.push_back(spawnedPlayer);
-                cout << "Player spawned at: (" << p.x << ", " << p.y << ")\n";*/
+            }
         }
 
-        // Walls
+        // ---------------- Walls ----------------
         for (auto& w : levelData.walls) {
-            Vector2f shiftedPos = Vector2f(w.spawnPos.x + shiftFactorX, w.spawnPos.y + shiftFactorY);
+            Vector2f sp = shifted(w.spawnPos);
+            b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-            b2Vec2 boxCoors = boxWorld.pixelToMeter(shiftedPos);
-            b2Vec2 pos = boxCoors;
-            bfWall* wall = boxWorld.CreateWall(b2_staticBody, pos, w.size, 0.01f, 0.3f, (uint16)w.type);
+            bfWall* wall = boxWorld.CreateWall(
+                b2_staticBody,
+                pos,
+                w.size,
+                0.01f,
+                0.3f,
+                (uint16)w.type
+            );
+
             if (wall)
                 spawnedObjects.push_back(wall);
         }
 
-        // Enemies
+        // ---------------- Enemies ----------------
         for (auto& e : levelData.enemies) {
-            Vector2f shiftedPos = Vector2f(e.spawnPos.x + shiftFactorX, e.spawnPos.y + shiftFactorY);
+            Vector2f sp = shifted(e.spawnPos);
+            b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-            b2Vec2 boxCoors = boxWorld.pixelToMeter(shiftedPos);
-            b2Vec2 pos = boxCoors;
-            bfMonster* mon = boxWorld.CreateMonster(b2_dynamicBody, pos, { e.radius+10, e.radius+10 },(unsigned char) e.type);
-            if (mon)
+            bfMonster* mon = boxWorld.CreateMonster(
+                b2_dynamicBody,
+                pos,
+                e.size,
+                0.01f,
+                0.3f,
+                (unsigned char)e.type
+            );
+
+            if (mon) {
                 spawnedObjects.push_back(mon);
+            }
         }
+
+        // ---------------- Key ----------------
+        {
+            Vector2f sp = shifted(levelData.key.spawnPos);
+            b2Vec2 pos = boxWorld.pixelToMeter(sp);
+
+            bfKey* key = boxWorld.CreateKey(
+                b2_staticBody,
+                pos,
+                levelData.key.size,
+                0.01f,
+                0.3f
+            );
+
+            if (key)
+                spawnedObjects.push_back(key);
+        }
+
+        // ---------------- Door ----------------
+        {
+            Vector2f sp = shifted(levelData.door.spawnPos);
+            b2Vec2 pos = boxWorld.pixelToMeter(sp);
+
+            bfDoor* door = boxWorld.CreateDoor(
+                b2_staticBody,
+                pos,
+                levelData.door.size,
+                0.01f,
+                0.3f
+            );
+
+            if (door)
+                spawnedObjects.push_back(door);
+        }
+
+
 
         _levelLoaded = true;
     }
+
+    
 
     void unloadLevel() {
         if (!_levelLoaded) return;
