@@ -19,12 +19,12 @@ private:
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MenusUI1/pause.png")) return false;
         if (!resumeTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Resume.png")) return false;
-        if (!quitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/exit.png")) return false;
+        if (!quitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/exit2.png")) return false;
         return true;
     }
 
     void setupSprites() {
-		sf::Vector2u windowSize = BoxML::Instance()->Resolution();
+        sf::Vector2u windowSize = { 1920,1080 };
 
         backgroundSprite.setTexture(backgroundTexture);
 
@@ -32,18 +32,18 @@ private:
         float bgScaleY = (float)windowSize.y / backgroundTexture.getSize().y;
         backgroundSprite.setScale(bgScaleX, bgScaleY);
 
-        float buttonWidth = 1000.0f;
+        float buttonWidth = 150.0f;
         float centerX = (windowSize.x - buttonWidth) * 0.5f;
 
         float resumeScale = buttonWidth / resumeTexture.getSize().x;
         resumeSprite.setTexture(resumeTexture);
         resumeSprite.setScale(resumeScale, resumeScale);
-        resumeSprite.setPosition(centerX, 260.0f);
+        resumeSprite.setPosition(centerX, 360.0f);
 
         float quitScale = buttonWidth / quitTexture.getSize().x;
         quitSprite.setTexture(quitTexture);
         quitSprite.setScale(quitScale, quitScale);
-        quitSprite.setPosition(centerX, 420.0f);
+        quitSprite.setPosition(centerX, 620.0f);
     }
 
 public:

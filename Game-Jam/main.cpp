@@ -1,4 +1,4 @@
-#include "def.h"
+﻿#include "def.h"
 #include "Hud.hpp"
 #include "BoxML.h"
 #include "bfCircle.h"
@@ -44,25 +44,23 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed || menuManager.currentState == EXIT)
+            if (event.type == sf::Event::Closed || menuManager.currentState == EXIT) {
+                levelMgr.unloadLevel();
                 window.close();
-
-            //inputHandler->handleInput();
+            }
 
             if (menuManager.currentState == ACTIVE_GAME) {
                 // Active Game: Handle Pause Input (ESC)
+                //levelMgr.loadLevel(Level3Data);
                 if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape) {
                     std::cout << "ESC pressed. Entering PAUSED state." << std::endl;
-                    // Note: You would typically load a PauseMenu object here
+
                     menuManager.setState(PAUSED);
                 }
                 // Handle other game inputs (WASD, etc.)
             }
             else if (menuManager.currentState == PAUSED) {
-                // Paused State: Handle Resume Input (ESC)
-                /*window.clear();
-                menuManager.draw(window);
-                window.display();*/
+
                 if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape) {
                     std::cout << "ESC pressed. Resuming ACTIVE_GAME state." << std::endl;
                     menuManager.setState(ACTIVE_GAME);
@@ -98,8 +96,6 @@ int main()
 
         if (menuManager.currentState == ACTIVE_GAME)
         {
-            //hud.draw(window)
-
             boxWorld.UpdatePreviewObject(worldPos);
             boxWorld.Step();
             boxWorld.Render(window);
@@ -112,20 +108,15 @@ int main()
             window.clear();
 
             if (menuManager.currentState == MAIN_MENU || menuManager.currentState == LEVEL_MENU) {
+                levelMgr.unloadLevel(); // Unload any active level
                 menuManager.draw(window); // Draw the current menu screen
             }
 
             //still need to code up pauseMenu.cpp, 
             else if (menuManager.currentState == PAUSED) {
-                // Draw Pause Menu overlay on top of the game
-                pausemenu.draw(window);
+                menuManager.showPauseMenu();
+                menuManager.draw(window); // Draw the pause menu
 
-                //sf::Text pauseText("PAUSED", sf::Font::getDefaultFont(), 72);
-                //pauseText.setFillColor(sf::Color::White);
-                //pauseText.setPosition(350.f, 300.f);
-                //pausemenu.draw(window);
-
-                // If you had a PauseMenu class, you would draw it here.
             }
 
             window.display();

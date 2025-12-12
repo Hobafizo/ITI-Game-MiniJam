@@ -21,7 +21,7 @@ private:
     }
 
     void setupSprites() {
-		sf::Vector2u windowSize = BoxML::Instance()->Resolution();
+		sf::Vector2u windowSize = {1920,1080};
 
         backgroundSprite.setTexture(backgroundTexture);
         startSprite.setTexture(startTexture);

@@ -30,9 +30,9 @@ public:
 
     void loadLevel(const LevelData& lvl) {
         levelData = lvl;
-        cout << "new level loaded";
+        
         if (_levelLoaded) return;
-
+        cout << "new level loaded";
         // Player remember to uncomment, having an issue currently
         float playWidth = 1366.f;
         float playHeight = 768.f;

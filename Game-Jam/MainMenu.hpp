@@ -16,8 +16,8 @@ private:
 
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MenusUI1/withoutButtons.jpg")) return false;
-        if (!startTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Start.png")) return false;
-        if (!exitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/exit.png")) return false;
+        if (!startTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Start2.png")) return false;
+        if (!exitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/exit2.png")) return false;
         return true;
     }
 
@@ -33,16 +33,16 @@ private:
         backgroundSprite.setScale(scaleX, scaleY);
         backgroundSprite.setPosition(0.0f, 0.0f);
 
-        float desiredButtonWidth = 1000.0f;
+        float desiredButtonWidth = 300;
         float centerX = (windowSize.x - desiredButtonWidth) / 2.0f;
 
         float startScale = desiredButtonWidth / startTexture.getSize().x;
         startSprite.setScale(startScale, startScale);
-        startSprite.setPosition(centerX, 200.0f);
+        startSprite.setPosition(centerX, 300.0f);
 
         float exitScale = desiredButtonWidth / exitTexture.getSize().x;
         exitSprite.setScale(exitScale, exitScale);
-        exitSprite.setPosition(centerX, 400.0f);
+        exitSprite.setPosition(centerX, 600.0f);
     }
 
 public:

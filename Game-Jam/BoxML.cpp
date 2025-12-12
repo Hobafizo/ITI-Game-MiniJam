@@ -8,7 +8,6 @@
 #include "bfSpeedWall.h"
 #include "bfKey.h"
 #include "bfDoor.h"
-
 #include<SFML/Audio.hpp>
 #include <iostream>
 #include <random>
