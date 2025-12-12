@@ -19,6 +19,8 @@ void bfCharacter::setStatus(const WalkStatus status)
 
 bool bfCharacter::loadSpriteSheet(const std::string& filepath, int frameWidth, int frameHeight, int marginX, int marginY, int framePerLine, int numFrames, float curTime, float frameTime, bool autoResize)
 {
+	autoResize = false;
+
     if (!_texture.loadFromFile(filepath))
         return false;
 
@@ -71,28 +73,28 @@ bool bfCharacter::updateSpriteSheet(int startIdx, int numFrames, float curTime, 
 
 void bfCharacter::resizeToFitFrame()
 {
-    // 1. Get current base size
-    sf::Vector2f currentSize = (sf::Vector2f)_texture.getSize();
-    sf::Vector2f textureSize = _shape.getSize();
+	// 1. Get current base size
+	sf::Vector2f currentSize = (sf::Vector2f)_texture.getSize();
+	sf::Vector2f targetSize = _shape.getSize();
 
-    // 2. Safety: If size is 0, set it directly instead of scaling
-    if (currentSize.x < 0.1f || currentSize.y < 0.1f)
-    {
-        sf::Vector2f newSize(textureSize.x, textureSize.y);
-        setSize(newSize);
-        setOrigin({ newSize.x / 2.0f, newSize.y / 2.0f });
-        setScale({ 1.0f, 1.0f });
-    }
-    else
-    {
-        // 3. Calculate Scale Ratio (Target / Current)
-        sf::Vector2f newScale;
-        newScale.x = textureSize.x / currentSize.x;
-        newScale.y = textureSize.y / currentSize.y;
+	// 2. Safety: If size is 0, set it directly instead of scaling
+	if (currentSize.x < 0.1f || currentSize.y < 0.1f)
+	{
+		sf::Vector2f newSize(targetSize.x, targetSize.y);
+		setSize(newSize);
+		setOrigin({ newSize.x / 2.0f, newSize.y / 2.0f });
+		setScale({ 1.0f, 1.0f });
+	}
+	else
+	{
+		// 3. Calculate Scale Ratio (Target / Current)
+		sf::Vector2f newScale;
+		newScale.x = targetSize.x / currentSize.x;
+		newScale.y = targetSize.y / currentSize.y;
 
-        // 4. Apply via setScale (Triggers Physics Update)
-        setScale(newScale);
-    }
+		// 4. Apply via setScale (Triggers Physics Update)
+		setScale(newScale);
+	}
 }
 
 void bfCharacter::setSfPosition(const sf::Vector2f pos)

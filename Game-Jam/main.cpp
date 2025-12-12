@@ -18,8 +18,13 @@ int main()
     const int32 velocityIterations = 6;
     const int32 positionIterations = 2;
 
-    //sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "My Game", sf::Style::Fullscreen);
-	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "My Game");
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
+#ifdef WINDOW_FULL_SCREEN
+		"My Game", sf::Style::Fullscreen);
+#else
+		"My Game");
+#endif
+
     window.setFramerateLimit(WINDOW_FRAME_RATE);
 
     BoxML boxWorld(WINDOW_WIDTH, WINDOW_HEIGHT, PIXELS_PER_UNIT, timeStep, velocityIterations, positionIterations);

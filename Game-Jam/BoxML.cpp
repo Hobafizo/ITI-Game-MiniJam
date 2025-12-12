@@ -110,7 +110,7 @@ void BoxML::CreateWorld(void)
 	ClearObjects();
 	PrepareWorld();
 
-	//_player = CreatePlayer(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 50, PLAYGROUND_MARGIN_TOP + 50 }), { 165, 192 }, 0.01f, 0.3f);
+	//_player = CreatePlayer(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 50, PLAYGROUND_MARGIN_TOP + 50 }), { PLAYER_WIDTH, PLAYER_HEIGHT }, 0.01f, 0.3f);
 	//_player->Body()->SetLinearVelocity({ PLAYER_SPEED_X, PLAYER_SPEED_Y });
 
 	//bfWall* wall = CreateWall(b2_staticBody, pixelToMeter({ 800, 500 }), { WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT }, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
@@ -338,7 +338,7 @@ bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, 
 	AddObject(bfObj);
 
 	if (loadSprite)
-		bfObj->loadSpriteSheet("Assets/characters/frog.png", size.x, size.y, 0, 0, 5, 5, _timer.getElapsedTime().asSeconds(), 0.17f);
+		bfObj->loadSpriteSheet("Assets/characters/frog.png", size.x, size.y, 0, 0, 3, 3, _timer.getElapsedTime().asSeconds(), 0.17f);
 
 	bfObj->setScale({ 0.7f, 0.7f });
 
@@ -397,7 +397,7 @@ bfMonster* BoxML::CreateMonster(const b2BodyType bodyType, const b2Vec2 position
 	return bfObj;
 }
 
-bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits, bool addToWorld, bool loadSprite, bool invisible)
+bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density, float friction, uint16 categoryBits, uint16 maskBits, bool addToWorld, bool loadSprite, bool invisible, unsigned char spriteIndex)
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
@@ -439,15 +439,27 @@ bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, cons
 			(ObjectCategory)((uint16)ObjectCategory::Wall_Vertical | (uint16)ObjectCategory::SpeedWall_Vertical)
 		))
 		{
-			std::uniform_int_distribution<int> typeNum(1, 2);
+			if (!spriteIndex)
+			{
+				std::uniform_int_distribution<int> typeNum(1, 2);
+				spriteIndex = typeNum(randGenerator);
+			}
 
-			switch (typeNum(randGenerator))
+			switch (spriteIndex)
 			{
 			case 1:
 				bfObj->loadSpriteSheet("Assets/walls/wall_v_1.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
 				break;
 
 			case 2:
+				bfObj->loadSpriteSheet("Assets/walls/wall_v_2.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
+				break;
+
+			case 3:
+				bfObj->loadSpriteSheet("Assets/walls/wall_v_1.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
+				break;
+
+			case 4:
 				bfObj->loadSpriteSheet("Assets/walls/wall_v_2.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
 				break;
 			}
@@ -457,9 +469,13 @@ bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, cons
 			(ObjectCategory)((uint16)ObjectCategory::Wall_Horizontal | (uint16)ObjectCategory::SpeedWall_Horizontal | (uint16)ObjectCategory::Wall | (uint16)ObjectCategory::SpeedWall)
 		))
 		{
-			std::uniform_int_distribution<int> typeNum(1, 3);
+			if (!spriteIndex)
+			{
+				std::uniform_int_distribution<int> typeNum(1, 3);
+				spriteIndex = typeNum(randGenerator);
+			}
 
-			switch (typeNum(randGenerator))
+			switch (spriteIndex)
 			{
 			case 1:
 				bfObj->loadSpriteSheet("Assets/walls/wall_h_1.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
@@ -672,12 +688,6 @@ void BoxML::OnBeginContact(b2Contact* contact)
 	b2Fixture* fixtureA = contact->GetFixtureA();
 	b2Fixture* fixtureB = contact->GetFixtureB();
 
-	if (isObject(ObjectCategory::Monster, fixtureA)
-		|| isObject(ObjectCategory::Monster, fixtureB))
-	{
-		printf("Monster collided\n");
-	}
-
 	if (fixtureA->IsSensor() ||
 		fixtureB->IsSensor())
 	{
@@ -693,16 +703,6 @@ void BoxML::OnBeginContact(b2Contact* contact)
 		OnMonsterContact(fixtureA, fixtureB);
 	else if (isObject(ObjectCategory::Monster, fixtureB))
 		OnMonsterContact(fixtureB, fixtureA);
-
-	if (isObject(ObjectCategory::Key, fixtureA))
-		OnKeyContact(fixtureA, fixtureB);
-	else if (isObject(ObjectCategory::Key, fixtureB))
-		OnKeyContact(fixtureB, fixtureA);
-
-	if (isObject(ObjectCategory::Gate, fixtureA))
-		OnDoorContact(fixtureA, fixtureB);
-	else if (isObject(ObjectCategory::Gate, fixtureB))
-		OnDoorContact(fixtureB, fixtureA);
 }
 
 void BoxML::OnEndContact(b2Contact* contact)
@@ -727,12 +727,19 @@ void BoxML::OnPlayerContact(b2Fixture* player, b2Fixture* object)
 		_wallSound.play();
 		OnPlayerWallContact(player, object, objCategory);
 	}
+
 	else if (isObject((ObjectCategory)objCategory, ObjectCategory::Monster))
 	{
 		_levelMusic.stop();
 		_loseSound.play();
 		printf("Player hit monster\n");
 	}
+
+	else if (isObject((ObjectCategory)objCategory, ObjectCategory::Key))
+		OnKeyContact(object, player);
+
+	else if (isObject((ObjectCategory)objCategory, ObjectCategory::Gate))
+		OnDoorContact(object, player);
 }
 
 void BoxML::OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCategory)
@@ -966,22 +973,20 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 
 	if (_previewObject == nullptr)
 	{
-		// 103 x 235 is a Vertical aspect ratio
-		sf::Vector2f objectSize(103.0f, 235.0f);
+		const sf::Vector2f objectSize(WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT);
 
 		switch (_currentPreviewType)
 		{
 		case ObjectCategory::Wall:
 			// FIX: Pass 'ObjectCategory::Wall_Vertical' here!
-			// This forces CreateWall to load "wall_v_1.png" which matches the 103x235 size.
 			_previewObject = CreateWall(b2_staticBody, mouseMeters, objectSize, 0.0f, 0.0f,
-				(uint16)ObjectCategory::Wall_Vertical, 0, false, true, false);
+				(uint16)ObjectCategory::Wall_Vertical, 0, false, true, false, 3);
 			break;
 
 		case ObjectCategory::SpeedWall:
 			// FIX: Pass 'ObjectCategory::SpeedWall_Vertical' here!
 			_previewObject = CreateWall(b2_staticBody, mouseMeters, objectSize, 0.0f, 0.0f,
-				(uint16)ObjectCategory::SpeedWall_Vertical, 0, false, true, false);
+				(uint16)ObjectCategory::SpeedWall_Vertical, 0, false, true, false, 4);
 			break;
 
 		case ObjectCategory::Monster:
