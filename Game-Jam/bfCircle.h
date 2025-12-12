@@ -6,9 +6,10 @@ class bfCircle : public bfObject
 private:
 	sf::CircleShape _shape;
 	b2Body* _body;
+
 	sf::Texture _texture; // Keeps the image data alive
-	sf::Vector2i _frameSize; // Width/Height of one frame
-	int _frameStartIdx, _numFrames; // Total frames in the sheet
+	sf::Vector2i _frameSize, _frameMargin; // Width/Height of one frame
+	int _frameStartIdx, _numFrames, _framesPerLine; // Total frames in the sheet
 	int _currentFrame; // Current index
 	float _frameStartTime, _frameDuration; // Time per frame
 
@@ -16,9 +17,10 @@ public:
 	bfCircle(b2Body* body, float radius = 0, unsigned int color = 0xFFFFFFF);
 	virtual ~bfCircle();
 
-	bool loadSpriteSheet(const std::string& filepath, int frameWidth, int frameHeight, int numFrames, float curTime, float frameTime = 0.1f);
+	bool loadSpriteSheet(const std::string& filepath, int frameWidth, int frameHeight, int marginX, int marginY, int framePerLine, int numFrames, float curTime, float frameTime = 0.1f, bool autoResize = false);
 	bool updateSpriteSheet(int startIdx, int numFrames, float curTime, float frameTime = 0.1f);
 
+public:
 	void setSfPosition(const sf::Vector2f pos) override;
 	void setPositionFromTopLeft(const sf::Vector2f& topLeft) override;
 	void setRotation(float angle) override;
@@ -32,6 +34,7 @@ public:
 	void setOutlineColor(const sf::Color color);
 
 	void updatePosition(float curTime) override;
+	virtual void updateAnimation(float curTime);
 
 	b2Body* Body() const override;
 	sf::Drawable* Drawable() const override;

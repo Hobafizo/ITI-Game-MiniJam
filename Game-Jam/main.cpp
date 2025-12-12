@@ -1,4 +1,4 @@
-#include "def.h"
+﻿#include "def.h"
 #include "Hud.hpp"
 #include "BoxML.h"
 #include "bfCircle.h"
@@ -18,8 +18,13 @@ int main()
     const int32 velocityIterations = 6;
     const int32 positionIterations = 2;
 
-    //sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "My Game", sf::Style::Fullscreen);
-	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "My Game");
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
+#ifdef WINDOW_FULL_SCREEN
+		"My Game", sf::Style::Fullscreen);
+#else
+		"My Game");
+#endif
+
     window.setFramerateLimit(WINDOW_FRAME_RATE);
 
     BoxML boxWorld(WINDOW_WIDTH, WINDOW_HEIGHT, PIXELS_PER_UNIT, timeStep, velocityIterations, positionIterations);
@@ -42,34 +47,41 @@ int main()
     while (window.isOpen())
     {
         sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed || menuManager.currentState == EXIT)
-                window.close();
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed || menuManager.currentState == EXIT) {
+				levelMgr.unloadLevel();
+				window.close();
+			}
 
-            //inputHandler->handleInput();
+			if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape)
+			{
+				if (menuManager.currentState == ACTIVE_GAME) {
+					// Active Game: Handle Pause Input (ESC)
+					//levelMgr.loadLevel(Level3Data);
+					std::cout << "ESC pressed. Entering PAUSED state." << std::endl;
 
-            if (menuManager.currentState == ACTIVE_GAME) {
-                // Active Game: Handle Pause Input (ESC)
-                if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape) {
-                    std::cout << "ESC pressed. Entering PAUSED state." << std::endl;
-                    // Note: You would typically load a PauseMenu object here
-                    menuManager.setState(PAUSED);
-                }
-                // Handle other game inputs (WASD, etc.)
-            }
-            else if (menuManager.currentState == PAUSED) {
-                // Paused State: Handle Resume Input (ESC)
-                /*window.clear();
-                menuManager.draw(window);
-                window.display();*/
-                if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape) {
-                    std::cout << "ESC pressed. Resuming ACTIVE_GAME state." << std::endl;
-                    menuManager.setState(ACTIVE_GAME);
-                }
-                
-                // Handle pause menu clicks/input if a PauseMenu is displayed
-            }
+					menuManager.setState(PAUSED);
+					boxWorld.SetRenderState(WorldRenderState::Paused);
+					// Handle other game inputs (WASD, etc.)
+				}
+				else if (menuManager.currentState == PAUSED) {
+					std::cout << "ESC pressed. Resuming ACTIVE_GAME state." << std::endl;
+					menuManager.setState(ACTIVE_GAME);
+					boxWorld.SetRenderState(WorldRenderState::Running);
+				}
+			}
+
+			if (menuManager.currentState == MAIN_MENU)
+			{
+				levelMgr.unloadLevel();
+			}
+
+			else if (menuManager.currentState == LOADING_LEVEL)
+			{
+				levelMgr.loadLevel(Level3Data);
+				menuManager.setState(ACTIVE_GAME);
+			}
 
             if (event.type == sf::Event::KeyPressed) {
                 if (menuManager.currentState == ACTIVE_GAME) {
@@ -98,11 +110,12 @@ int main()
 
         if (menuManager.currentState == ACTIVE_GAME)
         {
-            //hud.draw(window)
+			boxWorld.UpdatePreviewObject(worldPos);
+			boxWorld.Step();
 
-            boxWorld.UpdatePreviewObject(worldPos);
-            boxWorld.Step();
+			window.clear();
             boxWorld.Render(window);
+			window.display();
         }
 
         //inputHandler->handleInput
@@ -111,21 +124,21 @@ int main()
         {
             window.clear();
 
-            if (menuManager.currentState == MAIN_MENU || menuManager.currentState == LEVEL_MENU) {
+            if (menuManager.currentState == MAIN_MENU
+				|| menuManager.currentState == LEVEL_MENU
+				|| menuManager.currentState == LOADING_LEVEL
+				)
+			{
                 menuManager.draw(window); // Draw the current menu screen
             }
 
             //still need to code up pauseMenu.cpp, 
-            else if (menuManager.currentState == PAUSED) {
-                // Draw Pause Menu overlay on top of the game
-                pausemenu.draw(window);
-
-                //sf::Text pauseText("PAUSED", sf::Font::getDefaultFont(), 72);
-                //pauseText.setFillColor(sf::Color::White);
-                //pauseText.setPosition(350.f, 300.f);
-                //pausemenu.draw(window);
-
-                // If you had a PauseMenu class, you would draw it here.
+            else if (menuManager.currentState == PAUSED)
+			{
+				boxWorld.Render(window);
+				
+                menuManager.showPauseMenu();
+                menuManager.draw(window); // Draw the pause menu
             }
 
             window.display();
