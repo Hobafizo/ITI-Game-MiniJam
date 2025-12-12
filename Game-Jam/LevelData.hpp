@@ -15,22 +15,24 @@ struct PlayerData {
 struct WallData {
     Vector2f spawnPos;
     Vector2f size;
-    float orientation;
     ObjectCategory type;
 };
 
 struct EnemyData {
     Vector2f spawnPos;
-    float radius;
+    Vector2f size;
     unsigned char type;
 };
 
 struct KeyData {
     Vector2f spawnPos;
+    Vector2f size ={ 71, 82 };
+
 };
 
 struct DoorData {
     Vector2f spawnPos;
+    Vector2f size = { 202, 298 };
 };
 
 struct LevelData {
