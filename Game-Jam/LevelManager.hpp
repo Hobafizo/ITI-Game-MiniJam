@@ -60,11 +60,12 @@ public:
             };
 
         // ---------------- Player ----------------
+        bfPlayer* spawnedPlayer;
         {
             Vector2f sp = shifted(levelData.player.spawnPos);
             b2Vec2 p = boxWorld.pixelToMeter(sp);
 
-            bfPlayer* spawnedPlayer = boxWorld.CreatePlayer(
+                spawnedPlayer = boxWorld.CreatePlayer(
                 b2_dynamicBody,
                 p,
                 { 165, 192 },
@@ -79,11 +80,12 @@ public:
         }
 
         // ---------------- Walls ----------------
+        bfWall* wall;
         for (auto& w : levelData.walls) {
             Vector2f sp = shifted(w.spawnPos);
             b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-            bfWall* wall = boxWorld.CreateWall(
+                wall = boxWorld.CreateWall(
                 b2_staticBody,
                 pos,
                 w.size,
@@ -97,11 +99,12 @@ public:
         }
 
         // ---------------- Enemies ----------------
+        bfMonster* mon;
         for (auto& e : levelData.enemies) {
             Vector2f sp = shifted(e.spawnPos);
             b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-            bfMonster* mon = boxWorld.CreateMonster(
+            mon = boxWorld.CreateMonster(
                 b2_dynamicBody,
                 pos,
                 e.size,
@@ -116,11 +119,12 @@ public:
         }
 
         // ---------------- Key ----------------
+        bfKey* key;
         {
             Vector2f sp = shifted(levelData.key.spawnPos);
             b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-            bfKey* key = boxWorld.CreateKey(
+                key = boxWorld.CreateKey(
                 b2_staticBody,
                 pos,
                 levelData.key.size,
@@ -133,11 +137,12 @@ public:
         }
 
         // ---------------- Door ----------------
+        bfDoor* door;
         {
             Vector2f sp = shifted(levelData.door.spawnPos);
             b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-            bfDoor* door = boxWorld.CreateDoor(
+            door = boxWorld.CreateDoor(
                 b2_staticBody,
                 pos,
                 levelData.door.size,
