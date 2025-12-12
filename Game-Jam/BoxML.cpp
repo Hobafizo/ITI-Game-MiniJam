@@ -18,13 +18,13 @@
 #define WALL_SPEED_INC_TIME       5.0f
 #define PI           (22 / 7.0f)
 
-#define PLAYGROUND_MARGIN_LEFT   323
-#define PLAYGROUND_MARGIN_RIGHT  323
-#define PLAYGROUND_MARGIN_TOP    175
-#define PLAYGROUND_MARGIN_BOTTOM 185
+#define PLAYGROUND_MARGIN_LEFT   303
+#define PLAYGROUND_MARGIN_RIGHT  243
+#define PLAYGROUND_MARGIN_TOP    135
+#define PLAYGROUND_MARGIN_BOTTOM 145
 
-#define WALL_VERTICAL_WIDTH  103
-#define WALL_VERTICAL_HEIGHT 246
+#define WALL_VERTICAL_WIDTH      103
+#define WALL_VERTICAL_HEIGHT     246
 
 static std::random_device randomDevice;
 static std::mt19937 randGenerator(randomDevice());
@@ -34,10 +34,40 @@ BoxML* BoxML::_instance = nullptr;
 // --- HELPER: ROTATE VISUALS ---
 void ApplyRotation(bfObject* obj, float angleInRadians)
 {
-	if (!obj) return;
+	if (!obj)
+		return;
+
+	b2Body* body = obj->Body();
+	body->GetLinearVelocity();
+	body->GetAngularVelocity();
+
 	float angleDeg = angleInRadians * 180.0f / PI;
 	sf::Transformable* trans = dynamic_cast<sf::Transformable*>(obj->Drawable());
-	if (trans) trans->setRotation(angleDeg);
+	if (trans)
+		trans->setRotation(angleDeg);
+}
+
+void ApplyRotation(bfObject* obj)
+{
+	if (!obj)
+		return;
+
+	b2Body* body = obj->Body();
+	if (!body)
+		return;
+
+	b2Vec2 vel = body->GetLinearVelocity();
+
+	// Prevent NaN rotation when object is not moving
+	if (vel.LengthSquared() < 0.0001f)
+		return;
+
+	float angleRad = atan2(vel.y, vel.x);
+	float angleDeg = angleRad * 180.0f / b2_pi;
+
+	sf::Transformable* trans = dynamic_cast<sf::Transformable*>(obj->Drawable());
+	if (trans)
+		trans->setRotation(angleDeg + 90.0f);
 }
 
 BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned short screenPixelPerUnit,
@@ -57,8 +87,8 @@ BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned s
 	_loseSound.setBuffer(_loseBuffer);
 	_winBuffer.loadFromFile("Assets/Audio/Won.wav");
 	_winSound.setBuffer(_winBuffer);
-	_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
-	_levelMusic.setLoop(true);
+	/*_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
+	_levelMusic.setLoop(true);*/
 	_wallBuffer.loadFromFile("Assets/Audio/Ocean Wave - Sound Effect - RazendeGijs.wav");
 	_wallSound.setBuffer(_wallBuffer);
 }
@@ -92,13 +122,15 @@ void BoxML::CreateWorld(void)
 	wall = CreateWall(b2_staticBody, pixelToMeter({ 0, (float)_screenHeight - PLAYGROUND_MARGIN_BOTTOM }), { (float)_screenWidth, WALL_VERTICAL_WIDTH }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal, 0, true, false, true);
 
 	// 4. RESTORED: MONSTER
-	bfMonster* monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 108, 76 }, 0.01f, 0.3f, 1);
+	bfMonster* monster;
+
+	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 108, 76 }, 0.01f, 0.3f, 1);
 	monster->setMovePattern(Monster_MovePattern::Down);
 
 	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ (float)_screenWidth - 600, PLAYGROUND_MARGIN_TOP + 50 }), { 83, 87 }, 0.01f, 0.3f, 2);
 	monster->setMovePattern(Monster_MovePattern::Down);
 
-	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ (float)_screenWidth - 600, PLAYGROUND_MARGIN_TOP + 50}), { 94, 56 }, 0.01f, 0.3f, 3);
+	monster = CreateMonster(b2_dynamicBody, pixelToMeter({ (float)_screenWidth - 600, PLAYGROUND_MARGIN_TOP + 100}), { 94, 56 }, 0.01f, 0.3f, 3);
 	monster->setMovePattern(Monster_MovePattern::Right);
 
 	CreateKey(b2_staticBody, pixelToMeter({ 500, 500 }), { 71, 82 }, 0.01f, 0.3f);
@@ -134,7 +166,9 @@ void BoxML::LoadPositions(void)
 		obj = *it;
 		if (!obj) continue;
 		obj->setSfPosition(meterToPixel(obj->getB2Position()));
-		if (obj->Body()) ApplyRotation(obj, obj->Body()->GetAngle());
+
+		if (obj->Body())
+			ApplyRotation(obj, obj->Body()->GetAngle());
 	}
 }
 
@@ -152,7 +186,9 @@ bool BoxML::RemoveObject(bfObject* obj)
 		if (!cur) continue;
 		if (cur == obj)
 		{
-			//if (cur->Body()) _world.DestroyBody(cur->Body());
+			if (cur->Body())
+				_objsToDelete.push_back(cur->Body());
+
 			delete cur;
 			_objs.erase(it);
 			return true;
@@ -161,18 +197,38 @@ bool BoxML::RemoveObject(bfObject* obj)
 	return false;
 }
 
-void BoxML::ClearObjects()
+void BoxML::ClearObjects(void)
 {
 	bfObject* cur;
 	for (auto it = _objs.begin(); it != _objs.end(); ++it)
 	{
 		cur = *it;
-		if (!cur) continue;
-		//if (cur->Body()) _world.DestroyBody(cur->Body());
+		if (!cur)
+			continue;
+
+		if (cur->Body())
+			_objsToDelete.push_back(cur->Body());
+
 		delete cur;
 		*it = NULL;
 	}
+
 	_objs.clear();
+
+	_player = nullptr;
+	_placedWall = nullptr;
+	_placedSpeedWall = nullptr;
+	_placedMonster = nullptr;
+}
+
+void BoxML::DispatchDestroyBody(void)
+{
+	for (auto it = _objsToDelete.begin(); it != _objsToDelete.end(); ++it)
+	{
+		_world.DestroyBody(*it);
+	}
+
+	_objsToDelete.clear();
 }
 
 bfCircle* BoxML::CreateCircle(const b2BodyType bodyType, const b2Vec2 position, float radius, float density, float friction, uint16 categoryBits, uint16 maskBits)
@@ -530,6 +586,8 @@ void BoxML::Step(void)
 
 	_world.Step(_timeStep, _velocityIterations, _positionIterations);
 	_frameTimer.restart();
+
+	DispatchDestroyBody();
 }
 
 void BoxML::Render(sf::RenderWindow& mainWnd)
@@ -558,9 +616,9 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 
 			// --- FIX START ---
 			// Apply rotation to ALL objects that have a body, not just the player.
-			if (obj->Body())
+			if (_player && _player->Body() == obj->Body())
 			{
-				ApplyRotation(obj, obj->Body()->GetAngle());
+				ApplyRotation(obj);
 			}
 
 
@@ -572,8 +630,11 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 			_previewObject->setSfPosition(meterToPixel(_previewObject->getB2Position()));
 
 			// Rotation for Preview
-			if (_previewObject->Body()) ApplyRotation(_previewObject, _previewObject->Body()->GetAngle());
-			else ApplyRotation(_previewObject, _previewRotation);
+			if (_previewObject->Body())
+				ApplyRotation(_previewObject, _previewObject->Body()->GetAngle());
+
+			else
+				ApplyRotation(_previewObject, _previewRotation);
 
 			mainWnd.draw(*_previewObject->Drawable());
 		}
@@ -585,6 +646,11 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 
 void BoxML::OnBeginContact(b2Contact* contact)
 {
+	if (contact->GetFixtureA()->IsSensor() ||
+		contact->GetFixtureB()->IsSensor())
+	{
+		return;
+	}
 
 	b2Fixture* fixtureA = contact->GetFixtureA();
 	b2Fixture* fixtureB = contact->GetFixtureB();
@@ -620,7 +686,9 @@ void BoxML::OnPostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 
 void BoxML::OnPlayerContact(b2Fixture* player, b2Fixture* object)
 {
-	if (!player || !object) return;
+	if (!player || !object)
+		return;
+
 	uint16 objCategory = object->GetFilterData().categoryBits;
 
 	if (isObject((ObjectCategory)objCategory,
@@ -653,24 +721,32 @@ void BoxML::OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCa
 	// Generalized bounce
 	if (isObject((ObjectCategory)objCategory, ObjectCategory::Wall_Vertical))
 	{
-		if (currentVelocity.x > 0 && randomDir.x > 0 || currentVelocity.x < 0 && randomDir.x < 0) randomDir.x = -randomDir.x;
+		if (currentVelocity.x > 0 && randomDir.x > 0 || currentVelocity.x < 0 && randomDir.x < 0)
+			randomDir.x = -randomDir.x;
+
 		playerBody->SetLinearVelocity(currentSpeed * randomDir);
 	}
 	else if (isObject((ObjectCategory)objCategory, ObjectCategory::Wall_Horizontal))
 	{
-		if (currentVelocity.y > 0 && randomDir.y > 0 || currentVelocity.y < 0 && randomDir.y < 0) randomDir.y = -randomDir.y;
+		if (currentVelocity.y > 0 && randomDir.y > 0 || currentVelocity.y < 0 && randomDir.y < 0)
+			randomDir.y = -randomDir.y;
+
 		playerBody->SetLinearVelocity(currentSpeed * randomDir);
 	}
 	else if (isObject((ObjectCategory)objCategory, ObjectCategory::SpeedWall_Vertical))
 	{
-		if (currentVelocity.x > 0 && randomDir.x > 0 || currentVelocity.x < 0 && randomDir.x < 0) randomDir.x = -randomDir.x;
+		if (currentVelocity.x > 0 && randomDir.x > 0 || currentVelocity.x < 0 && randomDir.x < 0)
+			randomDir.x = -randomDir.x;
+
 		_player->setBoostMultiplier(WALL_SPEED_INC_MULTIPLIER);
 		_player->setSpeedBoostTimer(_timer.getElapsedTime().asSeconds() + WALL_SPEED_INC_TIME);
 		playerBody->SetLinearVelocity(currentSpeed * randomDir);
 	}
 	else if (isObject((ObjectCategory)objCategory, ObjectCategory::SpeedWall_Horizontal))
 	{
-		if (currentVelocity.y > 0 && randomDir.y > 0 || currentVelocity.y < 0 && randomDir.y < 0) randomDir.y = -randomDir.y;
+		if (currentVelocity.y > 0 && randomDir.y > 0 || currentVelocity.y < 0 && randomDir.y < 0)
+			randomDir.y = -randomDir.y;
+
 		_player->setBoostMultiplier(WALL_SPEED_INC_MULTIPLIER);
 		_player->setSpeedBoostTimer(_timer.getElapsedTime().asSeconds() + WALL_SPEED_INC_TIME);
 		playerBody->SetLinearVelocity(currentSpeed * randomDir);
@@ -679,10 +755,14 @@ void BoxML::OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCa
 
 void BoxML::OnMonsterContact(b2Fixture* monster, b2Fixture* object)
 {
-	if (!monster || !object) return;
+	if (!monster || !object)
+		return;
+
 	b2Body* monsterBody = monster->GetBody();
 	bfMonster* monsterObj = findObjectByBody<bfMonster>(monsterBody);
-	if (!monsterBody || !monsterObj) return;
+
+	if (!monsterBody || !monsterObj)
+		return;
 
 	uint16 objCategory = object->GetFilterData().categoryBits;
 
@@ -705,11 +785,11 @@ void BoxML::OnKeyContact(b2Fixture* key, b2Fixture* object)
 	if (!keyObj)
 		return;
 
+	RemoveObject(keyObj);
+
 	bfDoor* doorObj = findObjectByBody<bfDoor>(ObjectCategory::Gate);
 	if (!doorObj)
 		return;
-
-	RemoveObject(keyObj);
 
 	doorObj->loadSpriteSheet("Assets/Enviroment/Gate_Open.png", 202, 298, 0, 0, 1, 1, 0, 0, true);
 }
@@ -720,11 +800,10 @@ void BoxML::OnDoorContact(b2Fixture* door, b2Fixture* object)
 	if (keyObj)
 		return;
 
+	_levelMusic.stop();
 	_winSound.play();
-	//_levelMusic.stop();
 
 	_win = true;
-	//CreateWorld();
 }
 
 sf::Vector2u BoxML::Resolution(void) const
@@ -821,7 +900,9 @@ void BoxML::HandleKeyPress(sf::Keyboard::Key key)
 	if (typeChanged) {
 		_previewRotation = 0.0f;
 		if (_previewObject) {
-			//if (_previewObject->Body()) _world.DestroyBody(_previewObject->Body());
+			if (_previewObject->Body())
+				_objsToDelete.push_back(_previewObject->Body());
+
 			delete _previewObject;
 			_previewObject = nullptr;
 		}
@@ -837,7 +918,9 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 
 	if (alreadyHasThisType) {
 		if (_previewObject) {
-			//if (_previewObject->Body()) _world.DestroyBody(_previewObject->Body());
+			if (_previewObject->Body())
+				_objsToDelete.push_back(_previewObject->Body());
+
 			delete _previewObject;
 			_previewObject = nullptr;
 		}
@@ -888,14 +971,11 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 		break;
 		}
 
-		if (_previewObject && _previewObject->Body()) {
+		if (_previewObject && _previewObject->Body())
+		{
 			_previewObject->Body()->SetGravityScale(0.0f);
 			b2Fixture* fixture = _previewObject->Body()->GetFixtureList();
 			fixture->SetSensor(true);
-			b2Filter filter;
-			filter.categoryBits = 0;
-			filter.maskBits = 0;
-			fixture->SetFilterData(filter);
 		}
 	}
 
@@ -957,13 +1037,31 @@ void BoxML::HandleRightClick(const sf::Vector2f& pixelMousePos)
 	for (bfObject* obj : objectsToCheck) {
 		if (obj && obj->Body()) {
 			for (b2Fixture* f = obj->Body()->GetFixtureList(); f; f = f->GetNext()) {
-				if (f->TestPoint(mouseMeters)) {
-					// Found the object! Clear the specific pointer.
-					if (obj == _placedWall) _placedWall = nullptr;
-					if (obj == _placedSpeedWall) _placedSpeedWall = nullptr;
-					if (obj == _placedMonster) _placedMonster = nullptr;
+				if (f->TestPoint(mouseMeters))
+				{
+					bool remove = false;
 
-					RemoveObject(obj);
+					// Found the object! Clear the specific pointer.
+					if (obj == _placedWall)
+					{
+						_placedWall = nullptr;
+						remove = true;
+					}
+
+					if (obj == _placedSpeedWall)
+					{
+						_placedSpeedWall = nullptr;
+						remove = true;
+					}
+
+					if (obj == _placedMonster)
+					{
+						_placedMonster = nullptr;
+						remove = true;
+					}
+
+					if (remove)
+						RemoveObject(obj);
 					return;
 				}
 			}

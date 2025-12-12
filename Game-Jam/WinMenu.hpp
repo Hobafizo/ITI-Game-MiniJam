@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseMenu.hpp"
+#include "BoxML.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -14,8 +15,6 @@ private:
     sf::Texture quitTexture;
     sf::Sprite quitSprite;
 
-    sf::Vector2u windowSize = sf::Vector2u(1920, 1080);
-
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/UI/Menus/WinMenu/WinBackground.jpg")) return false;
         if (!menuTexture.loadFromFile("Assets/UI/Menus/WinMenu/Menu.jpg")) return false;
@@ -24,6 +23,8 @@ private:
     }
 
     void setupSprites() {
+		sf::Vector2u windowSize = BoxML::Instance()->Resolution();
+
         backgroundSprite.setTexture(backgroundTexture);
 
         float bgScaleX = (float)windowSize.x / backgroundTexture.getSize().x;
@@ -61,13 +62,13 @@ public:
     }
 
     MenuAction checkClick(sf::RenderWindow& window) override {
-        sf::Vector2f mouse = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+		sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(window);
 
-        if (menuSprite.getGlobalBounds().contains(mouse)) {
+        if (menuSprite.getGlobalBounds().contains(mousePos)) {
             std::cout << "WinMenu -> Back To Menu clicked\n";
             return GOTO_MAIN_MENU;
         }
-        if (quitSprite.getGlobalBounds().contains(mouse)) {
+        if (quitSprite.getGlobalBounds().contains(mousePos)) {
             std::cout << "WinMenu -> Quit clicked\n";
             return QUIT;
         }

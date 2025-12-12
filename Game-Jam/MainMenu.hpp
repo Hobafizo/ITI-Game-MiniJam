@@ -1,4 +1,5 @@
 #include "BaseMenu.hpp"
+#include "BoxML.h"
 #include<SFML/Audio.hpp>
 
 // "Assets/UI/Menus/LevelMenu/"
@@ -11,7 +12,6 @@ private:
     sf::Sprite startSprite;
     sf::Texture exitTexture;
     sf::Sprite exitSprite;
-    sf::Vector2u windowSize = sf::Vector2u(1920, 1080);
 
 
     bool loadAssets() {
@@ -22,6 +22,8 @@ private:
     }
 
     void setupSprites() {
+		sf::Vector2u windowSize = BoxML::Instance()->Resolution();
+
         backgroundSprite.setTexture(backgroundTexture);
         startSprite.setTexture(startTexture);
         exitSprite.setTexture(exitTexture);
@@ -60,14 +62,13 @@ public:
     }
 
     MenuAction checkClick(sf::RenderWindow& window) override {
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-        sf::Vector2f worldMousePos = window.mapPixelToCoords(mousePos);
+        sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(window);
 
-        if (startSprite.getGlobalBounds().contains(worldMousePos)) {
+        if (startSprite.getGlobalBounds().contains(mousePos)) {
             std::cout << "Main Menu -> Start button clicked." << std::endl;
             return GOTO_LEVEL_MENU;
         }
-        if (exitSprite.getGlobalBounds().contains(worldMousePos)) {
+        if (exitSprite.getGlobalBounds().contains(mousePos)) {
             std::cout << "Main Menu -> Exit button clicked." << std::endl;
             return QUIT;
         }

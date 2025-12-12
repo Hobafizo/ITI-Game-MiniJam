@@ -19,6 +19,7 @@ private:
 	b2Vec2 _gravity;
 	b2World _world;
 	WorldContactListener _contactListener;
+	std::list<b2Body*> _objsToDelete;
 	std::list<bfObject*> _objs;
 
 	bool _win = false;
@@ -66,6 +67,7 @@ private:
 	void AddObject(bfObject* obj);
 	bool RemoveObject(bfObject* obj);
 	void ClearObjects();
+	void DispatchDestroyBody();
 
 public:
 

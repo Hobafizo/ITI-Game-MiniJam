@@ -93,6 +93,12 @@
     <ClCompile Include="VisualHandler.hpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="bfDoor.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="bfKey.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxML.h">
@@ -145,6 +151,30 @@
     </ClInclude>
     <ClInclude Include="LevelManager.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hud.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Level2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Level3.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LoseMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WinMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bfDoor.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="bfKey.h">
+      <Filter>Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

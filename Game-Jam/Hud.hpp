@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BaseMenu.hpp"
+#include "BoxML.h"
 // "Assets/UI/Menus/LevelMenu/"
 //"Assets/UI/Menus/MainMenu/"
 class Hud {
@@ -11,7 +12,6 @@ private:
     sf::Sprite startSprite;
     sf::Texture exitTexture;
     sf::Sprite exitSprite;
-    sf::Vector2u windowSize = sf::Vector2u(1920, 1080);
 
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/UI/HudUI2/hud.png")) { cout << "did load hud?";return false; };
@@ -21,6 +21,8 @@ private:
     }
 
     void setupSprites() {
+		sf::Vector2u windowSize = BoxML::Instance()->Resolution();
+
         backgroundSprite.setTexture(backgroundTexture);
         startSprite.setTexture(startTexture);
         exitSprite.setTexture(exitTexture);

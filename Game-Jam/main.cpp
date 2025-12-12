@@ -15,7 +15,8 @@ int main()
     const int32 velocityIterations = 6;
     const int32 positionIterations = 2;
 
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "My Game", sf::Style::Fullscreen);
+    //sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "My Game", sf::Style::Fullscreen);
+	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "My Game");
     window.setFramerateLimit(WINDOW_FRAME_RATE);
 
     BoxML boxWorld(WINDOW_WIDTH, WINDOW_HEIGHT, PIXELS_PER_UNIT, timeStep, velocityIterations, positionIterations);
@@ -88,7 +89,7 @@ int main()
         if (menuManager.currentState == ACTIVE_GAME)
         {
             //hud.draw(window)
-;
+
             boxWorld.UpdatePreviewObject(worldPos);
             boxWorld.Step();
             boxWorld.Render(window);
