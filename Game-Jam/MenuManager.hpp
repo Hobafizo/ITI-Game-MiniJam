@@ -11,7 +11,7 @@ class MenuManager {
 private:
     std::unique_ptr<BaseMenu> currentMenu;
     sf::Music _mainMusic;
-    sf::Music _levelMusic;
+    //sf::Music _levelMusic;
     sf::SoundBuffer ck;
     sf::Sound ck_s;
 
@@ -62,9 +62,9 @@ public:
             currentMenu.reset();
             currentState = ACTIVE_GAME;
             _mainMusic.stop();
-            _levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
+            /*_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
             _levelMusic.setLoop(true);
-            _levelMusic.play();
+            _levelMusic.play();*/
             std::cout << "--- MenuManager switched state to ACTIVE GAME ---" << std::endl;
             break;
 
