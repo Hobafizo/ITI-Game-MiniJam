@@ -60,6 +60,7 @@ int main()
 
 					menuManager.setState(PAUSED);
 					boxWorld.SetRenderState(WorldRenderState::Paused);
+
 					// Handle other game inputs (WASD, etc.)
 				}
 				else if (menuManager.currentState == PAUSED) {
@@ -68,6 +69,12 @@ int main()
 					boxWorld.SetRenderState(WorldRenderState::Running);
 				}
 			}
+            if (boxWorld.RenderState() == WorldRenderState::Lose) {
+                menuManager.showLoseMenu();
+                boxWorld.SetRenderState(WorldRenderState::Paused);
+                levelMgr.unloadLevel();
+                menuManager.handleHover();
+            }
 
 			if (menuManager.currentState == MAIN_MENU)
 			{

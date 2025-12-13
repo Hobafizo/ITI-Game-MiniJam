@@ -775,6 +775,7 @@ void BoxML::OnPlayerContact(b2Fixture* player, b2Fixture* object)
 		_levelMusic.stop();
 		_loseSound.play();
 		printf("Player hit monster\n");
+		SetRenderState(WorldRenderState::Lose);
 	}
 
 	else if (isObject((ObjectCategory)objCategory, ObjectCategory::Key))

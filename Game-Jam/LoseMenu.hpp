@@ -106,7 +106,7 @@ private:
             retryScale = buttonWidth / retryTexWidth;
             retrySprite.setTexture(retryTexture);
             retrySprite.setScale(retryScale, retryScale);
-            retrySprite.setPosition(centerX+250.f, windowSize.y * 0.4f+250.f);
+            retrySprite.setPosition(centerX, windowSize.y * 0.4f);
         }
         else {
             std::cout << "WARNING: Retry button texture width is zero! Button will not display correctly.\n";
@@ -121,7 +121,7 @@ private:
             quitScale = buttonWidth / quitTexWidth;
             quitSprite.setTexture(quitTexture);
             quitSprite.setScale(quitScale, quitScale);
-            quitSprite.setPosition(centerX-250.f, windowSize.y * 0.6f+250.f);
+            quitSprite.setPosition(centerX, windowSize.y * 0.6f);
         }
         else {
             std::cout << "WARNING: Quit button texture width is zero! Button will not display correctly.\n";
@@ -169,7 +169,7 @@ public:
         }
         if (quitSprite.getGlobalBounds().contains(mousePos)) {
             std::cout << "LoseMenu -> Quit clicked\n";
-            return QUIT;
+            return GOTO_MAIN_MENU;
         }
         return NONE;
     }
