@@ -19,7 +19,7 @@ private:
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MenusUI1/pause.png")) return false;
         if (!resumeTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Resume.png")) return false;
-        if (!quitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/exit2.png")) return false;
+        if (!quitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Back.png")) return false;
         return true;
     }
 
