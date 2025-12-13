@@ -87,7 +87,8 @@ public:
 	bool LoadBackground2(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
 	bool LoadWinBackground(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
 	bool LoadPauseBackground(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
-
+	void StartLevelMusic();
+	void StopLevelMusic();
 	void Step();
 	void Render(sf::RenderWindow& mainWnd);
 

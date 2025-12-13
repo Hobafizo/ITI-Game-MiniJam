@@ -9,6 +9,7 @@
 //1080.f-768.f
 float shiftFactorX= (1920.f - 1366.f) / 2.f;;
 float shiftFactorY= (1080.f - 768.f) / 2.f;
+
 class LevelManager {
     LevelData levelData;
     BoxML& boxWorld;
@@ -17,7 +18,8 @@ class LevelManager {
 
     std::vector<bfObject*> spawnedObjects;
     bfPlayer* spawnedPlayer = nullptr;
-
+private:
+    sf::Music _levelMusic;
 public:
     LevelManager( BoxML& bw)
         :
@@ -30,17 +32,13 @@ public:
 
     void loadLevel(const LevelData& lvl) {
         levelData = lvl;
-        
         if (_levelLoaded)
 			return;
-
 		_levelLoaded = true;
         cout << "new level loaded\n";
-
 		const sf::Vector2u screen = boxWorld.Resolution();
-
 		boxWorld.PrepareWorld();
-
+        boxWorld.StartLevelMusic(); // (needs fixing)
         // Player remember to uncomment, having an issue currently
         float playWidth = 1366.f;
         float playHeight = 768.f;
@@ -89,12 +87,12 @@ public:
         }
 
         // ---------------- Walls ----------------
-        bfWall* wall;
+        
         for (auto& w : levelData.walls) {
             Vector2f sp = shifted(w.spawnPos);
             b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-                wall = boxWorld.CreateWall(
+            bfWall* wall = boxWorld.CreateWall(
                 b2_staticBody,
                 pos,
                 w.size,
@@ -108,12 +106,12 @@ public:
         }
 
         // ---------------- Enemies ----------------
-        bfMonster* mon;
+         
         for (auto& e : levelData.enemies) {
             Vector2f sp = shifted(e.spawnPos);
             b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-            mon = boxWorld.CreateMonster(
+            bfMonster* mon = boxWorld.CreateMonster(
                 b2_dynamicBody,
                 pos,
                 e.size,
@@ -128,12 +126,12 @@ public:
         }
 
         // ---------------- Key ----------------
-        bfKey* key;
+        
         {
             Vector2f sp = shifted(levelData.key.spawnPos);
             b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-                key = boxWorld.CreateKey(
+            bfKey* key = boxWorld.CreateKey(
                 b2_staticBody,
                 pos,
                 levelData.key.size,
@@ -146,12 +144,12 @@ public:
         }
 
         // ---------------- Door ----------------
-        bfDoor* door;
+         
         {
             Vector2f sp = shifted(levelData.door.spawnPos);
             b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-            door = boxWorld.CreateDoor(
+            bfDoor* door = boxWorld.CreateDoor(
                 b2_staticBody,
                 pos,
                 levelData.door.size,
@@ -161,17 +159,22 @@ public:
 
             if (door)
                 spawnedObjects.push_back(door);
+ 
         }
+
+
+
     }
 
     
 
     void unloadLevel() {
+        boxWorld.StopLevelMusic();
+
         if (!_levelLoaded) return;
 
         /*for (auto* obj : spawnedObjects)
             delete obj;*/
-
 		boxWorld.ClearObjects();
 
         spawnedObjects.clear();

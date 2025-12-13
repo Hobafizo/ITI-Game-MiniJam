@@ -1,6 +1,8 @@
 #pragma once
 #include "LevelData.hpp"
 #include "ObjectCategory.h"
+#include<SFML/Audio.hpp>
+
 static LevelData Level3Data = {
 
     // Player position in pixels
@@ -17,23 +19,20 @@ static LevelData Level3Data = {
     {
     // Vertical wall (you already had this one correct)
     { sf::Vector2f(960.f, 700.f),
-      sf::Vector2f(WALL_VERTICAL_WIDTH,WALL_VERTICAL_HEIGHT),
-      ObjectCategory::Wall_Vertical },
+           sf::Vector2f(WALL_HORIZONTAL_WIDTH, WALL_HORIZONTAL_HEIGHT),
 
-      { sf::Vector2f(960.f, 200.f),
-        sf::Vector2f(WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT),
-        ObjectCategory::Wall_Vertical},
+            ObjectCategory::Wall_Horizontal },
+      //hor wall
+      { sf::Vector2f(960.f, 400.f),
+        sf::Vector2f(WALL_HORIZONTAL_WIDTH, WALL_HORIZONTAL_HEIGHT),
+        ObjectCategory::Wall_Horizontal},
 
-        
-        { sf::Vector2f(910.f, 200.f),
+        // Vert wall
+        { sf::Vector2f(910.f, 300.f),
           sf::Vector2f(WALL_VERTICAL_WIDTH,WALL_VERTICAL_HEIGHT),
 
           ObjectCategory::Wall_Vertical },
 
-          { sf::Vector2f(100.f, 300.f),
-            sf::Vector2f(WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT),
-
-            ObjectCategory::Wall_Vertical },
      },
     // Enemy data: enemy spawn position and radius in pixels.
     /*
@@ -46,7 +45,7 @@ static LevelData Level3Data = {
     {
         { sf::Vector2f(1300.f, 700.f),{ 108, 76 } , 1},
         // EnemyData object 2
-        { sf::Vector2f(20.f, 900.f), { 83, 87 }, 2  },
+        { sf::Vector2f(600.f, 900.f), { 83, 87 }, 2  },
 
         // EnemyData object 3
 		{ sf::Vector2f(1700.f, 500.f), { 94, 56 }, 3  }
