@@ -338,7 +338,11 @@ bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, 
 	AddObject(bfObj);
 
 	if (loadSprite)
-		bfObj->loadSpriteSheet("Assets/characters/frog.png", size.x, size.y, 0, 0, 3, 3, _timer.getElapsedTime().asSeconds(), 0.17f);
+	{
+		bfObj->loadSpriteSheet("Assets/characters/frog.png", size.x, size.y, 0, 0, 3, 3, _timer.getElapsedTime().asSeconds(), 0.25f);
+		//bfObj->loadSpriteSheet("Assets/characters/frog4.png", 165, 192, 0, 0, 4, 4, _timer.getElapsedTime().asSeconds(), 0.17f);
+		//bfObj->loadSpriteSheet("Assets/characters/frog4_fixed.png", 150, 192, 0, 0, 4, 4, _timer.getElapsedTime().asSeconds(), 0.17f);
+	}
 
 	bfObj->setScale({ 0.7f, 0.7f });
 

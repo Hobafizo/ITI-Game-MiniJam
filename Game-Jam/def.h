@@ -16,8 +16,8 @@
 #define PLAYGROUND_MARGIN_TOP     135
 #define PLAYGROUND_MARGIN_BOTTOM  145
 
-#define PLAYER_WIDTH              181
-#define PLAYER_HEIGHT             180
+#define PLAYER_WIDTH              160
+#define PLAYER_HEIGHT             182
 #define WALL_VERTICAL_WIDTH       50
 #define WALL_VERTICAL_HEIGHT      119
 #define WALL_HORIZONTAL_WIDTH     178
