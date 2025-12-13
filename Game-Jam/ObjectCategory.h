@@ -2,6 +2,7 @@
 
 enum class ObjectCategory : unsigned short
 {
+	None = 0,
 	Player = 1,
 	Wall_Vertical = 2,
 	Wall_Horizontal = 4,

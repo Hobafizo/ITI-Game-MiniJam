@@ -40,7 +40,7 @@ private:
 	bool _hasLost;
 
 	bfObject* _previewObject = nullptr;
-	ObjectCategory _currentPreviewType = ObjectCategory::Wall;
+	ObjectCategory _currentPreviewType = ObjectCategory::None;
 	float _previewRotation;
 
 	bfObject* _placedWall = nullptr;
