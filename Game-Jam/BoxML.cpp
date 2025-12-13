@@ -131,21 +131,28 @@ void BoxML::CreateWorld(void)
 
 }
 
-//void BoxML::StartLevelMusic()
-//{
-//	// Only play if it isn't already playing
-//	if (_levelMusic.getStatus() != sf::SoundSource::Playing)
-//	{
-//		// Load and Play
-//		if (_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav")) {
-//			_levelMusic.setLoop(true);
-//			_levelMusic.play();
-//		}
-//		else {
-//			std::cout << "Error: Could not load level music!" << std::endl;
-//		}
-//	}
-//}
+void BoxML::StartLevelMusic()
+{
+	// Only play if it isn't already playing
+	if (_levelMusic.getStatus() != sf::SoundSource::Playing)
+	{
+		// Load and Play
+		if (_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav")) {
+			_levelMusic.setLoop(true);
+			_levelMusic.play();
+		}
+		else {
+			std::cout << "Error: Could not load level music!" << std::endl;
+		}
+	}
+}
+void BoxML::StopLevelMusic() {
+		if (_levelMusic.getStatus() == sf::SoundSource::Playing) {
+		_levelMusic.stop();
+		_levelMusic.setLoop(false);
+	}
+
+}
 void BoxML::HandleInput(sf::RenderWindow& window, sf::Event& event)
 {
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
