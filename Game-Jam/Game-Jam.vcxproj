@@ -155,7 +155,6 @@
     <ClCompile Include="LevelMenu.hpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.hpp" />
-    <ClCompile Include="MenuLoader.hpp" />
     <ClCompile Include="MenuManager.hpp" />
     <ClCompile Include="VisualHandler.hpp" />
     <ClCompile Include="WorldContactListener.cpp" />
