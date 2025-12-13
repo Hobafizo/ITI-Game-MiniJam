@@ -75,26 +75,26 @@
     <ClCompile Include="bfWall.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
-    <ClCompile Include="bfDoor.cpp">
-      <Filter>Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="bfKey.cpp">
-      <Filter>Objects</Filter>
+    <ClCompile Include="BaseMenu.hpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="LevelMenu.hpp">
-      <Filter>UI</Filter>
+      <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="MainMenu.hpp">
-      <Filter>UI</Filter>
+      <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="MenuManager.hpp">
-      <Filter>UI</Filter>
+      <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="VisualHandler.hpp">
-      <Filter>UI</Filter>
+      <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="BaseMenu.hpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="bfDoor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bfKey.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,37 +140,37 @@
     <ClInclude Include="bfWall.h">
       <Filter>Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Hud.hpp">
+    <ClInclude Include="CharacterData.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Level1.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="bfDoor.h">
-      <Filter>Objects</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="bfKey.h">
-      <Filter>Objects</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LevelManager.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="LoseMenu.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="PauseMenu.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="WinMenu.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Level1.hpp">
-      <Filter>UI</Filter>
+    <ClInclude Include="Hud.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Level2.hpp">
-      <Filter>UI</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Level3.hpp">
-      <Filter>UI</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CharacterData.h">
+    <ClInclude Include="LoseMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WinMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

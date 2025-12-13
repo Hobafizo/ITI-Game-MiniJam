@@ -20,7 +20,7 @@ static std::mt19937 randGenerator(randomDevice());
 
 BoxML* BoxML::_instance = nullptr;
 
-// --- HELPER: ROTATE VISUALS ---
+
 void ApplyRotation(bfObject* obj, float angleInRadians)
 {
 	if (!obj)
@@ -47,7 +47,6 @@ void ApplyRotation(bfObject* obj)
 
 	b2Vec2 vel = body->GetLinearVelocity();
 
-	// Prevent NaN rotation when object is not moving
 	if (vel.LengthSquared() < 0.0001f)
 		return;
 
@@ -79,6 +78,7 @@ BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned s
 	_winSound.setBuffer(_winBuffer);
 	_wallBuffer.loadFromFile("Assets/Audio/Ocean Wave - Sound Effect - RazendeGijs.wav");
 	_wallSound.setBuffer(_wallBuffer);
+	_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
 }
 
 BoxML::~BoxML(void)
@@ -93,10 +93,6 @@ void BoxML::PrepareWorld(void)
 	LoadWinBackground("Assets/background/win.png");
 	LoadPauseBackground("Assets/background/pause.png");
 
-	_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
-
-	_levelMusic.play();
-	_levelMusic.setLoop(true);
 
 	// Default map walls
 	bfWall* wall;
@@ -105,6 +101,7 @@ void BoxML::PrepareWorld(void)
 	wall = CreateWall(b2_staticBody, pixelToMeter({ (float)_screenWidth - PLAYGROUND_MARGIN_RIGHT, 0 }), { WALL_VERTICAL_WIDTH, (float)_screenHeight }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Vertical, 0, true, false, true);
 	wall = CreateWall(b2_staticBody, pixelToMeter({ 0, PLAYGROUND_MARGIN_TOP - WALL_VERTICAL_WIDTH }), { (float)_screenWidth, WALL_VERTICAL_WIDTH }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal, 0, true, false, true);
 	wall = CreateWall(b2_staticBody, pixelToMeter({ 0, (float)_screenHeight - PLAYGROUND_MARGIN_BOTTOM }), { (float)_screenWidth, WALL_VERTICAL_WIDTH }, 0.01f, 0.3f, (uint16)ObjectCategory::Wall_Horizontal, 0, true, false, true);
+
 }
 
 void BoxML::CreateWorld(void)
@@ -131,9 +128,24 @@ void BoxML::CreateWorld(void)
 
 	//CreateKey(b2_staticBody, pixelToMeter({ 500, 500 }), { 71, 82 }, 0.01f, 0.3f);
 	//CreateDoor(b2_staticBody, pixelToMeter({ 500, 800 }), { 202, 298 }, 0.01f, 0.3f);
+
 }
 
-
+//void BoxML::StartLevelMusic()
+//{
+//	// Only play if it isn't already playing
+//	if (_levelMusic.getStatus() != sf::SoundSource::Playing)
+//	{
+//		// Load and Play
+//		if (_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav")) {
+//			_levelMusic.setLoop(true);
+//			_levelMusic.play();
+//		}
+//		else {
+//			std::cout << "Error: Could not load level music!" << std::endl;
+//		}
+//	}
+//}
 void BoxML::HandleInput(sf::RenderWindow& window, sf::Event& event)
 {
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
@@ -242,13 +254,10 @@ bfCircle* BoxML::CreateCircle(const b2BodyType bodyType, const b2Vec2 position, 
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
 
-	// --- ADJUSTMENT START ---
-	// Convert pixel radius to meters
 	float rMeters = radius / _screenPixelPerUnit;
 
-	// Shift origin from Top-Left to Center
+
 	bodyDef.position = position + b2Vec2(rMeters, rMeters);
-	// --- ADJUSTMENT END ---
 
 	b2Body* body = _world.CreateBody(&bodyDef);
 
@@ -273,17 +282,11 @@ bfRectangle* BoxML::CreateRectangle(const b2BodyType bodyType, const b2Vec2 posi
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
-
-	// --- ADJUSTMENT START ---
-	// Get full size in meters
 	b2Vec2 bSize = pixelToMeter(size);
-	// Calculate half-extents
 	float hx = bSize.x / 2.0f;
 	float hy = bSize.y / 2.0f;
 
-	// Shift origin from Top-Left to Center
 	bodyDef.position = position + b2Vec2(hx, hy);
-	// --- ADJUSTMENT END ---
 
 	b2Body* body = _world.CreateBody(&bodyDef);
 
@@ -313,14 +316,11 @@ bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, 
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
 
-	// --- ADJUSTMENT START ---
 	b2Vec2 bSize = pixelToMeter(size);
 	float hx = bSize.x / 2.0f;
 	float hy = bSize.y / 2.0f;
 
-	// Shift origin from Top-Left to Center
 	bodyDef.position = position + b2Vec2(hx, hy);
-	// --- ADJUSTMENT END ---
 
 	b2Body* body = _world.CreateBody(&bodyDef);
 
@@ -352,14 +352,11 @@ bfMonster* BoxML::CreateMonster(const b2BodyType bodyType, const b2Vec2 position
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
 
-	// --- ADJUSTMENT START ---
 	b2Vec2 bSize = pixelToMeter(size);
 	float hx = bSize.x / 2.0f;
 	float hy = bSize.y / 2.0f;
 
-	// Shift origin from Top-Left to Center
 	bodyDef.position = position + b2Vec2(hx, hy);
-	// --- ADJUSTMENT END ---
 
 	b2Body* body = _world.CreateBody(&bodyDef);
 
@@ -404,15 +401,11 @@ bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, cons
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
 
-	// --- ADJUSTMENT START ---
 	b2Vec2 bSize = pixelToMeter(size);
 	float hx = bSize.x / 2.0f;
 	float hy = bSize.y / 2.0f;
 
-	// Shift origin from Top-Left to Center
 	bodyDef.position = position + b2Vec2(hx, hy);
-	// --- ADJUSTMENT END ---
-
 	b2Body* body = _world.CreateBody(&bodyDef);
 
 	b2PolygonShape boxShape;
@@ -501,15 +494,13 @@ bfKey* BoxML::CreateKey(const b2BodyType bodyType, const b2Vec2 position, const 
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
-
-	// --- ADJUSTMENT START ---
 	b2Vec2 bSize = pixelToMeter(size);
 	float hx = bSize.x / 2.0f;
 	float hy = bSize.y / 2.0f;
 
-	// Shift origin from Top-Left to Center
+
 	bodyDef.position = position + b2Vec2(hx, hy);
-	// --- ADJUSTMENT END ---
+
 
 	b2Body* body = _world.CreateBody(&bodyDef);
 
@@ -537,14 +528,11 @@ bfDoor* BoxML::CreateDoor(const b2BodyType bodyType, const b2Vec2 position, cons
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
 
-	// --- ADJUSTMENT START ---
 	b2Vec2 bSize = pixelToMeter(size);
 	float hx = bSize.x / 2.0f;
 	float hy = bSize.y / 2.0f;
 
-	// Shift origin from Top-Left to Center
 	bodyDef.position = position + b2Vec2(hx, hy);
-	// --- ADJUSTMENT END ---
 
 	b2Body* body = _world.CreateBody(&bodyDef);
 
@@ -652,8 +640,6 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 
 			obj->setSfPosition(meterToPixel(obj->getB2Position()));
 
-			// --- FIX START ---
-			// Apply rotation to ALL objects that have a body, not just the player.
 			if (_player && _player->Body() == obj->Body())
 			{
 				ApplyRotation(obj);
@@ -667,7 +653,6 @@ void BoxML::Render(sf::RenderWindow& mainWnd)
 		{
 			_previewObject->setSfPosition(meterToPixel(_previewObject->getB2Position()));
 
-			// Rotation for Preview
 			if (_previewObject->Body())
 				ApplyRotation(_previewObject, _previewObject->Body()->GetAngle());
 
@@ -756,7 +741,7 @@ void BoxML::OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCa
 	float randomAngle = angleDist(randGenerator);
 	b2Vec2 randomDir(cos(randomAngle), sin(randomAngle));
 
-	// Generalized bounce
+
 	if (isObject((ObjectCategory)objCategory, ObjectCategory::Wall_Vertical))
 	{
 		if (currentVelocity.x > 0 && randomDir.x > 0 || currentVelocity.x < 0 && randomDir.x < 0)
@@ -955,9 +940,9 @@ void BoxML::HandleKeyPress(sf::Keyboard::Key key)
 }
 void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 {
-	// 1. Singleton Check
+
 	bool limitReached = false;
-	// We check the generic types to prevent duplicates
+
 	if (_currentPreviewType == ObjectCategory::Wall && _placedWall != nullptr) limitReached = true;
 	if (_currentPreviewType == ObjectCategory::SpeedWall && _placedSpeedWall != nullptr) limitReached = true;
 	if (_currentPreviewType == ObjectCategory::Monster && _placedMonster != nullptr) limitReached = true;
@@ -980,13 +965,13 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 		switch (_currentPreviewType)
 		{
 		case ObjectCategory::Wall:
-			// FIX: Pass 'ObjectCategory::Wall_Vertical' here!
+
 			_previewObject = CreateWall(b2_staticBody, mouseMeters, objectSize, 0.0f, 0.0f,
 				(uint16)ObjectCategory::Wall_Vertical, 0, false, true, false, 3);
 			break;
 
 		case ObjectCategory::SpeedWall:
-			// FIX: Pass 'ObjectCategory::SpeedWall_Vertical' here!
+		
 			_previewObject = CreateWall(b2_staticBody, mouseMeters, objectSize, 0.0f, 0.0f,
 				(uint16)ObjectCategory::SpeedWall_Vertical, 0, false, true, false, 4);
 			break;
@@ -1006,7 +991,6 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 		}
 	}
 
-	// Update Position
 	if (_previewObject && _previewObject->Body())
 	{
 		_previewObject->Body()->SetTransform(mouseMeters, _previewRotation);
@@ -1039,7 +1023,6 @@ void BoxML::PlacePreviewObject()
 		AddObject(placedObj);
 	}
 
-	// Store the pointer so we can limit it to 1
 	if (_currentPreviewType == ObjectCategory::Wall) _placedWall = placedObj;
 	else if (_currentPreviewType == ObjectCategory::SpeedWall) _placedSpeedWall = placedObj;
 	else if (_currentPreviewType == ObjectCategory::Monster) _placedMonster = (bfMonster*)placedObj;
@@ -1059,7 +1042,7 @@ void BoxML::HandleRightClick(const sf::Vector2f& pixelMousePos)
 				{
 					bool remove = false;
 
-					// Found the object! Clear the specific pointer.
+				
 					if (obj == _placedWall)
 					{
 						_placedWall = nullptr;

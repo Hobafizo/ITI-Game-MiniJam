@@ -11,7 +11,7 @@ class MenuManager {
 private:
     std::unique_ptr<BaseMenu> currentMenu;
     sf::Music _mainMusic;
-    //sf::Music _levelMusic;
+    sf::Music _levelMusic;
     sf::SoundBuffer ck;
     sf::Sound ck_s;
 
@@ -21,9 +21,17 @@ public:
     MenuManager() {
         currentMenu = std::make_unique<Menu>();
         std::cout << "MenuManager initialized with Main Menu." << std::endl;
+        if (_mainMusic.openFromFile("Assets/Audio/John Powell This Is Berk (Piano Arrangement by Felipe Queiroga) - Felipe Queiroga.wav")) {
+            _mainMusic.setLoop(true);
+            _mainMusic.play();
+        }
+        else {
+            std::cout << "Error loading Menu Music" << std::endl;
+        }
 
-        _mainMusic.setLoop(true);
-        _mainMusic.play();
+        if (ck.loadFromFile("Assets/Audio/Water Plop - Sound Effect (HD) - Gaming Sound FX.wav")) {
+            ck_s.setBuffer(ck);
+        }
     }
 
     void draw(sf::RenderWindow& window) {
@@ -62,19 +70,15 @@ public:
             //currentMenu.reset();
             currentState = LOADING_LEVEL;
             _mainMusic.stop();
-            /*_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
-            _levelMusic.setLoop(true);
-            _levelMusic.play();*/
             std::cout << "--- MenuManager switched state to ACTIVE GAME ---" << std::endl;
             break;
 
-		case RESUME_GAME:
-			currentState = ACTIVE_GAME;
-			BoxML::Instance()->SetRenderState(WorldRenderState::Running);
-
-			//_mainMusic.stop();
-			std::cout << "--- MenuManager switched state to ACTIVE GAME ---" << std::endl;
-			break;
+        case RESUME_GAME:
+            currentState = ACTIVE_GAME;
+            BoxML::Instance()->SetRenderState(WorldRenderState::Running);
+            //_mainMusic.stop();
+            std::cout << "--- MenuManager switched state to ACTIVE GAME ---" << std::endl;
+            break;
 
         case NONE:
             break;

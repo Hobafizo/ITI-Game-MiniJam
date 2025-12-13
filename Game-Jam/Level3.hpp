@@ -1,6 +1,8 @@
 #pragma once
 #include "LevelData.hpp"
 #include "ObjectCategory.h"
+#include<SFML/Audio.hpp>
+
 static LevelData Level3Data = {
 
     // Player position in pixels

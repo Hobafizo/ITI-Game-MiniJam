@@ -9,6 +9,7 @@
 //1080.f-768.f
 float shiftFactorX= (1920.f - 1366.f) / 2.f;;
 float shiftFactorY= (1080.f - 768.f) / 2.f;
+
 class LevelManager {
     LevelData levelData;
     BoxML& boxWorld;
@@ -17,7 +18,8 @@ class LevelManager {
 
     std::vector<bfObject*> spawnedObjects;
     bfPlayer* spawnedPlayer = nullptr;
-
+private:
+    sf::Music _levelMusic;
 public:
     LevelManager( BoxML& bw)
         :
@@ -30,17 +32,13 @@ public:
 
     void loadLevel(const LevelData& lvl) {
         levelData = lvl;
-        
         if (_levelLoaded)
 			return;
-
 		_levelLoaded = true;
         cout << "new level loaded\n";
-
 		const sf::Vector2u screen = boxWorld.Resolution();
-
 		boxWorld.PrepareWorld();
-
+        //boxWorld.StartLevelMusic();  (needs fixing)
         // Player remember to uncomment, having an issue currently
         float playWidth = 1366.f;
         float playHeight = 768.f;
@@ -161,7 +159,11 @@ public:
 
             if (door)
                 spawnedObjects.push_back(door);
+ 
         }
+
+
+
     }
 
     
