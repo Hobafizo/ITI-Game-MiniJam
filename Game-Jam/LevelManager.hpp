@@ -35,7 +35,7 @@ public:
 			return;
 
 		_levelLoaded = true;
-        cout << "new level loaded";
+        cout << "new level loaded\n";
 
 		const sf::Vector2u screen = boxWorld.Resolution();
 
@@ -76,7 +76,7 @@ public:
                 spawnedPlayer = boxWorld.CreatePlayer(
                 b2_dynamicBody,
                 p,
-                { 165, 192 },
+                { PLAYER_WIDTH, PLAYER_HEIGHT },
                 0.01f,
                 0.3f
             );

@@ -14,6 +14,8 @@ bfWall::~bfWall(void)
 
 bool bfWall::loadSpriteSheet(const std::string& filepath, int frameWidth, int frameHeight, int marginX, int marginY, int framePerLine, int numFrames, float curTime, float frameTime, bool autoResize)
 {
+	autoResize = false;
+
     if (!_texture.loadFromFile(filepath))
         return false;
 
@@ -21,7 +23,7 @@ bool bfWall::loadSpriteSheet(const std::string& filepath, int frameWidth, int fr
     _shape.setTexture(&_texture);
 
     // 2. Setup Animation Data
-    _frameSize = { frameWidth, frameHeight };
+    _frameSize = (sf::Vector2i)_texture.getSize();
     _frameMargin = { marginX, marginY };
     _framesPerLine = framePerLine;
     _numFrames = numFrames;
@@ -31,13 +33,13 @@ bool bfWall::loadSpriteSheet(const std::string& filepath, int frameWidth, int fr
     _frameDuration = frameTime;
 
     // 3. Set the initial frame (Rectangle 0)
-    _shape.setTextureRect(sf::IntRect(_frameMargin.x, _frameMargin.y, frameWidth, frameHeight));
+    _shape.setTextureRect(sf::IntRect(_frameMargin.x, _frameMargin.y, _frameSize.x, _frameSize.y));
 
     // Optional: Reset color to White so it doesn't tint the texture
     _shape.setFillColor(sf::Color::White);
 
-    if (autoResize)
-        resizeToFitFrame();
+	if (autoResize)
+		resizeToFitFrame();
 
     return true;
 }
@@ -68,12 +70,12 @@ void bfWall::resizeToFitFrame()
 {
     // 1. Get current base size
     sf::Vector2f currentSize = (sf::Vector2f)_texture.getSize();
-    sf::Vector2f textureSize = _shape.getSize();
+    sf::Vector2f targetSize = _shape.getSize();
 
     // 2. Safety: If size is 0, set it directly instead of scaling
     if (currentSize.x < 0.1f || currentSize.y < 0.1f)
     {
-        sf::Vector2f newSize(textureSize.x, textureSize.y);
+        sf::Vector2f newSize(targetSize.x, targetSize.y);
         setSize(newSize);
         setOrigin({ newSize.x / 2.0f, newSize.y / 2.0f });
         setScale({ 1.0f, 1.0f });
@@ -82,8 +84,8 @@ void bfWall::resizeToFitFrame()
     {
         // 3. Calculate Scale Ratio (Target / Current)
         sf::Vector2f newScale;
-        newScale.x = textureSize.x / currentSize.x;
-        newScale.y = textureSize.y / currentSize.y;
+        newScale.x = targetSize.x / currentSize.x;
+        newScale.y = targetSize.y / currentSize.y;
 
         // 4. Apply via setScale (Triggers Physics Update)
         setScale(newScale);
