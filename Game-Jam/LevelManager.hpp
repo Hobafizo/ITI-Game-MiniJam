@@ -87,12 +87,12 @@ public:
         }
 
         // ---------------- Walls ----------------
-        bfWall* wall;
+        
         for (auto& w : levelData.walls) {
             Vector2f sp = shifted(w.spawnPos);
             b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-                wall = boxWorld.CreateWall(
+            bfWall* wall = boxWorld.CreateWall(
                 b2_staticBody,
                 pos,
                 w.size,
@@ -106,12 +106,12 @@ public:
         }
 
         // ---------------- Enemies ----------------
-        bfMonster* mon;
+         
         for (auto& e : levelData.enemies) {
             Vector2f sp = shifted(e.spawnPos);
             b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-            mon = boxWorld.CreateMonster(
+            bfMonster* mon = boxWorld.CreateMonster(
                 b2_dynamicBody,
                 pos,
                 e.size,
@@ -126,12 +126,12 @@ public:
         }
 
         // ---------------- Key ----------------
-        bfKey* key;
+        
         {
             Vector2f sp = shifted(levelData.key.spawnPos);
             b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-                key = boxWorld.CreateKey(
+            bfKey* key = boxWorld.CreateKey(
                 b2_staticBody,
                 pos,
                 levelData.key.size,
@@ -144,12 +144,12 @@ public:
         }
 
         // ---------------- Door ----------------
-        bfDoor* door;
+         
         {
             Vector2f sp = shifted(levelData.door.spawnPos);
             b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-            door = boxWorld.CreateDoor(
+            bfDoor* door = boxWorld.CreateDoor(
                 b2_staticBody,
                 pos,
                 levelData.door.size,
