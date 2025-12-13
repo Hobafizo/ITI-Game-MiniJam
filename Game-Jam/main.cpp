@@ -127,7 +127,7 @@ int main()
 				|| menuManager.currentState == LOADING_LEVEL || menuManager.currentState == LOSE_MENU
 				)
 			{
-
+                menuManager.handleHover();
                 menuManager.draw(window); // Draw the current menu screen
             }
 
@@ -135,7 +135,7 @@ int main()
             else if (menuManager.currentState == PAUSED)
 			{
 				boxWorld.Render(window);
-				
+                menuManager.handleHover();
                 menuManager.showPauseMenu();
                 menuManager.draw(window); // Draw the pause menu
             }

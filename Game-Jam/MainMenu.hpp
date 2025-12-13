@@ -12,7 +12,7 @@ private:
     sf::Sprite startSprite;
     sf::Texture exitTexture;
     sf::Sprite exitSprite;
-
+    sf::Vector2f defaultScale;
 
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MenusUI1/withoutButtons.jpg")) return false;
@@ -43,6 +43,7 @@ private:
         float exitScale = desiredButtonWidth / exitTexture.getSize().x;
         exitSprite.setScale(exitScale, exitScale);
         exitSprite.setPosition(centerX, 600.0f);
+        defaultScale = exitSprite.getScale();
     }
 
 public:
@@ -73,5 +74,25 @@ public:
             return QUIT;
         }
         return NONE;
+    }
+    void checkHover(sf::Vector2f mousePos) {
+        sf::Vector2u windowSize = BoxML::Instance()->Resolution();
+
+        if (startSprite.getScale() != defaultScale) {
+            			startSprite.setScale(defaultScale);
+        }
+        if (exitSprite.getScale() != defaultScale) {
+						exitSprite.setScale(defaultScale);
+		}
+        if (startSprite.getGlobalBounds().contains(mousePos)) {
+
+            startSprite.setScale(startSprite.getScale().x * 1.1f, startSprite.getScale().y * 1.1f);
+
+        }
+        if (exitSprite.getGlobalBounds().contains(mousePos)) {
+            			exitSprite.setScale(exitSprite.getScale().x * 1.1f, exitSprite.getScale().y * 1.1f);
+
+        }
+
     }
 };

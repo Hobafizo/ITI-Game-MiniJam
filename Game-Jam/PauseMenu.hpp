@@ -15,7 +15,7 @@ private:
 
     sf::Texture quitTexture;
     sf::Sprite quitSprite;
-
+    sf::Vector2f defaultScale;
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MenusUI1/pause.png")) return false;
         if (!resumeTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Resume.png")) return false;
@@ -44,6 +44,7 @@ private:
         quitSprite.setTexture(quitTexture);
         quitSprite.setScale(quitScale, quitScale);
         quitSprite.setPosition(centerX, 620.0f);
+        defaultScale = resumeSprite.getScale();
     }
 
 public:
@@ -74,5 +75,19 @@ public:
             return GOTO_MAIN_MENU;
         }
         return NONE;
+    }
+    void checkHover(sf::Vector2f mousePos) {
+        if(resumeSprite.getScale()!= defaultScale)
+			resumeSprite.setScale(defaultScale);
+        if(quitSprite.getScale()!= defaultScale)
+            quitSprite.setScale(defaultScale);
+
+        if (resumeSprite.getGlobalBounds().contains(mousePos)) {
+            resumeSprite.setScale(resumeSprite.getScale().x * 1.1f, resumeSprite.getScale().y * 1.1f);
+        }
+        if (quitSprite.getGlobalBounds().contains(mousePos)) {
+            quitSprite.setScale(quitSprite.getScale().x * 1.1f, quitSprite.getScale().y * 1.1f);
+        }
+
     }
 };

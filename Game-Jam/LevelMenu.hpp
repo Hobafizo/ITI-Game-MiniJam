@@ -9,7 +9,7 @@ private:
     sf::Sprite level1Sprite;
     sf::Texture exitTexture; // Reused for Back button
     sf::Sprite exitSprite;
-
+    sf::Vector2f defaultScale;
     bool loadAssets() {
         
         if (!level1Texture.loadFromFile("Assets/UI/Menus/MenusUI1/Start2.png")) return false;
@@ -40,6 +40,7 @@ private:
         float exitScale = desiredButtonWidth / exitTexture.getSize().x;
         exitSprite.setScale(exitScale, exitScale);
         exitSprite.setPosition(centerX, 600.0f);
+        defaultScale = level1Sprite.getScale();
     }
 
 public:
@@ -71,5 +72,16 @@ public:
             return GOTO_MAIN_MENU;
         }
         return NONE;
+    }
+    void checkHover(sf::Vector2f mousePos) {
+        if (level1Sprite.getScale() != defaultScale) level1Sprite.setScale(defaultScale);
+        if (exitSprite.getScale() != defaultScale) exitSprite.setScale(defaultScale);
+        if (level1Sprite.getGlobalBounds().contains(mousePos)) {
+            level1Sprite.setScale(level1Sprite.getScale().x * 1.1f, level1Sprite.getScale().y * 1.1f);
+        }
+        if (exitSprite.getGlobalBounds().contains(mousePos)) {
+            exitSprite.setScale(exitSprite.getScale().x * 1.1f, exitSprite.getScale().y * 1.1f);
+        }
+
     }
 };

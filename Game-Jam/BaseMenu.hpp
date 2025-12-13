@@ -29,4 +29,6 @@ public:
     virtual ~BaseMenu() = default;
     virtual void draw(sf::RenderWindow& window) = 0;
     virtual MenuAction checkClick(sf::RenderWindow& window) = 0;
+    virtual void checkHover(sf::Vector2f mousePos) = 0;
+
 };

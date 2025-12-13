@@ -23,7 +23,7 @@ private:
 
     sf::Texture quitTexture;
     sf::Sprite quitSprite;
-
+    sf::Vector2f defaultScale;
     bool loadAssets() {
         // 1. Load Button Textures
         if (!retryTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Start2.png")) return false;
@@ -106,7 +106,7 @@ private:
             retryScale = buttonWidth / retryTexWidth;
             retrySprite.setTexture(retryTexture);
             retrySprite.setScale(retryScale, retryScale);
-            retrySprite.setPosition(centerX, windowSize.y * 0.4f);
+            retrySprite.setPosition(centerX+250.f, windowSize.y * 0.4f+250.f);
         }
         else {
             std::cout << "WARNING: Retry button texture width is zero! Button will not display correctly.\n";
@@ -121,11 +121,12 @@ private:
             quitScale = buttonWidth / quitTexWidth;
             quitSprite.setTexture(quitTexture);
             quitSprite.setScale(quitScale, quitScale);
-            quitSprite.setPosition(centerX, windowSize.y * 0.6f);
+            quitSprite.setPosition(centerX-250.f, windowSize.y * 0.6f+250.f);
         }
         else {
             std::cout << "WARNING: Quit button texture width is zero! Button will not display correctly.\n";
         }
+        defaultScale= retrySprite.getScale();
     }
 
 public:
@@ -171,5 +172,20 @@ public:
             return QUIT;
         }
         return NONE;
+    }
+    void checkHover(sf::Vector2f mousePos) {
+        if(retrySprite.getScale()!=defaultScale){
+			retrySprite.setScale(defaultScale);
+		}
+        if (quitSprite.getScale() != defaultScale) {
+            quitSprite.setScale(defaultScale);
+        }
+        if (retrySprite.getGlobalBounds().contains(mousePos)) {
+            retrySprite.setScale(retrySprite.getScale().x * 1.1f, retrySprite.getScale().y * 1.1f);
+        }
+        if (quitSprite.getGlobalBounds().contains(mousePos)) {
+            quitSprite.setScale(quitSprite.getScale().x * 1.1f, quitSprite.getScale().y * 1.1f);
+        }
+
     }
 };

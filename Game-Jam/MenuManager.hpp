@@ -87,6 +87,12 @@ public:
             break;
         }
     }
+    void handleHover() {
+        sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition();
+        if(currentMenu) {
+			currentMenu->checkHover(mousePos);
+		}
+    }
 
     void setState(GameState newState) {
         currentState = newState;
