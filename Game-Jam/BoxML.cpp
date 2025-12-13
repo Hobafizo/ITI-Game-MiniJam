@@ -77,6 +77,10 @@ BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned s
 	_wallBuffer.loadFromFile("Assets/Audio/Ocean Wave - Sound Effect - RazendeGijs.wav");
 	_wallSound.setBuffer(_wallBuffer);
 	_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
+	_LoserMusic.openFromFile("Assets/Audio/YOU DIED (HD) - iwanPlays.wav");
+	_winBuffer.loadFromFile("Assets/Audio/Won.wav");
+	_winSound.setBuffer(_winBuffer);
+
 }
 
 BoxML::~BoxML(void)
@@ -130,17 +134,19 @@ void BoxML::CreateWorld(void)
 
 void BoxML::StartLevelMusic()
 {
-
 	if (_levelMusic.getStatus() != sf::SoundSource::Playing)
 	{
-		// Load and Play
-		if (_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav")) {
-			_levelMusic.setLoop(true);
-			_levelMusic.play();
-		}
-		else {
-			std::cout << "Error: Could not load level music!" << std::endl;
-		}
+		_levelMusic.setLoop(true);
+		_levelMusic.play();
+	}
+
+}
+void BoxML::StartLoserMusic()
+{
+	if (_LoserMusic.getStatus() != sf::SoundSource::Playing)
+	{
+		_LoserMusic.setLoop(true);
+		_LoserMusic.play();
 	}
 }
 void BoxML::StartWinMusic()
@@ -148,16 +154,10 @@ void BoxML::StartWinMusic()
 
 	if (_winSound.getStatus() != sf::SoundSource::Playing)
 	{
-		;
 
-		if (_winBuffer.loadFromFile("Assets/Audio/Won.wav")) {
-			_winSound.setBuffer(_winBuffer);
-			_winSound.setLoop(true);
-			_winSound.play();
-		}
-		else {
-			std::cout << "Error: Could not load level music!" << std::endl;
-		}
+
+		_winSound.setLoop(true);
+		_winSound.play();
 	}
 }
 void BoxML::StopLevelMusic() {
@@ -171,6 +171,12 @@ void::BoxML::StopWinMusic() {
 	if (_winSound.getStatus() == sf::SoundSource::Playing) {
 		_winSound.stop();
 		_winSound.setLoop(false);
+	}
+}
+void::BoxML::StopLoserMusic() {
+	if (_LoserMusic.getStatus() == sf::SoundSource::Playing) {
+		_LoserMusic.stop();
+		_LoserMusic.setLoop(false);
 	}
 }
 void BoxML::HandleInput(sf::RenderWindow& window, sf::Event& event)
@@ -772,7 +778,7 @@ void BoxML::OnPlayerContact(b2Fixture* player, b2Fixture* object)
 
 	else if (isObject((ObjectCategory)objCategory, ObjectCategory::Monster))
 	{
-		_levelMusic.stop();
+		StopLevelMusic();
 		_loseSound.play();
 		printf("Player hit monster\n");
 		SetRenderState(WorldRenderState::Lose);

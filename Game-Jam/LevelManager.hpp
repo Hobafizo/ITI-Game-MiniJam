@@ -39,6 +39,7 @@ public:
 		const sf::Vector2u screen = boxWorld.Resolution();
 		boxWorld.PrepareWorld();
         boxWorld.StartLevelMusic();
+        boxWorld.StopLoserMusic();
         // Player remember to uncomment, having an issue currently
         float playWidth = 1366.f;
         float playHeight = 768.f;
@@ -107,23 +108,23 @@ public:
 
         // ---------------- Enemies ----------------
          
-        //for (auto& e : levelData.enemies) {
-        //    Vector2f sp = shifted(e.spawnPos);
-        //    b2Vec2 pos = boxWorld.pixelToMeter(sp);
+        for (auto& e : levelData.enemies) {
+            Vector2f sp = shifted(e.spawnPos);
+            b2Vec2 pos = boxWorld.pixelToMeter(sp);
 
-        //    bfMonster* mon = boxWorld.CreateMonster(
-        //        b2_dynamicBody,
-        //        pos,
-        //        e.size,
-        //        0.01f,
-        //        0.3f,
-        //        (unsigned char)e.type
-        //    );
+            bfMonster* mon = boxWorld.CreateMonster(
+                b2_dynamicBody,
+                pos,
+                e.size,
+                0.01f,
+                0.3f,
+                (unsigned char)e.type
+            );
 
-        //    if (mon) {
-        //        spawnedObjects.push_back(mon);
-        //    }
-        //}
+            if (mon) {
+                spawnedObjects.push_back(mon);
+            }
+        }
 
         // ---------------- Key ----------------
         
