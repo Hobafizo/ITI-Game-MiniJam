@@ -58,6 +58,7 @@ int main()
 					//levelMgr.loadLevel(Level3Data);
 					std::cout << "ESC pressed. Entering PAUSED state." << std::endl;
 
+					menuManager.showPauseMenu();
 					menuManager.setState(PAUSED);
 					boxWorld.SetRenderState(WorldRenderState::Paused);
 
@@ -143,7 +144,6 @@ int main()
 			{
 				boxWorld.Render(window);
                 menuManager.handleHover();
-                menuManager.showPauseMenu();
                 menuManager.draw(window); // Draw the pause menu
             }
 
