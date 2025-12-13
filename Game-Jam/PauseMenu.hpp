@@ -32,7 +32,7 @@ private:
         float bgScaleY = (float)windowSize.y / backgroundTexture.getSize().y;
         backgroundSprite.setScale(bgScaleX, bgScaleY);
 
-        float buttonWidth = 150.0f;
+        float buttonWidth = 250.0f;
         float centerX = (windowSize.x - buttonWidth) * 0.5f;
 
         float resumeScale = buttonWidth / resumeTexture.getSize().x;
@@ -43,7 +43,7 @@ private:
         float quitScale = buttonWidth / quitTexture.getSize().x;
         quitSprite.setTexture(quitTexture);
         quitSprite.setScale(quitScale, quitScale);
-        quitSprite.setPosition(centerX, 620.0f);
+        quitSprite.setPosition(centerX+20.f, 600.0f);
         defaultScale = resumeSprite.getScale();
     }
 
