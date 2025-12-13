@@ -170,9 +170,6 @@
     <ClInclude Include="LevelManager.hpp">
       <Filter>Scripts\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="CharacterData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Documentation.txt" />
