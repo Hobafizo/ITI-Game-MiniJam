@@ -22,6 +22,10 @@
 #define WALL_VERTICAL_HEIGHT      119
 #define WALL_HORIZONTAL_WIDTH     178
 #define WALL_HORIZONTAL_HEIGHT    50
+#define KEY_WIDTH                 71
+#define KEY_HEIGHT                82
+#define GATE_WIDTH                202
+#define GATE_HEIGHT               298
 
 #define WALL_SPEED_INC_MULTIPLIER 2.5f
 #define WALL_SPEED_INC_TIME       5.0f
