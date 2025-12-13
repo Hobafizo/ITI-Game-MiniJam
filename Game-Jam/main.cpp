@@ -11,7 +11,6 @@
 #include "Level2.hpp"
 #include "Level3.hpp"
 
-int active_menu= 0; // 0 - main menu, 1 - level menu 3-pause menu 4-game over menu 5-win menu 6-none
 int main()
 {
     const float timeStep = 1.0f / 60.0f; // 1/60 (frames/sec)
@@ -42,7 +41,6 @@ int main()
     MenuManager menuManager;
 
     Hud hud;
-    PauseMenu pausemenu;
     while (window.isOpen())
     {
         sf::Event event;
@@ -126,9 +124,10 @@ int main()
 
             if (menuManager.currentState == MAIN_MENU
 				|| menuManager.currentState == LEVEL_MENU
-				|| menuManager.currentState == LOADING_LEVEL
+				|| menuManager.currentState == LOADING_LEVEL || menuManager.currentState == LOSE_MENU
 				)
 			{
+                menuManager.handleHover();
                 menuManager.draw(window); // Draw the current menu screen
             }
 
@@ -136,7 +135,7 @@ int main()
             else if (menuManager.currentState == PAUSED)
 			{
 				boxWorld.Render(window);
-				
+                menuManager.handleHover();
                 menuManager.showPauseMenu();
                 menuManager.draw(window); // Draw the pause menu
             }

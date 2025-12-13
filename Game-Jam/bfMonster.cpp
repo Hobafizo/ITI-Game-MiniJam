@@ -16,7 +16,7 @@ void bfMonster::setMovePattern(Monster_MovePattern pattern)
 
 void bfMonster::updatePosition(float curTime)
 {
-	bfCharacter::updatePosition(curTime);
+	bfCharacter::updateAnimation(curTime);
 	updateAnimation(curTime);
 
 	if (_movePattern == Monster_MovePattern::Up)
@@ -47,12 +47,12 @@ void bfMonster::updateAnimation(float curTime)
 	switch (dir)
 	{
 	case WalkDirection::Left:
-		frameStartIdx = 0;
+		frameStartIdx = 3;
 		frameCount = 3;
 		break;
 
 	case WalkDirection::Right:
-		frameStartIdx = 3;
+		frameStartIdx = 0;
 		frameCount = 3;
 		break;
 

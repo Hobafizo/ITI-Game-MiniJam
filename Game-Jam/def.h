@@ -7,8 +7,8 @@
 
 #define PIXELS_PER_UNIT   10
 
-#define PLAYER_SPEED_X 10.0f
-#define PLAYER_SPEED_Y 10.0f
+#define PLAYER_SPEED_X 20.0f
+#define PLAYER_SPEED_Y 20.0f
 #define PLAYER_SPEED   sqrt(PLAYER_SPEED_X * PLAYER_SPEED_X + PLAYER_SPEED_Y * PLAYER_SPEED_Y)
 
 #define PLAYGROUND_MARGIN_LEFT    303
@@ -16,8 +16,8 @@
 #define PLAYGROUND_MARGIN_TOP     135
 #define PLAYGROUND_MARGIN_BOTTOM  145
 
-#define PLAYER_WIDTH              181
-#define PLAYER_HEIGHT             180
+#define PLAYER_WIDTH              160
+#define PLAYER_HEIGHT             182
 #define WALL_VERTICAL_WIDTH       50
 #define WALL_VERTICAL_HEIGHT      119
 #define WALL_HORIZONTAL_WIDTH     178

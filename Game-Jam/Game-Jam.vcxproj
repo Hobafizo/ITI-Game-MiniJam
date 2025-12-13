@@ -170,7 +170,6 @@
     <ClInclude Include="bfSpeedWall.h" />
     <ClInclude Include="bfWall.h" />
     <ClInclude Include="BoxML.h" />
-    <ClInclude Include="CharacterData.h" />
     <ClInclude Include="GameManager.hpp" />
     <ClInclude Include="Hud.hpp" />
     <ClInclude Include="Level1.hpp" />

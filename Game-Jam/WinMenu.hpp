@@ -14,7 +14,7 @@ private:
 
     sf::Texture quitTexture;
     sf::Sprite quitSprite;
-
+    sf::Vector2f defaultScale;
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/UI/Menus/WinMenu/WinBackground.jpg")) return false;
         if (!menuTexture.loadFromFile("Assets/UI/Menus/WinMenu/Menu.jpg")) return false;
@@ -73,5 +73,8 @@ public:
             return QUIT;
         }
         return NONE;
+    }
+    void checkHover(sf::Vector2f mousePos) {
+
     }
 };

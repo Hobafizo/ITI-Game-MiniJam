@@ -5,7 +5,7 @@
 #include "ObjectCategory.h"
 #include <list>
 #include <SFML/Graphics.hpp> // Required for sf::RenderWindow and sf::Event
-#include<SFML/Audio.hpp>
+#include <SFML/Audio.hpp>
 
 class BoxML
 {
@@ -20,6 +20,7 @@ private:
 	b2Vec2 _gravity;
 	b2World _world;
 	WorldContactListener _contactListener;
+	std::list<std::pair<b2Body*, b2Body*>> _objsInContact;
 	std::list<b2Body*> _objsToDelete;
 	std::list<bfObject*> _objs;
 
@@ -40,7 +41,7 @@ private:
 	bool _hasLost;
 
 	bfObject* _previewObject = nullptr;
-	ObjectCategory _currentPreviewType = ObjectCategory::Wall;
+	ObjectCategory _currentPreviewType = ObjectCategory::None;
 	float _previewRotation;
 
 	bfObject* _placedWall = nullptr;
@@ -69,6 +70,8 @@ private:
 public:
 	void ClearObjects();
 private:
+	bool addContactObjects(b2Body* bodyA, b2Body* bodyB);
+	bool removeContactObjects(b2Body* bodyA, b2Body* bodyB);
 	void DispatchDestroyBody();
 
 public:
@@ -92,7 +95,6 @@ public:
 	void Step();
 	void Render(sf::RenderWindow& mainWnd);
 
-
 	void OnBeginContact(b2Contact* contact);
 	void OnEndContact(b2Contact* contact);
 	void OnPostSolve(b2Contact* contact, const b2ContactImpulse* impulse);
@@ -111,6 +113,7 @@ public:
 	b2Vec2 centerAround(const b2Vec2 size, const sf::Vector2f targetPosition, const sf::Vector2f targetSize) const;
 	bool isObject(const ObjectCategory category, const ObjectCategory object) const;
 	bool isObject(const ObjectCategory category, b2Fixture* fixture) const;
+	bool inContactObjects(b2Body* bodyA, b2Body* bodyB);
 
 	template<typename T>
 	T* findObjectByBody(b2Body* body);
