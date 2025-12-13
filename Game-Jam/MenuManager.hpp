@@ -101,10 +101,12 @@ public:
     // ----- NEW: Pause menu functions -----
 
     void showPauseMenu() {
+        if(currentState==PAUSED) return;
         currentMenu = std::make_unique<PauseMenu>();
         currentState = PAUSED;
     }
     void showLoseMenu() {
+        if(currentState==LOSE_MENU) return;
         currentMenu = std::make_unique<LoseMenu>();
         currentState= LOSE_MENU;
     }
