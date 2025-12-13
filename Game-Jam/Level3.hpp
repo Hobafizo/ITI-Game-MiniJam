@@ -23,7 +23,7 @@ static LevelData Level3Data = {
 
             ObjectCategory::Wall_Horizontal },
       //hor wall
-      { sf::Vector2f(960.f, 400.f),
+      { sf::Vector2f(960.f, 500.f),
         sf::Vector2f(WALL_HORIZONTAL_WIDTH, WALL_HORIZONTAL_HEIGHT),
         ObjectCategory::Wall_Horizontal},
 
@@ -43,7 +43,7 @@ static LevelData Level3Data = {
     //2 right
     //3 unknown
     {
-        //{ sf::Vector2f(1300.f, 700.f),{ 108, 76 } , 1},
+        { sf::Vector2f(1300.f, 700.f),{ 108, 76 } , 1},
         // EnemyData object 2
         { sf::Vector2f(600.f, 900.f), { 83, 87 }, 2  },
 

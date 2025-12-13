@@ -19,7 +19,7 @@ private:
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/UI/Menus/MenusUI1/pause.png")) return false;
         if (!resumeTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Resume.png")) return false;
-        if (!quitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/exit2.png")) return false;
+        if (!quitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Back.png")) return false;
         return true;
     }
 
@@ -32,7 +32,7 @@ private:
         float bgScaleY = (float)windowSize.y / backgroundTexture.getSize().y;
         backgroundSprite.setScale(bgScaleX, bgScaleY);
 
-        float buttonWidth = 150.0f;
+        float buttonWidth = 250.0f;
         float centerX = (windowSize.x - buttonWidth) * 0.5f;
 
         float resumeScale = buttonWidth / resumeTexture.getSize().x;
@@ -43,7 +43,7 @@ private:
         float quitScale = buttonWidth / quitTexture.getSize().x;
         quitSprite.setTexture(quitTexture);
         quitSprite.setScale(quitScale, quitScale);
-        quitSprite.setPosition(centerX, 620.0f);
+        quitSprite.setPosition(centerX+20.f, 600.0f);
         defaultScale = resumeSprite.getScale();
     }
 
