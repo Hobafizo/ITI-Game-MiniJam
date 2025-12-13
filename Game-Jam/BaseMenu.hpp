@@ -19,7 +19,8 @@ enum GameState {
 	LOADING_LEVEL,
     ACTIVE_GAME,
     PAUSED,
-    EXIT
+    EXIT,
+    LOSE_MENU
 };
 
 // Base Menu Interface

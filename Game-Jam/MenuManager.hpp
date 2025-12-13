@@ -6,7 +6,7 @@
 #include "MainMenu.hpp"
 #include "LevelMenu.hpp"
 #include "PauseMenu.hpp"   // <--- NEW
-
+#include "LoseMenu.hpp"    // <--- NEW
 class MenuManager {
 private:
     std::unique_ptr<BaseMenu> currentMenu;
@@ -97,6 +97,10 @@ public:
     void showPauseMenu() {
         currentMenu = std::make_unique<PauseMenu>();
         currentState = PAUSED;
+    }
+    void showLoseMenu() {
+        currentMenu = std::make_unique<LoseMenu>();
+        currentState= LOSE_MENU;
     }
 
     void resumeGame() {
