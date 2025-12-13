@@ -72,6 +72,7 @@ int main()
 			}
             if (boxWorld.RenderState() == WorldRenderState::Lose) {
                 menuManager.showLoseMenu();
+                boxWorld.StartLoserMusic();
                 boxWorld.SetRenderState(WorldRenderState::Paused);
                 levelMgr.unloadLevel();
                 menuManager.handleHover();
@@ -137,6 +138,10 @@ int main()
 			{
                 menuManager.handleHover();
                 menuManager.draw(window); // Draw the current menu screen
+                if (menuManager.currentState != LOSE_MENU)
+                {
+                    boxWorld.StopLoserMusic();
+                }
             }
 
             //still need to code up pauseMenu.cpp, 

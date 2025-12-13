@@ -36,6 +36,9 @@ private:
 	sf::Sound _loseSound;
 	sf::Sound _winSound;
 	sf::Music _levelMusic;
+public:
+	sf::Music _LoserMusic;
+private:
 	sf::SoundBuffer _wallBuffer;
 	sf::Sound _wallSound;
 	bool _hasLost;
@@ -93,7 +96,9 @@ public:
 	void StartLevelMusic();
 	void StopLevelMusic();
 	void StartWinMusic();
+	void StartLoserMusic();
 	void StopWinMusic();
+	void StopLoserMusic();
 	void Step();
 	void Render(sf::RenderWindow& mainWnd);
 

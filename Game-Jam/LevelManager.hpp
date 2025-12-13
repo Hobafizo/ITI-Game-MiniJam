@@ -39,6 +39,7 @@ public:
 		const sf::Vector2u screen = boxWorld.Resolution();
 		boxWorld.PrepareWorld();
         boxWorld.StartLevelMusic();
+        boxWorld.StopLoserMusic();
         // Player remember to uncomment, having an issue currently
         float playWidth = 1366.f;
         float playHeight = 768.f;

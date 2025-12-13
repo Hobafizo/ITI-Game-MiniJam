@@ -7,6 +7,7 @@
 #include "LevelMenu.hpp"
 #include "PauseMenu.hpp"   // <--- NEW
 #include "LoseMenu.hpp"    // <--- NEW
+
 class MenuManager {
 private:
     std::unique_ptr<BaseMenu> currentMenu;
@@ -14,6 +15,7 @@ private:
     sf::Music _levelMusic;
     sf::SoundBuffer ck;
     sf::Sound ck_s;
+    sf::Music _LoserMusic;
 
 public:
     GameState currentState = MAIN_MENU;
@@ -31,6 +33,11 @@ public:
 
         if (ck.loadFromFile("Assets/Audio/Water Plop - Sound Effect (HD) - Gaming Sound FX.wav")) {
             ck_s.setBuffer(ck);
+        }
+        if (_LoserMusic.getStatus() != sf::SoundSource::Playing)
+        {
+            // Load and Play
+            _LoserMusic.openFromFile("Assets/Audio/YOU DIED (HD) - iwanPlays.wav");
         }
     }
 
@@ -73,6 +80,8 @@ public:
             //currentMenu.reset();
             currentState = LOADING_LEVEL;
             _mainMusic.stop();
+            
+
             std::cout << "--- MenuManager switched state to ACTIVE GAME ---" << std::endl;
             break;
 
