@@ -276,9 +276,8 @@ WalkDirection bfCharacter::getWalkDirection(b2Vec2 velocity)
     if (velocity.x > velocity.y)
     {
         if (velocity.x > 0)
-            return WalkDirection::Left;
-
-        return WalkDirection::Right;
+            return WalkDirection::Right;
+        return WalkDirection::Left;
     }
 
     else if (velocity.y > 0)
@@ -297,6 +296,6 @@ WalkDirection bfCharacter::getVerticalWalkDirection(b2Vec2 velocity)
 WalkDirection bfCharacter::getHorizontalWalkDirection(b2Vec2 velocity)
 {
     if (velocity.x > 0)
-        return WalkDirection::Left;
-    return WalkDirection::Right;
+        return WalkDirection::Right;
+    return WalkDirection::Left;
 }

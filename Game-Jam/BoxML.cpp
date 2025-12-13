@@ -106,8 +106,8 @@ void BoxML::PrepareWorld(void)
 
 void BoxML::CreateWorld(void)
 {
-	ClearObjects();
-	PrepareWorld();
+	//ClearObjects();
+	//PrepareWorld();
 
 	//_player = CreatePlayer(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 50, PLAYGROUND_MARGIN_TOP + 50 }), { PLAYER_WIDTH, PLAYER_HEIGHT }, 0.01f, 0.3f);
 	//_player->Body()->SetLinearVelocity({ PLAYER_SPEED_X, PLAYER_SPEED_Y });
@@ -115,7 +115,7 @@ void BoxML::CreateWorld(void)
 	//bfWall* wall = CreateWall(b2_staticBody, pixelToMeter({ 800, 500 }), { WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT }, 0.01f, 0.3f, (uint16)ObjectCategory::SpeedWall_Vertical);
 
 	// 4. RESTORED: MONSTER
-	// bfMonster* monster;
+	//bfMonster* monster;
 
 	//monster = CreateMonster(b2_dynamicBody, pixelToMeter({ PLAYGROUND_MARGIN_LEFT + 600, PLAYGROUND_MARGIN_TOP + 50 }), { 108, 76 }, 0.01f, 0.3f, 1);
 	//monster->setMovePattern(Monster_MovePattern::Down);
@@ -128,7 +128,6 @@ void BoxML::CreateWorld(void)
 
 	//CreateKey(b2_staticBody, pixelToMeter({ 500, 500 }), { 71, 82 }, 0.01f, 0.3f);
 	//CreateDoor(b2_staticBody, pixelToMeter({ 500, 800 }), { 202, 298 }, 0.01f, 0.3f);
-
 }
 
 void BoxML::StartLevelMusic()
@@ -234,6 +233,32 @@ void BoxML::ClearObjects(void)
 	_placedWall = nullptr;
 	_placedSpeedWall = nullptr;
 	_placedMonster = nullptr;
+}
+
+bool BoxML::addContactObjects(b2Body* bodyA, b2Body* bodyB)
+{
+	if (inContactObjects(bodyA, bodyB))
+		return false;
+
+	_objsInContact.push_back({ bodyA, bodyB });
+	return true;
+}
+
+bool BoxML::removeContactObjects(b2Body* bodyA, b2Body* bodyB)
+{
+	for (auto it = _objsInContact.begin(); it != _objsInContact.end(); ++it)
+	{
+		if (
+			it->first == bodyA && it->second == bodyB
+			|| it->first == bodyB && it->second == bodyA
+			)
+		{
+			_objsInContact.erase(it);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void BoxML::DispatchDestroyBody(void)
@@ -686,11 +711,8 @@ void BoxML::OnBeginContact(b2Contact* contact)
 	b2Fixture* fixtureA = contact->GetFixtureA();
 	b2Fixture* fixtureB = contact->GetFixtureB();
 
-	if (fixtureA->IsSensor() ||
-		fixtureB->IsSensor())
-	{
+	if (!fixtureA || !fixtureB|| fixtureA->IsSensor() || fixtureB->IsSensor())
 		return;
-	}
 
 	if (isObject(ObjectCategory::Player, fixtureA))
 		OnPlayerContact(fixtureA, fixtureB);
@@ -705,6 +727,7 @@ void BoxML::OnBeginContact(b2Contact* contact)
 
 void BoxML::OnEndContact(b2Contact* contact)
 {
+	
 }
 
 void BoxML::OnPostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
@@ -921,7 +944,19 @@ bool BoxML::isObject(const ObjectCategory category, b2Fixture* fixture) const
 	return isObject(category, (ObjectCategory)fixture->GetFilterData().categoryBits);
 }
 
+bool BoxML::inContactObjects(b2Body* bodyA, b2Body* bodyB)
+{
+	for (auto it = _objsInContact.begin(); it != _objsInContact.end(); ++it)
+	{
+		if (
+			it->first == bodyA && it->second == bodyB
+			|| it->first == bodyB && it->second == bodyA
+			)
+			return true;
+	}
 
+	return false;
+}
 
 void BoxML::HandleKeyPress(sf::Keyboard::Key key)
 {
