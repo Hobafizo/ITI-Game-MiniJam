@@ -43,12 +43,12 @@ static LevelData Level3Data = {
     //2 right
     //3 unknown
     {
-        { sf::Vector2f(1300.f, 700.f),{ 108, 76 } , 1},
+        //{ sf::Vector2f(1300.f, 700.f),{ 108, 76 } , 1},
         // EnemyData object 2
-        //{ sf::Vector2f(600.f, 900.f), { 83, 87 }, 2  },
+        { sf::Vector2f(600.f, 900.f), { 83, 87 }, 2  },
 
         // EnemyData object 3
-		{ sf::Vector2f(1700.f, 500.f), { 94, 56 }, 3  }
+		//{ sf::Vector2f(1700.f, 500.f), { 94, 56 }, 3  }
     },
 
     // Traps (empty for now)

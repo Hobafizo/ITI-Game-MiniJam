@@ -736,6 +736,12 @@ void BoxML::OnBeginContact(b2Contact* contact)
 	if (!fixtureA || !fixtureB|| fixtureA->IsSensor() || fixtureB->IsSensor())
 		return;
 
+	b2Body* bodyA = fixtureA->GetBody();
+	b2Body* bodyB = fixtureB->GetBody();
+
+	if (!bodyA || !bodyB || !addContactObjects(bodyA, bodyB))
+		return;
+
 	if (isObject(ObjectCategory::Player, fixtureA))
 		OnPlayerContact(fixtureA, fixtureB);
 	else if (isObject(ObjectCategory::Player, fixtureB))
@@ -749,7 +755,19 @@ void BoxML::OnBeginContact(b2Contact* contact)
 
 void BoxML::OnEndContact(b2Contact* contact)
 {
-	
+	b2Fixture* fixtureA = contact->GetFixtureA();
+	b2Fixture* fixtureB = contact->GetFixtureB();
+
+	if (!fixtureA || !fixtureB || fixtureA->IsSensor() || fixtureB->IsSensor())
+		return;
+
+	b2Body* bodyA = fixtureA->GetBody();
+	b2Body* bodyB = fixtureB->GetBody();
+
+	if (!bodyA || !bodyB)
+		return;
+
+	removeContactObjects(bodyA, bodyB);
 }
 
 void BoxML::OnPostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
@@ -847,6 +865,7 @@ void BoxML::OnMonsterContact(b2Fixture* monster, b2Fixture* object)
 		return;
 
 	uint16 objCategory = object->GetFilterData().categoryBits;
+	printf(__FUNCTION__": %d\n", objCategory);
 
 	if (isObject((ObjectCategory)objCategory,
 		(ObjectCategory)((uint16)ObjectCategory::Wall_Vertical
@@ -1069,6 +1088,24 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 		_previewObject->Body()->SetAngularVelocity(0);
 	}
 }
+
+bool IsFixtureColliding(b2Fixture* fixture)
+{
+	b2Body* body = fixture->GetBody();
+
+	for (b2ContactEdge* ce = body->GetContactList(); ce; ce = ce->next)
+	{
+		b2Contact* c = ce->contact;
+
+		if (!c->IsTouching())
+			continue;
+
+		if (c->GetFixtureA() == fixture || c->GetFixtureB() == fixture)
+			return true;
+	}
+	return false;
+}
+
 void BoxML::PlacePreviewObject()
 {
 	if (!_previewObject) return;
@@ -1079,7 +1116,13 @@ void BoxML::PlacePreviewObject()
 	if (body)
 	{
 		b2Fixture* fixture = body->GetFixtureList();
-		if (fixture) fixture->SetSensor(false);
+		if (fixture)
+		{
+			if (IsFixtureColliding(fixture))
+				return;
+
+			fixture->SetSensor(false);
+		}
 
 		if (_currentPreviewType == ObjectCategory::Monster) {
 			body->SetType(b2_dynamicBody);
