@@ -38,7 +38,7 @@ public:
         cout << "new level loaded\n";
 		const sf::Vector2u screen = boxWorld.Resolution();
 		boxWorld.PrepareWorld();
-        //boxWorld.StartLevelMusic(); 
+        boxWorld.StartLevelMusic(); // (needs fixing)
         // Player remember to uncomment, having an issue currently
         float playWidth = 1366.f;
         float playHeight = 768.f;
@@ -169,11 +169,12 @@ public:
     
 
     void unloadLevel() {
+        boxWorld.StopLevelMusic();
+
         if (!_levelLoaded) return;
 
         /*for (auto* obj : spawnedObjects)
             delete obj;*/
-
 		boxWorld.ClearObjects();
 
         spawnedObjects.clear();

@@ -43,7 +43,6 @@ int main()
 
     Hud hud;
     PauseMenu pausemenu;
-    levelMgr.loadLevel(Level3Data); // Load level 
     while (window.isOpen())
     {
         sf::Event event;
@@ -81,6 +80,7 @@ int main()
 			{
 				levelMgr.loadLevel(Level3Data);
 				menuManager.setState(ACTIVE_GAME);
+                boxWorld.SetRenderState(WorldRenderState::Running);
 			}
 
             if (event.type == sf::Event::KeyPressed) {

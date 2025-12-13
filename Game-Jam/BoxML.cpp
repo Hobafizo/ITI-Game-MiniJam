@@ -146,6 +146,13 @@ void BoxML::StartLevelMusic()
 		}
 	}
 }
+void BoxML::StopLevelMusic() {
+		if (_levelMusic.getStatus() == sf::SoundSource::Playing) {
+		_levelMusic.stop();
+		_levelMusic.setLoop(false);
+	}
+
+}
 void BoxML::HandleInput(sf::RenderWindow& window, sf::Event& event)
 {
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
