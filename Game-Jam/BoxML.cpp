@@ -74,8 +74,6 @@ BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned s
 	_previewRotation = 0.0f;
 	_loseBuffer.loadFromFile("Assets/Audio/Creepy Bell Sound Effect - KiiroKarol.wav");
 	_loseSound.setBuffer(_loseBuffer);
-	_winBuffer.loadFromFile("Assets/Audio/Won.wav");
-	_winSound.setBuffer(_winBuffer);
 	_wallBuffer.loadFromFile("Assets/Audio/Ocean Wave - Sound Effect - RazendeGijs.wav");
 	_wallSound.setBuffer(_wallBuffer);
 	_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
@@ -132,7 +130,7 @@ void BoxML::CreateWorld(void)
 
 void BoxML::StartLevelMusic()
 {
-	// Only play if it isn't already playing
+
 	if (_levelMusic.getStatus() != sf::SoundSource::Playing)
 	{
 		// Load and Play
@@ -145,12 +143,35 @@ void BoxML::StartLevelMusic()
 		}
 	}
 }
+void BoxML::StartWinMusic()
+{
+
+	if (_winSound.getStatus() != sf::SoundSource::Playing)
+	{
+		;
+
+		if (_winBuffer.loadFromFile("Assets/Audio/Won.wav")) {
+			_winSound.setBuffer(_winBuffer);
+			_winSound.setLoop(true);
+			_winSound.play();
+		}
+		else {
+			std::cout << "Error: Could not load level music!" << std::endl;
+		}
+	}
+}
 void BoxML::StopLevelMusic() {
-		if (_levelMusic.getStatus() == sf::SoundSource::Playing) {
+	if (_levelMusic.getStatus() == sf::SoundSource::Playing) {
 		_levelMusic.stop();
 		_levelMusic.setLoop(false);
 	}
 
+}
+void::BoxML::StopWinMusic() {
+	if (_winSound.getStatus() == sf::SoundSource::Playing) {
+		_winSound.stop();
+		_winSound.setLoop(false);
+	}
 }
 void BoxML::HandleInput(sf::RenderWindow& window, sf::Event& event)
 {
@@ -860,10 +881,8 @@ void BoxML::OnDoorContact(b2Fixture* door, b2Fixture* object)
 	bfKey* keyObj = findObjectByBody<bfKey>(ObjectCategory::Key);
 	if (keyObj)
 		return;
-
-	_levelMusic.stop();
-	_levelMusic.setLoop(false);
-	_winSound.play();
+	StopLevelMusic();
+	StartWinMusic();
 
 	SetRenderState(WorldRenderState::Win);
 }
