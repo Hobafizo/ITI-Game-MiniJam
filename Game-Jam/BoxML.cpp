@@ -666,13 +666,14 @@ void BoxML::Step(void)
 	if (_frameTimer.getElapsedTime().asMilliseconds() < _frameRefreshRate)
 		return;
 
+	DispatchDestroyBody();
+
 	for (auto it = _objs.begin(); it != _objs.end(); ++it)
 		(*it)->updatePosition(_timer.getElapsedTime().asSeconds());
 
 	_world.Step(_timeStep, _velocityIterations, _positionIterations);
-	_frameTimer.restart();
 
-	DispatchDestroyBody();
+	_frameTimer.restart();	
 }
 
 void BoxML::Render(sf::RenderWindow& mainWnd)
@@ -780,8 +781,10 @@ void BoxML::OnPlayerContact(b2Fixture* player, b2Fixture* object)
 	{
 		StopLevelMusic();
 		_loseSound.play();
-		printf("Player hit monster\n");
 		SetRenderState(WorldRenderState::Lose);
+
+		static int counter = 1;
+		std::cout << "[" << counter++ << "] Player hit monster" << std::endl;
 	}
 
 	else if (isObject((ObjectCategory)objCategory, ObjectCategory::Key))
