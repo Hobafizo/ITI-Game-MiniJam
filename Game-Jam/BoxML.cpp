@@ -78,8 +78,7 @@ BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned s
 	_wallSound.setBuffer(_wallBuffer);
 	_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
 	_LoserMusic.openFromFile("Assets/Audio/YOU DIED (HD) - iwanPlays.wav");
-	_winBuffer.loadFromFile("Assets/Audio/Won.wav");
-	_winSound.setBuffer(_winBuffer);
+	_winSound.openFromFile("Assets/Audio/Won.wav");
 	KeypickUpBuffer.loadFromFile("Assets/Audio/Pick Up Keys  Sound Effect.wav");
 	KeypickUp.setBuffer(KeypickUpBuffer);
 
