@@ -3,7 +3,9 @@
 #define WINDOW_WIDTH      1920
 #define WINDOW_HEIGHT     1080
 #define WINDOW_FRAME_RATE 60
-#define WINDOW_FULL_SCREEN
+//#define WINDOW_FULL_SCREEN
+#define NO_INTRO
+//#define QUALITY_INTRO
 
 #define PIXELS_PER_UNIT   10
 
@@ -22,6 +24,8 @@
 #define WALL_VERTICAL_HEIGHT      119
 #define WALL_HORIZONTAL_WIDTH     178
 #define WALL_HORIZONTAL_HEIGHT    50
+#define WALL_L_WIDTH              200
+#define WALL_L_HEIGHT             150
 #define KEY_WIDTH                 71
 #define KEY_HEIGHT                82
 #define GATE_WIDTH                202

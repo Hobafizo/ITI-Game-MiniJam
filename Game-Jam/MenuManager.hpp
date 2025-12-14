@@ -1,3 +1,4 @@
+#include "def.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <iostream>
@@ -8,6 +9,7 @@
 #include "PauseMenu.hpp"   // <--- NEW
 #include "LoseMenu.hpp"    // <--- NEW
 #include "WinMenu.hpp"     // <--- NEW
+
 class MenuManager {
 private:
     std::unique_ptr<BaseMenu> currentMenu;
@@ -18,7 +20,13 @@ private:
     sf::Music _LoserMusic;
 
 public:
-    GameState currentState = INTRO_VIDEO;
+
+	GameState currentState =
+#ifdef NO_INTRO
+	MAIN_MENU;
+#else
+    INTRO_VIDEO;
+#endif
 
     MenuManager() {
         currentMenu = std::make_unique<Menu>();

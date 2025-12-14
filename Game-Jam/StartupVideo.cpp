@@ -1,13 +1,24 @@
 #include "StartupVideo.h"
+#include "def.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 
+#ifndef QUALITY_INTRO
 #define FRAME_PATH           "Assets/intro_video/ezgif-frame-"
 #define FRAME_FILE_EXTENSION ".jpg"
 #define FRAME_COUNT          196
 #define FRAME_DURATION       0.04f
 #define MUSIC_PATH           "Assets/intro_video/sound.wav"
+
+#else
+#define FRAME_PATH           "Assets/intro_video2/ezgif-frame-"
+#define FRAME_FILE_EXTENSION ".png"
+#define FRAME_COUNT          196
+#define FRAME_DURATION       0.04f
+#define MUSIC_PATH           "Assets/intro_video2/sound.wav"
+
+#endif
 
 StartupVideo::StartupVideo(sf::Vector2u windowSize) : windowSize(windowSize)
 {

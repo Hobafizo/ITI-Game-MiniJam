@@ -45,12 +45,13 @@ private:
 	bool _hasLost;
 
 	bfObject* _previewObject = nullptr;
+	std::vector<class bfWall*> _previewObjects;
 	ObjectCategory _currentPreviewType = ObjectCategory::None;
 	float _previewRotation;
 
 	bfObject* _placedWall = nullptr;
 	bfObject* _placedSpeedWall = nullptr;
-	bfObject* _placedMonster = nullptr;
+	std::vector<bfWall*> _placedLWall;
 
 	static BoxML* _instance;
 
@@ -89,6 +90,7 @@ public:
 	class bfWall* CreateWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, uint16 categoryBits = 0, uint16 maskBits = 0, bool addToWorld = true, bool loadSprite = true, bool invisible = false, unsigned char spriteIndex = 0);
 	class bfKey* CreateKey(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, bool loadSprite = true);
 	class bfDoor* CreateDoor(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, bool loadSprite = true);
+	std::vector<class bfWall*> CreateLWall(const b2BodyType bodyType, const b2Vec2 position, const sf::Vector2f size, float density = 0.01f, float friction = 0.3f, bool addToWorld = true, bool loadSprite = true);
 
 	bool LoadBackground(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
 	bool LoadBackground2(const std::string& imagePath, sf::Color color = sf::Color(255, 255, 255, 255));
@@ -107,11 +109,11 @@ public:
 	void OnEndContact(b2Contact* contact);
 	void OnPostSolve(b2Contact* contact, const b2ContactImpulse* impulse);
 
-	void OnPlayerContact(b2Fixture* player, b2Fixture* object);
-	void OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCategory);
-	void OnMonsterContact(b2Fixture* monster, b2Fixture* object);
-	void OnKeyContact(b2Fixture* key, b2Fixture* object);
-	void OnDoorContact(b2Fixture* door, b2Fixture* object);
+	void OnPlayerContact(b2Contact* contact, b2Fixture* player, b2Fixture* object);
+	void OnPlayerWallContact(b2Contact* contact, b2Fixture* player, b2Fixture* wall, uint16 objCategory);
+	void OnMonsterContact(b2Contact* contact, b2Fixture* monster, b2Fixture* object);
+	void OnKeyContact(b2Contact* contact, b2Fixture* key, b2Fixture* object);
+	void OnDoorContact(b2Contact* contact, b2Fixture* door, b2Fixture* object);
 
 	// Utilities
 	WorldRenderState RenderState() const;
