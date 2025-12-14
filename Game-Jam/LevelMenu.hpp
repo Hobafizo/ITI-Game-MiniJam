@@ -65,6 +65,7 @@ public:
         if (level1Sprite.getGlobalBounds().contains(mousePos)) {
             std::cout << "Level Menu -> Level 1 button clicked. Start Game." << std::endl;
             return START_GAME;
+            
         }
 
         if (exitSprite.getGlobalBounds().contains(mousePos)) {

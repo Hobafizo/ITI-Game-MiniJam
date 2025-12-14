@@ -84,7 +84,7 @@ public:
 
             std::cout << "--- MenuManager switched state to ACTIVE GAME ---" << std::endl;
             break;
-
+           
         case RESUME_GAME:
             currentState = ACTIVE_GAME;
             BoxML::Instance()->SetRenderState(WorldRenderState::Running);
