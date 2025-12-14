@@ -648,11 +648,11 @@ bool BoxML::LoadBackground2(const std::string& imagePath, sf::Color color)
 
 bool BoxML::LoadWinBackground(const std::string& imagePath, sf::Color color)
 {
-	if (!_winTexture.loadFromFile(imagePath, {}))
+	/*if (!_winTexture.loadFromFile(imagePath, {}))
 		return false;
 
 	_winBackground.setTexture(_winTexture);
-	_winBackground.setColor(color);
+	_winBackground.setColor(color);*/
 	return true;
 }
 

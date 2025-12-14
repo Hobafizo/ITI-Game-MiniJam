@@ -7,7 +7,7 @@
 #include "LevelMenu.hpp"
 #include "PauseMenu.hpp"   // <--- NEW
 #include "LoseMenu.hpp"    // <--- NEW
-
+#include "WinMenu.hpp"     // <--- NEW
 class MenuManager {
 private:
     std::unique_ptr<BaseMenu> currentMenu;
@@ -119,7 +119,11 @@ public:
         currentMenu = std::make_unique<LoseMenu>();
         currentState= LOSE_MENU;
     }
-
+    void showWinMenu() {
+		if(currentState==WIN_MENU) return;
+		currentMenu = std::make_unique<WinMenu>();
+		currentState= WIN_MENU;
+	}
     void resumeGame() {
         currentMenu.reset();
         currentState = ACTIVE_GAME;

@@ -20,7 +20,8 @@ enum GameState {
     ACTIVE_GAME,
     PAUSED,
     EXIT,
-    LOSE_MENU
+    LOSE_MENU,
+    WIN_MENU
 };
 
 // Base Menu Interface

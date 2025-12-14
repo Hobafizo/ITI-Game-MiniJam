@@ -9,7 +9,7 @@ static LevelData Level2Data = {
 
     // Walls (converted to Level3 format)
     {
-        { sf::Vector2f(890.f, 400.f),  sf::Vector2f(WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT),  ObjectCategory::Wall_Vertical },
+        { sf::Vector2f(890.f, 250.f),  sf::Vector2f(WALL_VERTICAL_WIDTH, WALL_VERTICAL_HEIGHT),  ObjectCategory::Wall_Vertical },
         { sf::Vector2f(650.f, 700.f),   sf::Vector2f(WALL_HORIZONTAL_WIDTH, WALL_HORIZONTAL_HEIGHT),  ObjectCategory::Wall_Horizontal },
     },
 

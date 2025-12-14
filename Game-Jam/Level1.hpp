@@ -22,8 +22,8 @@ static LevelData Level1Data = {
     {},
 
     // Key (added size)
-    { sf::Vector2f(1400.f, 650.f), { 71, 82 } },
+    { sf::Vector2f(1200.f, 650.f), { 71, 82 } },
 
     // Door (added size)
-    { sf::Vector2f(1400.f, 100.f), { 202, 298 } }
+    { sf::Vector2f(1200.f, 350.f), { 202, 298 } }
 };
