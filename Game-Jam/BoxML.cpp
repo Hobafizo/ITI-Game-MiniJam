@@ -80,6 +80,8 @@ BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned s
 	_LoserMusic.openFromFile("Assets/Audio/YOU DIED (HD) - iwanPlays.wav");
 	_winBuffer.loadFromFile("Assets/Audio/Won.wav");
 	_winSound.setBuffer(_winBuffer);
+	KeypickUpBuffer.loadFromFile("Assets/Audio/Pick Up Keys  Sound Effect.wav");
+	KeypickUp.setBuffer(KeypickUpBuffer);
 
 }
 
@@ -900,6 +902,7 @@ void BoxML::OnMonsterContact(b2Fixture* monster, b2Fixture* object)
 
 void BoxML::OnKeyContact(b2Fixture* key, b2Fixture* object)
 {
+	KeypickUp.play();
 	bfKey* keyObj = findObjectByBody<bfKey>(key->GetBody());
 	if (!keyObj)
 		return;

@@ -36,6 +36,8 @@ private:
 	sf::Sound _loseSound;
 	sf::Sound _winSound;
 	sf::Music _levelMusic;
+	sf::SoundBuffer KeypickUpBuffer;
+	sf::Sound KeypickUp;
 public:
 	sf::Music _LoserMusic;
 private:

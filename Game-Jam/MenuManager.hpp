@@ -71,8 +71,10 @@ public:
             currentMenu = std::make_unique<Menu>();
 
             currentState = MAIN_MENU;
-            _mainMusic.play();
-            _mainMusic.setLoop(true);
+            if (_mainMusic.getStatus() != sf::Music::Playing) {
+                _mainMusic.play();
+                _mainMusic.setLoop(true);
+            }
             std::cout << "--- MenuManager switched state to Main Menu ---" << std::endl;
             break;
 
