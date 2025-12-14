@@ -55,8 +55,8 @@ static LevelData Level3Data = {
     {},
 
     // Key position in pixels
-    { sf::Vector2f(1800.f, 900.f),{ 71, 82 } },
+    { sf::Vector2f(1800.f, 900.f),{ KEY_WIDTH, KEY_HEIGHT } },
 
     // Door position in pixels
-    { sf::Vector2f(960.f, 20.f),{ 202, 298 } }
+    { sf::Vector2f(960.f, 150.f),{ GATE_WIDTH, GATE_HEIGHT } }
 };

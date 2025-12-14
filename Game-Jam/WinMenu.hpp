@@ -12,13 +12,17 @@ private:
     sf::Texture menuTexture;
     sf::Sprite menuSprite;
 
+    sf::Texture nextTexture;
+    sf::Sprite nextSprite;
+
     sf::Texture quitTexture;
     sf::Sprite quitSprite;
     sf::Vector2f defaultScale;
     bool loadAssets() {
-        if (!backgroundTexture.loadFromFile("Assets/UI/Menus/WinMenu/WinBackground.jpg")) return false;
-        if (!menuTexture.loadFromFile("Assets/UI/Menus/WinMenu/Menu.jpg")) return false;
-        if (!quitTexture.loadFromFile("Assets/UI/Menus/WinMenu/Quit.jpg")) return false;
+        if (!backgroundTexture.loadFromFile("Assets/background/win.png")) return false;
+        if (!menuTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Back.png")) return false;
+        if (!nextTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Resume.png")) return false;
+        if (!quitTexture.loadFromFile("Assets/UI/Menus/MenusUI1/exit2.png")) return false;
         return true;
     }
 
@@ -31,7 +35,7 @@ private:
         float bgScaleY = (float)windowSize.y / backgroundTexture.getSize().y;
         backgroundSprite.setScale(bgScaleX, bgScaleY);
 
-        float buttonWidth = 300.0f;
+        float buttonWidth = 200.0f;
         float centerX = (windowSize.x - buttonWidth) * 0.5f;
 
         float menuScale = buttonWidth / menuTexture.getSize().x;
@@ -39,10 +43,15 @@ private:
         menuSprite.setScale(menuScale, menuScale);
         menuSprite.setPosition(centerX, 260.0f);
 
+        float nextScale = buttonWidth / nextTexture.getSize().x;
+        nextSprite.setTexture(nextTexture);
+        nextSprite.setScale(nextScale, nextScale);
+        nextSprite.setPosition(centerX, 460.f);
+
         float quitScale = buttonWidth / quitTexture.getSize().x;
         quitSprite.setTexture(quitTexture);
         quitSprite.setScale(quitScale, quitScale);
-        quitSprite.setPosition(centerX, 420.0f);
+        quitSprite.setPosition(centerX, 620.0f);
     }
 
 public:
@@ -58,6 +67,7 @@ public:
     void draw(sf::RenderWindow& window) override {
         window.draw(backgroundSprite);
         window.draw(menuSprite);
+        window.draw(nextSprite);
         window.draw(quitSprite);
     }
 
@@ -71,6 +81,10 @@ public:
         if (quitSprite.getGlobalBounds().contains(mousePos)) {
             std::cout << "WinMenu -> Quit clicked\n";
             return QUIT;
+        }
+        if (nextSprite.getGlobalBounds().contains(mousePos)) {
+            cout<<"WinMenu -> Next Level clicked\n";
+            return START_GAME;
         }
         return NONE;
     }

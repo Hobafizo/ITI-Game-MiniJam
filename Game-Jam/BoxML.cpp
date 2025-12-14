@@ -128,8 +128,8 @@ void BoxML::CreateWorld(void)
 	//monster = CreateMonster(b2_dynamicBody, pixelToMeter({ (float)_screenWidth - 600, PLAYGROUND_MARGIN_TOP + 100}), { 94, 56 }, 0.01f, 0.3f, 3);
 	//monster->setMovePattern(Monster_MovePattern::Right);
 
-	//CreateKey(b2_staticBody, pixelToMeter({ 500, 500 }), { 71, 82 }, 0.01f, 0.3f);
-	//CreateDoor(b2_staticBody, pixelToMeter({ 500, 800 }), { 202, 298 }, 0.01f, 0.3f);
+	//CreateKey(b2_staticBody, pixelToMeter({ 500, 500 }), { KEY_WIDTH, KEY_HEIGHT }, 0.01f, 0.3f);
+	//CreateDoor(b2_staticBody, pixelToMeter({ 500, 800 }), { GATE_WIDTH, GATE_HEIGHT }, 0.01f, 0.3f);
 }
 
 void BoxML::StartLevelMusic()
@@ -405,7 +405,7 @@ bfPlayer* BoxML::CreatePlayer(const b2BodyType bodyType, const b2Vec2 position, 
 		//bfObj->loadSpriteSheet("Assets/characters/frog4_fixed.png", 150, 192, 0, 0, 4, 4, _timer.getElapsedTime().asSeconds(), 0.17f);
 	}
 
-	bfObj->setScale({ 0.7f, 0.7f });
+	bfObj->setScale({ 0.6f, 0.6f });
 
 	return bfObj;
 }
@@ -494,8 +494,11 @@ bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, cons
 	else if (loadSprite)
 	{
 		if (isObject((ObjectCategory)categoryBits,
-			(ObjectCategory)((uint16)ObjectCategory::Wall_Vertical | (uint16)ObjectCategory::SpeedWall_Vertical)
-		))
+			(ObjectCategory)((uint16)ObjectCategory::Wall_Vertical
+				| (uint16)ObjectCategory::SpeedWall_Vertical
+				| (uint16)ObjectCategory::Wall
+				| (uint16)ObjectCategory::SpeedWall
+				)))
 		{
 			if (!spriteIndex)
 			{
@@ -524,7 +527,8 @@ bfWall* BoxML::CreateWall(const b2BodyType bodyType, const b2Vec2 position, cons
 		}
 
 		else if (isObject((ObjectCategory)categoryBits,
-			(ObjectCategory)((uint16)ObjectCategory::Wall_Horizontal | (uint16)ObjectCategory::SpeedWall_Horizontal | (uint16)ObjectCategory::Wall | (uint16)ObjectCategory::SpeedWall)
+			(ObjectCategory)((uint16)ObjectCategory::Wall_Horizontal
+				| (uint16)ObjectCategory::SpeedWall_Horizontal)
 		))
 		{
 			if (!spriteIndex)
@@ -583,6 +587,8 @@ bfKey* BoxML::CreateKey(const b2BodyType bodyType, const b2Vec2 position, const 
 	if (loadSprite)
 		bfObj->loadSpriteSheet("Assets/Enviroment/key.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
 
+	bfObj->setScale({ 0.7f, 0.7f });
+
 	return bfObj;
 }
 
@@ -615,6 +621,8 @@ bfDoor* BoxML::CreateDoor(const b2BodyType bodyType, const b2Vec2 position, cons
 	if (loadSprite)
 		bfObj->loadSpriteSheet("Assets/Enviroment/Gate_Closed.png", size.x, size.y, 0, 0, 1, 1, 0, 0, true);
 
+	bfObj->setScale({ 0.5f, 0.5f });
+
 	return bfObj;
 }
 
@@ -640,11 +648,11 @@ bool BoxML::LoadBackground2(const std::string& imagePath, sf::Color color)
 
 bool BoxML::LoadWinBackground(const std::string& imagePath, sf::Color color)
 {
-	if (!_winTexture.loadFromFile(imagePath, {}))
+	/*if (!_winTexture.loadFromFile(imagePath, {}))
 		return false;
 
 	_winBackground.setTexture(_winTexture);
-	_winBackground.setColor(color);
+	_winBackground.setColor(color);*/
 	return true;
 }
 
@@ -788,9 +796,14 @@ void BoxML::OnPlayerContact(b2Fixture* player, b2Fixture* object)
 	uint16 objCategory = object->GetFilterData().categoryBits;
 
 	if (isObject((ObjectCategory)objCategory,
-		(ObjectCategory)((uint16)ObjectCategory::Wall_Vertical | (uint16)ObjectCategory::Wall_Horizontal | (uint16)ObjectCategory::SpeedWall_Vertical | (uint16)ObjectCategory::SpeedWall_Horizontal)))
+		(ObjectCategory)((uint16)ObjectCategory::Wall_Vertical
+			| (uint16)ObjectCategory::Wall_Horizontal
+			| (uint16)ObjectCategory::SpeedWall_Vertical
+			| (uint16)ObjectCategory::SpeedWall_Horizontal
+			| (uint16)ObjectCategory::Wall
+			| (uint16)ObjectCategory::SpeedWall
+			)))
 	{
-
 		_wallSound.play();
 		OnPlayerWallContact(player, object, objCategory);
 	}
@@ -800,9 +813,6 @@ void BoxML::OnPlayerContact(b2Fixture* player, b2Fixture* object)
 		StopLevelMusic();
 		_loseSound.play();
 		SetRenderState(WorldRenderState::Lose);
-
-		static int counter = 1;
-		std::cout << "[" << counter++ << "] Player hit monster" << std::endl;
 	}
 
 	else if (isObject((ObjectCategory)objCategory, ObjectCategory::Key))
@@ -819,11 +829,11 @@ void BoxML::OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCa
 	b2Body* playerBody = player->GetBody();
 	b2Vec2 currentVelocity = playerBody->GetLinearVelocity();
 	float currentSpeed = currentVelocity.Length();
-	if (currentSpeed < 0.1f) currentSpeed = 5.0f;
+	if (currentSpeed < 0.1f)
+		currentSpeed = PLAYER_SPEED;
 
 	float randomAngle = angleDist(randGenerator);
 	b2Vec2 randomDir(cos(randomAngle), sin(randomAngle));
-
 
 	if (isObject((ObjectCategory)objCategory, ObjectCategory::Wall_Vertical))
 	{
@@ -857,6 +867,13 @@ void BoxML::OnPlayerWallContact(b2Fixture* player, b2Fixture* wall, uint16 objCa
 		_player->setSpeedBoostTimer(_timer.getElapsedTime().asSeconds() + WALL_SPEED_INC_TIME);
 		playerBody->SetLinearVelocity(currentSpeed * randomDir);
 	}
+
+	else if (isObject((ObjectCategory)objCategory, ObjectCategory::SpeedWall))
+	{
+		_player->setBoostMultiplier(WALL_SPEED_INC_MULTIPLIER);
+		_player->setSpeedBoostTimer(_timer.getElapsedTime().asSeconds() + WALL_SPEED_INC_TIME);
+		playerBody->SetLinearVelocity(currentVelocity);
+	}
 }
 
 void BoxML::OnMonsterContact(b2Fixture* monster, b2Fixture* object)
@@ -874,16 +891,11 @@ void BoxML::OnMonsterContact(b2Fixture* monster, b2Fixture* object)
 	printf(__FUNCTION__": %d\n", objCategory);
 
 	if (isObject((ObjectCategory)objCategory,
-		(ObjectCategory)((uint16)ObjectCategory::Wall_Vertical
-			| (uint16)ObjectCategory::Wall_Horizontal
-			| (uint16)ObjectCategory::SpeedWall_Vertical
-			| (uint16)ObjectCategory::SpeedWall_Horizontal
-			| (uint16)ObjectCategory::Wall
-			| (uint16)ObjectCategory::SpeedWall
+		(ObjectCategory)((uint16)ObjectCategory::Player
 			)))
-	{
-		monsterObj->setMovePattern(monsterObj->toggleMovementPattern());
-	}
+		return;
+
+	monsterObj->setMovePattern(monsterObj->toggleMovementPattern());
 }
 
 void BoxML::OnKeyContact(b2Fixture* key, b2Fixture* object)
@@ -1061,13 +1073,13 @@ void BoxML::UpdatePreviewObject(const sf::Vector2f& pixelMousePos)
 		case ObjectCategory::Wall:
 
 			_previewObject = CreateWall(b2_staticBody, mouseMeters, objectSize, 0.0f, 0.0f,
-				(uint16)ObjectCategory::Wall_Vertical, 0, false, true, false, 3);
+				(uint16)ObjectCategory::Wall, 0, false, true, false, 3);
 			break;
 
 		case ObjectCategory::SpeedWall:
 		
 			_previewObject = CreateWall(b2_staticBody, mouseMeters, objectSize, 0.0f, 0.0f,
-				(uint16)ObjectCategory::SpeedWall_Vertical, 0, false, true, false, 4);
+				(uint16)ObjectCategory::SpeedWall, 0, false, true, false, 4);
 			break;
 
 		case ObjectCategory::Monster:
