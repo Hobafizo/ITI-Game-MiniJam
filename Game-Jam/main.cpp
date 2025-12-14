@@ -154,6 +154,9 @@ int main()
 			{
 				menuManager.setState(MAIN_MENU);
 				menuManager.playMainMusic();
+
+				window.clear(defaultColor);
+				window.display();
 			}
 		}
 
