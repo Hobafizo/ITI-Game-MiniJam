@@ -156,6 +156,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.hpp" />
     <ClCompile Include="MenuManager.hpp" />
+    <ClCompile Include="StartupVideo.cpp" />
     <ClCompile Include="VisualHandler.hpp" />
     <ClCompile Include="WorldContactListener.cpp" />
   </ItemGroup>
@@ -184,6 +185,7 @@
     <ClInclude Include="LoseMenu.hpp" />
     <ClInclude Include="ObjectCategory.h" />
     <ClInclude Include="PauseMenu.hpp" />
+    <ClInclude Include="StartupVideo.h" />
     <ClInclude Include="WinMenu.hpp" />
     <ClInclude Include="WorldContactListener.h" />
   </ItemGroup>
