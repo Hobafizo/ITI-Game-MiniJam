@@ -15,6 +15,8 @@
 #include "Level4.hpp"
 int main()
 {
+    vector <LevelData> levels = { Level1Data, Level2Data, Level3Data, Level4Data };
+    int curLevel= 0;
     const float timeStep = 1.0f / 60.0f; // 1/60 (frames/sec)
     const int32 velocityIterations = 6;
     const int32 positionIterations = 2;
@@ -90,7 +92,9 @@ int main()
             if (boxWorld.RenderState() == WorldRenderState::Win) {
                 
                 menuManager.showWinMenu();
-				levelMgr.unloadLevel();
+                curLevel++;
+                levelMgr.unloadLevel();
+
                 boxWorld.SetRenderState(WorldRenderState::Paused);
                 boxWorld.StartWinMusic();
 				menuManager.handleHover();
@@ -102,7 +106,7 @@ int main()
 
 			else if (menuManager.currentState == LOADING_LEVEL)
 			{
-				levelMgr.loadLevel(Level3Data);
+				levelMgr.loadLevel(levels[curLevel]);
 				menuManager.setState(ACTIVE_GAME);
                 boxWorld.SetRenderState(WorldRenderState::Running);
 			}
