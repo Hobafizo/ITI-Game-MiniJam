@@ -7,7 +7,7 @@
 #include "LevelMenu.hpp"
 #include "PauseMenu.hpp"   // <--- NEW
 #include "LoseMenu.hpp"    // <--- NEW
-
+#include "WinMenu.hpp"     // <--- NEW
 class MenuManager {
 private:
     std::unique_ptr<BaseMenu> currentMenu;
@@ -76,8 +76,10 @@ public:
             currentMenu = std::make_unique<Menu>();
 
             currentState = MAIN_MENU;
-            _mainMusic.play();
-            _mainMusic.setLoop(true);
+            if (_mainMusic.getStatus() != sf::Music::Playing) {
+                _mainMusic.play();
+                _mainMusic.setLoop(true);
+            }
             std::cout << "--- MenuManager switched state to Main Menu ---" << std::endl;
             break;
 
@@ -89,7 +91,7 @@ public:
 
             std::cout << "--- MenuManager switched state to ACTIVE GAME ---" << std::endl;
             break;
-
+           
         case RESUME_GAME:
             currentState = ACTIVE_GAME;
             BoxML::Instance()->SetRenderState(WorldRenderState::Running);
@@ -124,7 +126,11 @@ public:
         currentMenu = std::make_unique<LoseMenu>();
         currentState= LOSE_MENU;
     }
-
+    void showWinMenu() {
+		if(currentState==WIN_MENU) return;
+		currentMenu = std::make_unique<WinMenu>();
+		currentState= WIN_MENU;
+	}
     void resumeGame() {
         currentMenu.reset();
         currentState = ACTIVE_GAME;

@@ -12,6 +12,7 @@
 #include "Level3.hpp"
 #include "StartupVideo.h"
 
+#include "Level4.hpp"
 int main()
 {
     const float timeStep = 1.0f / 60.0f; // 1/60 (frames/sec)
@@ -86,7 +87,14 @@ int main()
                 levelMgr.unloadLevel();
                 menuManager.handleHover();
             }
-
+            if (boxWorld.RenderState() == WorldRenderState::Win) {
+                
+                menuManager.showWinMenu();
+				levelMgr.unloadLevel();
+                boxWorld.SetRenderState(WorldRenderState::Paused);
+                boxWorld.StartWinMusic();
+				menuManager.handleHover();
+			}
 			if (menuManager.currentState == MAIN_MENU)
 			{
 				levelMgr.unloadLevel();
@@ -157,7 +165,7 @@ int main()
 
             if (menuManager.currentState == MAIN_MENU
 				|| menuManager.currentState == LEVEL_MENU
-				|| menuManager.currentState == LOADING_LEVEL || menuManager.currentState == LOSE_MENU
+				|| menuManager.currentState == LOADING_LEVEL || menuManager.currentState == LOSE_MENU ||menuManager.currentState==WIN_MENU
 				)
 			{
                 menuManager.handleHover();
@@ -165,6 +173,9 @@ int main()
                 if (menuManager.currentState != LOSE_MENU)
                 {
                     boxWorld.StopLoserMusic();
+                }
+                if (menuManager.currentState != WIN_MENU) {
+                    boxWorld.StopWinMusic();
                 }
             }
 

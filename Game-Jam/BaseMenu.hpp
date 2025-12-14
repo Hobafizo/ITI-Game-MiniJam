@@ -22,6 +22,7 @@ enum GameState {
     EXIT,
     LOSE_MENU,
 	INTRO_VIDEO,
+    WIN_MENU
 };
 
 // Base Menu Interface

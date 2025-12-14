@@ -178,6 +178,8 @@
     </ClInclude>
     <ClInclude Include="StartupVideo.h">
       <Filter>Engines</Filter>
+    <ClInclude Include="Level4.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

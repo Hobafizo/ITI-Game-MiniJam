@@ -177,6 +177,7 @@
     <ClInclude Include="Level1.hpp" />
     <ClInclude Include="Level2.hpp" />
     <ClInclude Include="Level3.hpp" />
+    <ClInclude Include="Level4.hpp" />
     <ClInclude Include="LevelData.hpp" />
     <ClInclude Include="LevelManager.hpp" />
     <ClInclude Include="def.h" />

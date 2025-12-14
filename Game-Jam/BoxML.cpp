@@ -78,8 +78,10 @@ BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned s
 	_wallSound.setBuffer(_wallBuffer);
 	_levelMusic.openFromFile("Assets/Audio/Forbidden Friends.wav");
 	_LoserMusic.openFromFile("Assets/Audio/YOU DIED (HD) - iwanPlays.wav");
-	_winBuffer.loadFromFile("Assets/Audio/Won.wav");
-	_winSound.setBuffer(_winBuffer);
+	_winSound.openFromFile("Assets/Audio/Won.wav");
+	KeypickUpBuffer.loadFromFile("Assets/Audio/Pick Up Keys  Sound Effect.wav");
+	KeypickUp.setBuffer(KeypickUpBuffer);
+
 }
 
 BoxML::~BoxML(void)
@@ -647,11 +649,11 @@ bool BoxML::LoadBackground2(const std::string& imagePath, sf::Color color)
 
 bool BoxML::LoadWinBackground(const std::string& imagePath, sf::Color color)
 {
-	if (!_winTexture.loadFromFile(imagePath, {}))
+	/*if (!_winTexture.loadFromFile(imagePath, {}))
 		return false;
 
 	_winBackground.setTexture(_winTexture);
-	_winBackground.setColor(color);
+	_winBackground.setColor(color);*/
 	return true;
 }
 
@@ -899,6 +901,7 @@ void BoxML::OnMonsterContact(b2Fixture* monster, b2Fixture* object)
 
 void BoxML::OnKeyContact(b2Fixture* key, b2Fixture* object)
 {
+	KeypickUp.play();
 	bfKey* keyObj = findObjectByBody<bfKey>(key->GetBody());
 	if (!keyObj)
 		return;
