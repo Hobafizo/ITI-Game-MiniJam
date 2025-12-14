@@ -10,12 +10,15 @@
 #include "Level1.hpp"
 #include "Level2.hpp"
 #include "Level3.hpp"
+#include "StartupVideo.h"
 
 int main()
 {
     const float timeStep = 1.0f / 60.0f; // 1/60 (frames/sec)
     const int32 velocityIterations = 6;
     const int32 positionIterations = 2;
+
+	sf::Color defaultColor(0x000100);
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
 #ifdef WINDOW_FULL_SCREEN
@@ -25,6 +28,8 @@ int main()
 #endif
 
     window.setFramerateLimit(WINDOW_FRAME_RATE);
+	window.clear(defaultColor);
+	window.display();
 
     BoxML boxWorld(WINDOW_WIDTH, WINDOW_HEIGHT, PIXELS_PER_UNIT, timeStep, velocityIterations, positionIterations);
     BoxML::setInstance(&boxWorld);
@@ -33,12 +38,15 @@ int main()
 	boxWorld.LoadPositions();
 
     LevelManager levelMgr(boxWorld);
-    
 
     bool shouldCloseWindow = false;
 
     InputHandler *inputHandler = new InputHandler(window);
     MenuManager menuManager;
+
+	StartupVideo introVideo(boxWorld.Resolution());
+	introVideo.Load();
+	introVideo.Start();
 
     Hud hud;
     while (window.isOpen())
@@ -53,7 +61,8 @@ int main()
 
 			if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape)
 			{
-				if (menuManager.currentState == ACTIVE_GAME) {
+				if (menuManager.currentState == ACTIVE_GAME)
+				{
 					// Active Game: Handle Pause Input (ESC)
 					//levelMgr.loadLevel(Level3Data);
 					std::cout << "ESC pressed. Entering PAUSED state." << std::endl;
@@ -120,16 +129,31 @@ int main()
 			boxWorld.UpdatePreviewObject(worldPos);
 			boxWorld.Step();
 
-			window.clear();
+			window.clear(defaultColor);
             boxWorld.Render(window);
 			window.display();
         }
+
+		else if (menuManager.currentState == INTRO_VIDEO)
+		{
+			if (!introVideo.Ended())
+			{
+				window.clear(defaultColor);
+				introVideo.Draw(window);
+				window.display();
+			}
+			else
+			{
+				menuManager.setState(MAIN_MENU);
+				menuManager.playMainMusic();
+			}
+		}
 
         //inputHandler->handleInput
        
         else
         {
-            window.clear();
+            window.clear(defaultColor);
 
             if (menuManager.currentState == MAIN_MENU
 				|| menuManager.currentState == LEVEL_MENU

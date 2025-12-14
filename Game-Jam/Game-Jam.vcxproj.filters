@@ -75,9 +75,6 @@
     <ClCompile Include="bfWall.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
-    <ClCompile Include="VisualHandler.hpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="bfDoor.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
@@ -95,6 +92,12 @@
     </ClCompile>
     <ClCompile Include="BaseMenu.hpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="VisualHandler.hpp">
+      <Filter>Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="StartupVideo.cpp">
+      <Filter>Engines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,22 +143,7 @@
     <ClInclude Include="bfWall.h">
       <Filter>Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Level1.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bfDoor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bfKey.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hud.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Level2.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Level3.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WinMenu.hpp">
@@ -169,6 +157,27 @@
     </ClInclude>
     <ClInclude Include="LevelManager.hpp">
       <Filter>Scripts\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Level1.hpp">
+      <Filter>Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="Level2.hpp">
+      <Filter>Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="Level3.hpp">
+      <Filter>Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="bfKey.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="bfDoor.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="StartupVideo.h">
+      <Filter>Engines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

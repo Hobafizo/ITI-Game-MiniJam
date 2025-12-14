@@ -3,7 +3,7 @@
 #define WINDOW_WIDTH      1920
 #define WINDOW_HEIGHT     1080
 #define WINDOW_FRAME_RATE 60
-//#define WINDOW_FULL_SCREEN
+#define WINDOW_FULL_SCREEN
 
 #define PIXELS_PER_UNIT   10
 

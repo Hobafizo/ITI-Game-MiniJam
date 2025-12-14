@@ -80,7 +80,6 @@ BoxML::BoxML(unsigned short screenWidth, unsigned short screenHeight, unsigned s
 	_LoserMusic.openFromFile("Assets/Audio/YOU DIED (HD) - iwanPlays.wav");
 	_winBuffer.loadFromFile("Assets/Audio/Won.wav");
 	_winSound.setBuffer(_winBuffer);
-
 }
 
 BoxML::~BoxML(void)

@@ -132,7 +132,7 @@ private:
 public:
     LoseMenu() {
         if (!loadAssets()) {
-            std::cout << "ERROR: Failed to initialize LoseMenu (Check console for asset load failures).\n";
+            std::cout << "ERROR: Failed to initialize LoseMenu (Check console for asset loa d failures).\n";
         }
         else {
             setupSprites();

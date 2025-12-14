@@ -18,14 +18,14 @@ private:
     sf::Music _LoserMusic;
 
 public:
-    GameState currentState = MAIN_MENU;
+    GameState currentState = INTRO_VIDEO;
 
     MenuManager() {
         currentMenu = std::make_unique<Menu>();
         std::cout << "MenuManager initialized with Main Menu." << std::endl;
         if (_mainMusic.openFromFile("Assets/Audio/John Powell This Is Berk (Piano Arrangement by Felipe Queiroga) - Felipe Queiroga.wav")) {
             _mainMusic.setLoop(true);
-            _mainMusic.play();
+            //_mainMusic.play();
         }
         else {
             std::cout << "Error loading Menu Music" << std::endl;
@@ -40,6 +40,11 @@ public:
             _LoserMusic.openFromFile("Assets/Audio/YOU DIED (HD) - iwanPlays.wav");
         }
     }
+
+	void playMainMusic()
+	{
+		_mainMusic.play();
+	}
 
     void draw(sf::RenderWindow& window) {
         if (currentMenu) {
