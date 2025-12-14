@@ -65,7 +65,7 @@ int main()
         sf::Event event;
 		while (window.pollEvent(event))
 		{
-			if (event.type == sf::Event::Closed || menuManager.currentState == EXIT) {
+			if (event.type == sf::Event::Closed) {
 				levelMgr.unloadLevel();
 				window.close();
 			}
@@ -90,34 +90,7 @@ int main()
 					boxWorld.SetRenderState(WorldRenderState::Running);
 				}
 			}
-            if (boxWorld.RenderState() == WorldRenderState::Lose) {
-                menuManager.showLoseMenu();
-                boxWorld.StartLoserMusic();
-                boxWorld.SetRenderState(WorldRenderState::Paused);
-                levelMgr.unloadLevel();
-                menuManager.handleHover();
-            }
-            if (boxWorld.RenderState() == WorldRenderState::Win) {
-                
-                menuManager.showWinMenu();
-                if (curLevel < numLevels) { curLevel++; }
-                levelMgr.unloadLevel();
-
-                boxWorld.SetRenderState(WorldRenderState::Paused);
-                boxWorld.StartWinMusic();
-				menuManager.handleHover();
-			}
-			if (menuManager.currentState == MAIN_MENU)
-			{
-				levelMgr.unloadLevel();
-			}
-
-			else if (menuManager.currentState == LOADING_LEVEL)
-			{
-				levelMgr.loadLevel(levels[curLevel]);
-				menuManager.setState(ACTIVE_GAME);
-                boxWorld.SetRenderState(WorldRenderState::Running);
-			}
+            
 
             if (event.type == sf::Event::KeyPressed) {
                 if (menuManager.currentState == ACTIVE_GAME) {
@@ -140,12 +113,48 @@ int main()
                 boxWorld.HandleRightClick((sf::Vector2f)sf::Mouse::getPosition(window));
             }
         }
-        sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
-        sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
-       
+
+        if (menuManager.currentState == EXIT) {
+            levelMgr.unloadLevel();
+            window.close();
+        }
+
+        if (boxWorld.RenderState() == WorldRenderState::Lose) {
+            menuManager.showLoseMenu();
+            boxWorld.StartLoserMusic();
+            boxWorld.SetRenderState(WorldRenderState::Paused);
+            levelMgr.unloadLevel();
+            menuManager.handleHover();
+        }
+        if (boxWorld.RenderState() == WorldRenderState::Win) {
+
+            menuManager.showWinMenu();
+            if (curLevel < numLevels) { curLevel++; }
+            levelMgr.unloadLevel();
+
+            boxWorld.SetRenderState(WorldRenderState::Paused);
+            boxWorld.StartWinMusic();
+            menuManager.handleHover();
+        }
+        if (menuManager.currentState == MAIN_MENU)
+        {
+            levelMgr.unloadLevel();
+        }
+
+        else if (menuManager.currentState == LOADING_LEVEL)
+        {
+            levelMgr.loadLevel(levels[curLevel]);
+            boxWorld.StopWinMusic();
+            boxWorld.StopLoserMusic();
+            menuManager.setState(ACTIVE_GAME);
+            boxWorld.SetRenderState(WorldRenderState::Running);
+        }
 
         if (menuManager.currentState == ACTIVE_GAME)
         {
+            sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
+            sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
+
 			boxWorld.UpdatePreviewObject(worldPos);
 			boxWorld.Step();
 
@@ -185,8 +194,9 @@ int main()
 				|| menuManager.currentState == LOADING_LEVEL || menuManager.currentState == LOSE_MENU ||menuManager.currentState==WIN_MENU
 				)
 			{
-                menuManager.handleHover();
                 menuManager.draw(window); // Draw the current menu screen
+
+                menuManager.handleHover();
                 if (menuManager.currentState != LOSE_MENU)
                 {
                     boxWorld.StopLoserMusic();
@@ -200,8 +210,9 @@ int main()
             else if (menuManager.currentState == PAUSED)
 			{
 				boxWorld.Render(window);
-                menuManager.handleHover();
                 menuManager.draw(window); // Draw the pause menu
+
+                menuManager.handleHover();
             }
 
             window.display();

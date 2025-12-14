@@ -25,5 +25,5 @@ static LevelData Level2Data = {
     { sf::Vector2f(1800.f, 900.f), {71, 82} },
 
     // Door (added missing size)
-    { sf::Vector2f(550.f, 100.f), {202, 298} }
+    { sf::Vector2f(550.f, 200.f), {202, 298} }
 };
