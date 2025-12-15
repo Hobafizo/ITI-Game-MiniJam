@@ -13,4 +13,7 @@ enum class ObjectCategory : unsigned short
 	SpeedWall = 128,
 	Key = 256,
 	Gate = 512,
+	LWall = 1024,
+	LWall_Left = 2048,
+	LWall_Bottom = 4096,
 };

@@ -45,9 +45,15 @@ int main()
     InputHandler *inputHandler = new InputHandler(window);
     MenuManager menuManager;
 
+#ifndef NO_INTRO
 	StartupVideo introVideo(boxWorld.Resolution());
 	introVideo.Load();
 	introVideo.Start();
+
+#else
+	menuManager.playMainMusic();
+
+#endif
 
     Hud hud;
     while (window.isOpen())
@@ -142,6 +148,7 @@ int main()
 			window.display();
         }
 
+#ifndef NO_INTRO
 		else if (menuManager.currentState == INTRO_VIDEO)
 		{
 			if (!introVideo.Ended())
@@ -152,13 +159,14 @@ int main()
 			}
 			else
 			{
-				menuManager.setState(MAIN_MENU);
-				menuManager.playMainMusic();
-
 				window.clear(defaultColor);
 				window.display();
+
+				menuManager.setState(MAIN_MENU);
+				menuManager.playMainMusic();
 			}
 		}
+#endif
 
         //inputHandler->handleInput
        
