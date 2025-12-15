@@ -102,6 +102,7 @@ public:
 	void StartLoserMusic();
 	void StopWinMusic();
 	void StopLoserMusic();
+	void SetLWallPosition(bfWall* left, bfWall* bottom, sf::Vector2f size, sf::Vector2f pos, float rotation);
 	void Step();
 	void Render(sf::RenderWindow& mainWnd);
 
