@@ -18,6 +18,8 @@ private:
     sf::Texture quitTexture;
     sf::Sprite quitSprite;
     sf::Vector2f defaultScale;
+    sf::Vector2f defaultScaleOther;
+    
     bool loadAssets() {
         if (!backgroundTexture.loadFromFile("Assets/background/win.png")) return false;
         if (!menuTexture.loadFromFile("Assets/UI/Menus/MenusUI1/Back.png")) return false;
@@ -47,11 +49,12 @@ private:
         nextSprite.setTexture(nextTexture);
         nextSprite.setScale(nextScale, nextScale);
         nextSprite.setPosition(centerX, 460.f);
-
+        defaultScaleOther=nextSprite.getScale();
         float quitScale = buttonWidth / quitTexture.getSize().x;
         quitSprite.setTexture(quitTexture);
         quitSprite.setScale(quitScale, quitScale);
         quitSprite.setPosition(centerX, 620.0f);
+        defaultScale=quitSprite.getScale();
     }
 
 public:
@@ -88,7 +91,28 @@ public:
         }
         return NONE;
     }
-    void checkHover(sf::Vector2f mousePos) {
+    void checkHover(sf::Vector2f mousePos)
+    {
+        // Reset all to default
+        menuSprite.setScale(defaultScaleOther);
+        nextSprite.setScale(defaultScaleOther);
+        quitSprite.setScale(defaultScale);
 
+        // Hover scaling
+        if (menuSprite.getGlobalBounds().contains(mousePos))
+        {
+            menuSprite.setScale(defaultScaleOther.x * 1.1f,
+                defaultScaleOther.y * 1.1f);
+        }
+        else if (nextSprite.getGlobalBounds().contains(mousePos))
+        {
+            nextSprite.setScale(defaultScaleOther.x * 1.1f,
+                defaultScaleOther.y * 1.1f);
+        }
+        else if (quitSprite.getGlobalBounds().contains(mousePos))
+        {
+            quitSprite.setScale(defaultScale.x * 1.1f,
+                defaultScale.y * 1.1f);
+        }
     }
 };
