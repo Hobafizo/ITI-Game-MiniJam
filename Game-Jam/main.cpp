@@ -10,11 +10,14 @@
 #include "Level1.hpp"
 #include "Level2.hpp"
 #include "Level3.hpp"
+#include "Level4.hpp"
 #include "StartupVideo.h"
 
 #include "Level4.hpp"
 int main()
 {
+    vector <LevelData> levels = { Level1Data,Level2Data , Level3Data };
+    int curLevel = 0;
     const float timeStep = 1.0f / 60.0f; // 1/60 (frames/sec)
     const int32 velocityIterations = 6;
     const int32 positionIterations = 2;
@@ -108,7 +111,7 @@ int main()
 
 			else if (menuManager.currentState == LOADING_LEVEL)
 			{
-				levelMgr.loadLevel(Level3Data);
+				levelMgr.loadLevel(Level1Data);
 				menuManager.setState(ACTIVE_GAME);
                 boxWorld.SetRenderState(WorldRenderState::Running);
 			}
