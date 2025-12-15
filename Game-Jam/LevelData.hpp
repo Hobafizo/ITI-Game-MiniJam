@@ -5,6 +5,8 @@
 #include "bfPlayer.h"
 #include "bfMonster.h"
 #include "bfWall.h"
+#include "ObjectCategory.h"
+#include "def.h"
 
 using namespace std;
 using namespace sf;
