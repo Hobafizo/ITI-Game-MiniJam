@@ -114,7 +114,7 @@ int main()
 
 			else if (menuManager.currentState == LOADING_LEVEL)
 			{
-				levelMgr.loadLevel(Level3Data);
+				levelMgr.loadLevel(levels[curLevel]);
 				menuManager.setState(ACTIVE_GAME);
                 boxWorld.SetRenderState(WorldRenderState::Running);
 			}
