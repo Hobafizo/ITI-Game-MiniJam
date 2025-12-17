@@ -56,8 +56,8 @@ public:
 
     void draw(sf::RenderWindow& window){
         window.draw(backgroundSprite);
-        window.draw(exitSprite);
-        window.draw(startSprite);
+  /*      window.draw(exitSprite);
+        window.draw(startSprite);*/
     }
 
 };

@@ -14,13 +14,15 @@
 #include "StartupVideo.h"
 #include "ConsoleControl.h"
 
+#include "Level4.hpp"
+#include "Level5.hpp"
 int main()
 {
-#ifdef HIDE_CONSOLE
+    #ifdef HIDE_CONSOLE
     HideConsole();
 #endif
 
-    vector <LevelData> levels = { Level1Data, Level2Data, Level3Data, Level4Data };
+    vector <LevelData> levels = { Level1Data, Level2Data, Level3Data, Level4Data,Level5Data };
     int numLevels = levels.size();
     int curLevel= 0;
     const float timeStep = 1.0f / 60.0f; // 1/60 (frames/sec)
