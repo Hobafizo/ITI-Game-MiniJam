@@ -4,6 +4,7 @@
 #define WINDOW_HEIGHT     1080
 #define WINDOW_FRAME_RATE 60
 #define WINDOW_FULL_SCREEN
+#define HIDE_CONSOLE
 //#define NO_INTRO
 #define QUALITY_INTRO
 

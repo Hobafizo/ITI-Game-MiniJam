@@ -77,7 +77,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)libraries\SFML-2.6.2-vc17-64\include;$(SolutionDir)libraries\Box2D\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-<LibraryPath>$(SolutionDir)libraries\SFML-2.6.2-vc17-64\lib;$(SolutionDir)libraries\Box2D\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <LibraryPath>$(SolutionDir)libraries\SFML-2.6.2-vc17-64\lib;$(SolutionDir)libraries\Box2D\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -151,6 +151,7 @@
     <ClCompile Include="bfSpeedWall.cpp" />
     <ClCompile Include="bfWall.cpp" />
     <ClCompile Include="BoxML.cpp" />
+    <ClCompile Include="ConsoleControl.cpp" />
     <ClCompile Include="InputHandler.hpp" />
     <ClCompile Include="LevelMenu.hpp" />
     <ClCompile Include="main.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="bfWall.h" />
     <ClInclude Include="BoxML.h" />
     <ClInclude Include="CharacterData.h" />
+    <ClInclude Include="ConsoleControl.h" />
     <ClInclude Include="GameManager.hpp" />
     <ClInclude Include="Hud.hpp" />
     <ClInclude Include="Level1.hpp" />

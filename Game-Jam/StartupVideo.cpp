@@ -149,10 +149,16 @@ bool StartupVideo::Start(void)
 
 void StartupVideo::Draw(sf::RenderWindow& window)
 {
+	if (_framesEnded)
+		return;
+
 	if (!backgroundFrames.empty() && animationClock.getElapsedTime().asSeconds() > frameDuration)
 	{
-		if (currentFrameIndex + 1 == backgroundFrames.size())
+		if (currentFrameIndex + 1 >= backgroundFrames.size())
+		{
 			_framesEnded = true;
+			return;
+		}
 
 		currentFrameIndex = (currentFrameIndex + 1) % backgroundFrames.size();
 

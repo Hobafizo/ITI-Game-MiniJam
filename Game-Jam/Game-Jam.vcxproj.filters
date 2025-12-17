@@ -99,6 +99,9 @@
     <ClCompile Include="StartupVideo.cpp">
       <Filter>Engines</Filter>
     </ClCompile>
+    <ClCompile Include="ConsoleControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxML.h">
@@ -181,6 +184,12 @@
     </ClInclude>
     <ClInclude Include="bfDoor.h">
       <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Level5.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleControl.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

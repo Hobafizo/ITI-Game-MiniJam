@@ -12,10 +12,14 @@
 #include "Level3.hpp"
 #include "Level4.hpp"
 #include "StartupVideo.h"
+#include "ConsoleControl.h"
 
-#include "Level4.hpp"
 int main()
 {
+#ifdef HIDE_CONSOLE
+    HideConsole();
+#endif
+
     vector <LevelData> levels = { Level1Data, Level2Data, Level3Data, Level4Data };
     int numLevels = levels.size();
     int curLevel= 0;
